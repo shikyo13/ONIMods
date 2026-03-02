@@ -17,7 +17,7 @@ Use `Read` tool with `offset` and `limit` to load specific sections only.
 | 9 | Debugging and testing | 1119-1193 |
 | 10 | Publishing to Steam Workshop | 1194-1228 |
 | 11 | Key API reference | 1229-1409 |
-| 12 | Community resources | 1410-1411 |
+| 12 | Community resources and ecosystem | 1410-1461 |
 
 ---
 
@@ -1407,6 +1407,56 @@ public class MyComponent : KMonoBehaviour
 
 ---
 
-## Essential community resources for ongoing reference
+## 12. Community resources and ecosystem
 
-The ONI modding ecosystem centers on a handful of critical resources. **Cairath's modding wiki** (github.com/Cairath/Oxygen-Not-Included-Modding/wiki) remains the most comprehensive community guide, covering post-Mergedown practices. **Peter Han's ONIMods repository** (github.com/peterhaneve/ONIMods) contains PLib and 20+ reference mods with ~450 stars. **Truinto's SimpleMods** (github.com/Truinto/ONI-Modloader-SimpleMods) demonstrates JSON-configurable customization of buildings, geysers, recipes, and elements. The **ONI Modding Discord** (linked from Klei Forums) is the most active source of current help. **Harmony 2.0 documentation** at harmony.pardeike.net covers the patching library in full. For kanim work, **romen-h's Kanim Explorer** (github.com/romen-h/kanim-explorer) is the best GUI tool. Finally, always decompile the latest `Assembly-CSharp.dll` — the game's source is the ultimate reference, and the codebase evolves with each update.
+### PLib (Peter Han's modding library)
+
+The dominant community library. NuGet package `PLib 4.19.0+` (ILMerged into output automatically via build targets).
+
+| Module | Purpose | Key Types |
+|-|-|-|
+| PLib.Core | Cross-mod event bus, shared data registry | `PUtil.InitLibrary()`, `PRegistry` |
+| PLib.Options | In-game settings UI from attribute-decorated classes | `POptions`, `SingletonOptions<T>`, `[Option]` |
+| PLib.Lighting | Custom light shapes for buildings | `PLightShape` |
+| PLib.Actions | Custom key bindings registered with the game | `PAction`, `PActionManager` |
+| PLib.UI | IMGUI-style UI panel builder | `PUIElements`, `PPanel`, `PButton` |
+| PLib.Database | Localization string registration | `PLocalization` |
+| PLib.Buildings | Building registration helpers | `PBuilding` |
+
+**Usage pattern**: Call `PUtil.InitLibrary()` first in `OnLoad`, then register options with `new POptions().RegisterOptions(this, typeof(MyOptions))`. Options class uses `[JsonObject(MemberSerialization.OptIn)]` + `[JsonProperty]` on fields, `[Option("Label", "Tooltip")]` for UI, and inherits `SingletonOptions<T>` for static access.
+
+### Reference repositories
+
+| Repository | What It Offers |
+|-|-|
+| **Peter Han's ONIMods** (github.com/peterhaneve/ONIMods) | PLib source + 20+ production mods. Best reference for patterns |
+| **Truinto's SimpleMods** (github.com/Truinto/ONI-Modloader-SimpleMods) | JSON-configurable building/geyser/recipe customization |
+| **Sanchozz's Mods** (github.com/SanchozzDepon662/ONIMods) | Advanced Harmony patterns, complex game system patches |
+| **Cairath's Modding Wiki** (github.com/Cairath/Oxygen-Not-Included-Modding/wiki) | Most comprehensive community guide, post-Mergedown |
+| **Aki's Mods** (github.com/AkisExtraTwitchEvents) | Event-driven architecture, Twitch integration patterns |
+
+### Development tools
+
+| Tool | Best For |
+|-|-|
+| **ILSpy** (GUI, github.com/icsharpcode/ILSpy) | Browsing game classes interactively |
+| **ilspycmd** (CLI) | Scripted decompilation: `ilspycmd -t TypeName -r ManagedDir` |
+| **dnSpy** (GUI, no longer maintained) | IL + C# side-by-side viewing. Still works fine |
+| **dotPeek** (JetBrains, free) | Rider integration, search across assemblies |
+| **Kanim Explorer** (github.com/romen-h/kanim-explorer) | GUI tool for viewing/editing ONI animation files |
+
+### Community channels
+
+- **ONI Modding Discord** (linked from Klei Forums) — most active source of current help, real-time troubleshooting
+- **Klei Forums — Modding subforum** (forums.kleientertainment.com) — official venue, slower but archived and searchable
+- **Harmony 2.0 docs** (harmony.pardeike.net) — full patching library reference: prefixes, postfixes, transpilers, finalizers
+
+### Modding infrastructure (post-Mergedown)
+
+Since the 2021 Mergedown update, ONI has built-in mod loading. No external mod loader is needed:
+
+- **`mod_info.yaml`**: Declares `supportedContent` (ALL, VANILLA_ID, EXPANSION1_ID) and `APIVersion: 2`
+- **`mod.yaml`**: Title, description, `staticID` for Workshop identification
+- **Mod load order**: Game scans `Documents/Klei/OxygenNotIncluded/mods/local/` and Steam Workshop folders, loads DLLs matching `mod_info.yaml`, calls `OnLoad(Harmony)` on `UserMod2` subclasses
+- **No IL2CPP**: ONI ships standard Mono/.NET assemblies — direct Harmony patching works without extra tooling
+- **PLib dominance**: Most mods use PLib for options/settings. Few other shared libraries exist since PLib covers the common needs
