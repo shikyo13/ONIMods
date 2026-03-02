@@ -6,24 +6,22 @@ C# class libraries using Harmony 2.0 to patch Oxygen Not Included at runtime. .N
 
 | Path | Purpose |
 |-|-|
-| `ReplaceTool/` | One-click building replacement mod (active development) |
-| `ReplaceTool/Core/` | Entry point (`ReplaceToolMod.cs`), data classes, validation |
-| `ReplaceTool/Patches/` | Harmony patches — build tool, cancel, construct, deconstruct |
-| `ReplaceTool/Systems/` | `ReplacementTracker` — central state manager (KSerialization) |
-| `ReplaceTool/UI/` | Ghost visuals, tooltips |
-| `ReplaceTool/Config/` | PLib options |
+| `ReplaceStuff/` | Furniture replacement mod — active, source on `v2-vanilla-replacement` branch |
+| `BuildThrough/` | Build/deconstruct through walls — source on `build-through` branch |
+| `ReplaceTool/` | Legacy replacement mod — superseded by ReplaceStuff |
+| `docs/` | Tiered documentation (see routing table below) |
 
 ## Build & Deploy
 
 ```bash
-# Build (from ReplaceTool/)
-dotnet build ReplaceTool.csproj
+# Build any mod (from workspace root)
+dotnet build <ModName>/<ModName>.csproj
 
 # Game DLLs referenced from:
 D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\
 
 # Deploy to:
-%USERPROFILE%\Documents\Klei\OxygenNotIncluded\mods\local\ReplaceTool\
+%USERPROFILE%\Documents\Klei\OxygenNotIncluded\mods\local\<ModName>\
 
 # Logs:
 %APPDATA%\..\LocalLow\Klei\Oxygen Not Included\Player.log
@@ -35,7 +33,7 @@ D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Manage
 - All game DLL references: `<Private>false</Private>` (never bundle)
 - Entry point: subclass `KMod.UserMod2`, override `OnLoad(Harmony)`
 - PLib: init with `PUtil.InitLibrary()` in OnLoad, options via `POptions`
-- Namespace matches folder structure: `ReplaceTool.Core`, `ReplaceTool.Patches`, etc.
+- Namespace matches folder structure: `ReplaceStuff.Core`, `BuildThrough.Patches`, etc.
 - Harmony patches: use `[HarmonyPatch]` attributes, all patch methods `static`
 - Prefer postfix patches over prefix unless you need to skip the original
 - `AddOrGet<T>()` for attaching components — never raw `AddComponent` without null-check
@@ -46,5 +44,6 @@ D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Manage
 | When | Read |
 |-|-|
 | Every session | `docs/tier1-quickref.md` (~100 lines) |
-| Editing ReplaceTool architecture | `docs/tier2-replacetool-design.md` |
+| Editing ReplaceStuff | `docs/tier2-replacestuff-design.md` |
+| Editing BuildThrough | `docs/tier2-buildthrough-design.md` |
 | ONI API/Harmony/building questions | `docs/ONI-modding-guide.md` — use section index at top, read only relevant section |
