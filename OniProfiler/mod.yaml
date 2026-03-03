@@ -1,0 +1,3 @@
+title: "OniProfiler"
+description: "Real-time performance diagnostics overlay for Oxygen Not Included. Shows frame timing breakdowns, entity counts, GC pressure, and detects other mods' patches."
+staticID: "OniProfiler"
