@@ -4,11 +4,10 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 
 ## Workspace Mod Index
 
-| Mod | Branch | Entry Point | Status |
-|-|-|-|-|
-| ReplaceStuff | `v2-vanilla-replacement` | `Core/ReplaceStuffMod.cs` | v2.1, active |
-| BuildThrough | `build-through` | `Core/BuildThroughMod.cs` | Initial commit |
-| ReplaceTool | `build-through` | `Core/ReplaceToolMod.cs` | Legacy — superseded by ReplaceStuff |
+| Mod | Entry Point | Status |
+|-|-|-|
+| ReplaceStuff | `Core/ReplaceStuffMod.cs` | v2.1, active |
+| BuildThrough | `Core/BuildThroughMod.cs` | Initial commit |
 
 ## ReplaceStuff Module Map
 
