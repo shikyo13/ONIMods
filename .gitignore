@@ -9,3 +9,6 @@ obj/
 
 # Local tooling Code local settings
 .local tooling/
+
+# Git worktrees
+.worktrees/
