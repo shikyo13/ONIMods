@@ -1,0 +1,11 @@
+# Build output
+bin/
+obj/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# Local tooling Code local settings
+.local tooling/
