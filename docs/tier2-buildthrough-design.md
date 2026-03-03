@@ -1,6 +1,6 @@
 # Tier 2 — BuildThrough Design Reference
 
-Read when editing BuildThrough mod. Source on `build-through` branch.
+Read when editing BuildThrough mod.
 
 ## What It Does
 

@@ -1,6 +1,6 @@
 # Tier 2 — ReplaceStuff Design Reference
 
-Read when editing ReplaceStuff mod. Source on `v2-vanilla-replacement` branch.
+Read when editing ReplaceStuff mod.
 
 ## What It Does
 
