@@ -6,9 +6,8 @@ C# class libraries using Harmony 2.0 to patch Oxygen Not Included at runtime. .N
 
 | Path | Purpose |
 |-|-|
-| `ReplaceStuff/` | Furniture replacement mod — active, source on `v2-vanilla-replacement` branch |
-| `BuildThrough/` | Build/deconstruct through walls — source on `build-through` branch |
-| `ReplaceTool/` | Legacy replacement mod — superseded by ReplaceStuff |
+| `ReplaceStuff/` | Furniture replacement mod — active |
+| `BuildThrough/` | Build/deconstruct through walls |
 | `docs/` | Tiered documentation (see routing table below) |
 
 ## Build & Deploy
