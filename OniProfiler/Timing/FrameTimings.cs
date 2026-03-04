@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics;
 using System.Threading;
+using UnityEngine;
 
 namespace OniProfiler.Timing
 {
@@ -24,6 +26,7 @@ namespace OniProfiler.Timing
 
         // AI & Pathfinding
         PathProbe,
+        PathProbe_Async,
         BrainAdvance,
         FindNextChore,
         FetchUpdatePickups,
@@ -33,18 +36,11 @@ namespace OniProfiler.Timing
         RoomProber,
         DecorRecalc,
         GameScheduler,
-        WorldContainer,
 
         // Rendering
         SMRender,
         SMRenderEveryTick,
         OverlayRefresh,
-
-        // Scheduler buckets
-        Sim33ms,
-        Sim200msBucket,
-        Sim1000ms,
-        Sim4000ms,
 
         COUNT
     }
@@ -55,8 +51,7 @@ namespace OniProfiler.Timing
         Simulation,
         AI,
         World,
-        Rendering,
-        Scheduler
+        Rendering
     }
 
     /// <summary>
@@ -73,17 +68,42 @@ namespace OniProfiler.Timing
         // Current frame accumulators (ticks)
         private readonly long[] currentTicks;
 
+        // Per-frame allocation tracking (bytes → KB for display)
+        private readonly long[] currentAllocBytes;
+        private readonly double[] cachedAllocKB;
+        private readonly double[] displayAllocKB;
+
         // Ring buffer: [keyIndex][frameIndex] = elapsed ticks
         private readonly long[][] history;
         private int historySize;
         private int writeIndex;
         private int sampleCount;
 
-        // Cached stats
+        // Inter-frame tracking (rendering/vsync gap between frames)
+        private long lastLateUpdateEndTs;   // Stopwatch timestamp at end of LateUpdate
+        private long thisUpdateStartTs;     // Stopwatch timestamp at start of Update
+        private double interFrameGapMs;     // Computed gap between frames
+
+        // GC location detection (in-frame vs inter-frame)
+        private int gcCountAtUpdateStart;
+        private bool gcDuringGameLogic;     // GC fired between Update prefix and LateUpdate postfix
+
+        // Cached stats (updated every frame)
         private readonly double[] cachedCurrent;
         private readonly double[] cachedMin;
         private readonly double[] cachedAvg;
         private readonly double[] cachedMax;
+
+        // Last non-zero value for periodic systems (prevents 0-flicker between ticks)
+        private readonly double[] lastNonZero;
+
+        // Display arrays — copied from cached arrays ~4 times/sec for readable UI
+        private readonly double[] displayCurrent;
+        private readonly double[] displayAvg;
+        private readonly double[] displayMax;
+        private float displayTimer;
+        private int displayFrameCount;
+        private double displayFps;
 
         public FrameTimings()
         {
@@ -98,6 +118,15 @@ namespace OniProfiler.Timing
             cachedMin = new double[keyCount];
             cachedAvg = new double[keyCount];
             cachedMax = new double[keyCount];
+            lastNonZero = new double[keyCount];
+
+            displayCurrent = new double[keyCount];
+            displayAvg = new double[keyCount];
+            displayMax = new double[keyCount];
+
+            currentAllocBytes = new long[keyCount];
+            cachedAllocKB = new double[keyCount];
+            displayAllocKB = new double[keyCount];
         }
 
         /// <summary>
@@ -116,6 +145,58 @@ namespace OniProfiler.Timing
         }
 
         /// <summary>
+        /// Called from postfix patches. Accumulates allocation delta for this system.
+        /// Thread-safe: sim-thread patches may call concurrently.
+        /// </summary>
+        public void AddAlloc(TimingKey key, long bytes)
+        {
+            Interlocked.Add(ref currentAllocBytes[(int)key], bytes);
+        }
+
+        // Inter-frame gap accessors
+        public double InterFrameGapMs => interFrameGapMs;
+        public bool GCDuringGameLogic => gcDuringGameLogic;
+
+        /// <summary>
+        /// Called from TimingPrefix_GameUpdate at the very start of Game.Update.
+        /// Records inter-frame gap (time spent in rendering/vsync since last LateUpdate).
+        /// </summary>
+        public void RecordUpdateStart(long timestamp)
+        {
+            thisUpdateStartTs = timestamp;
+            if (lastLateUpdateEndTs > 0)
+                interFrameGapMs = (timestamp - lastLateUpdateEndTs) * ticksToMs;
+        }
+
+        /// <summary>
+        /// Called from Postfix_GameLateUpdate at the end of Game.LateUpdate.
+        /// Marks the boundary between game logic and rendering pipeline.
+        /// </summary>
+        public void RecordLateUpdateEnd()
+        {
+            lastLateUpdateEndTs = Stopwatch.GetTimestamp();
+        }
+
+        /// <summary>
+        /// Called from TimingPrefix_GameUpdate. Captures GC count at frame start
+        /// so we can detect if GC fired during game logic vs inter-frame.
+        /// </summary>
+        public void RecordGCCheckStart()
+        {
+            gcCountAtUpdateStart = GC.CollectionCount(0);
+            gcDuringGameLogic = false;
+        }
+
+        /// <summary>
+        /// Called from Postfix_GameLateUpdate. Compares GC count to detect
+        /// whether a collection happened during game logic execution.
+        /// </summary>
+        public void RecordGCCheckEnd()
+        {
+            gcDuringGameLogic = GC.CollectionCount(0) > gcCountAtUpdateStart;
+        }
+
+        /// <summary>
         /// Called once per frame from ProfilerOverlay.Update to commit current data to ring buffer.
         /// </summary>
         public void RecordFrameEnd()
@@ -124,7 +205,17 @@ namespace OniProfiler.Timing
             {
                 long ticks = Interlocked.Exchange(ref currentTicks[i], 0);
                 history[i][writeIndex] = ticks;
-                cachedCurrent[i] = ticks * ticksToMs;
+                double ms = ticks * ticksToMs;
+                if (ms > 0.001)
+                    lastNonZero[i] = ms;
+                cachedCurrent[i] = ms > 0.001 ? ms : lastNonZero[i];
+            }
+
+            // Convert alloc bytes → KB and reset accumulators
+            for (int i = 0; i < keyCount; i++)
+            {
+                long bytes = Interlocked.Exchange(ref currentAllocBytes[i], 0);
+                cachedAllocKB[i] = bytes > 0 ? bytes / 1024.0 : 0;
             }
 
             writeIndex = (writeIndex + 1) % historySize;
@@ -132,6 +223,22 @@ namespace OniProfiler.Timing
                 sampleCount++;
 
             ComputeStats();
+
+            displayTimer += Time.unscaledDeltaTime;
+            displayFrameCount++;
+            if (displayTimer >= 0.25f)
+            {
+                displayFps = displayFrameCount / displayTimer;
+                displayFrameCount = 0;
+                displayTimer = 0f;
+                for (int j = 0; j < keyCount; j++)
+                {
+                    displayCurrent[j] = cachedCurrent[j];
+                    displayAvg[j] = cachedAvg[j];
+                    displayMax[j] = cachedMax[j];
+                    displayAllocKB[j] = cachedAllocKB[j];
+                }
+            }
         }
 
         public void Reset()
@@ -139,6 +246,9 @@ namespace OniProfiler.Timing
             for (int i = 0; i < keyCount; i++)
             {
                 currentTicks[i] = 0;
+                currentAllocBytes[i] = 0;
+                cachedAllocKB[i] = 0;
+                displayAllocKB[i] = 0;
                 for (int j = 0; j < historySize; j++)
                     history[i][j] = 0;
             }
@@ -150,6 +260,16 @@ namespace OniProfiler.Timing
         public double GetMinMs(TimingKey key) => cachedMin[(int)key];
         public double GetAvgMs(TimingKey key) => cachedAvg[(int)key];
         public double GetMaxMs(TimingKey key) => cachedMax[(int)key];
+
+        // Display getters — throttled to ~4 Hz for readable UI
+        public double GetDisplayCurrentMs(TimingKey key) => displayCurrent[(int)key];
+        public double GetDisplayAvgMs(TimingKey key) => displayAvg[(int)key];
+        public double GetDisplayMaxMs(TimingKey key) => displayMax[(int)key];
+        public double GetDisplayFps() => displayFps;
+
+        // Allocation getters
+        public double GetCurrentAllocKB(TimingKey key) => cachedAllocKB[(int)key];
+        public double GetDisplayAllocKB(TimingKey key) => displayAllocKB[(int)key];
 
         private void ComputeStats()
         {
@@ -193,6 +313,7 @@ namespace OniProfiler.Timing
                     return TimingCategory.Simulation;
 
                 case TimingKey.PathProbe:
+                case TimingKey.PathProbe_Async:
                 case TimingKey.BrainAdvance:
                 case TimingKey.FindNextChore:
                 case TimingKey.FetchUpdatePickups:
@@ -202,19 +323,12 @@ namespace OniProfiler.Timing
                 case TimingKey.RoomProber:
                 case TimingKey.DecorRecalc:
                 case TimingKey.GameScheduler:
-                case TimingKey.WorldContainer:
                     return TimingCategory.World;
 
                 case TimingKey.SMRender:
                 case TimingKey.SMRenderEveryTick:
                 case TimingKey.OverlayRefresh:
                     return TimingCategory.Rendering;
-
-                case TimingKey.Sim33ms:
-                case TimingKey.Sim200msBucket:
-                case TimingKey.Sim1000ms:
-                case TimingKey.Sim4000ms:
-                    return TimingCategory.Scheduler;
 
                 default:
                     return TimingCategory.Frame;
@@ -235,6 +349,7 @@ namespace OniProfiler.Timing
                 case TimingKey.CircuitLast: return "Circuit (last)";
                 case TimingKey.EnergySim: return "Energy Sim";
                 case TimingKey.PathProbe: return "Path Probe";
+                case TimingKey.PathProbe_Async: return "Path Probe (async)";
                 case TimingKey.BrainAdvance: return "Brain Advance";
                 case TimingKey.FindNextChore: return "Find Chore";
                 case TimingKey.FetchUpdatePickups: return "Fetch Pickups";
@@ -242,14 +357,9 @@ namespace OniProfiler.Timing
                 case TimingKey.RoomProber: return "Room Prober";
                 case TimingKey.DecorRecalc: return "Decor Recalc";
                 case TimingKey.GameScheduler: return "Scheduler";
-                case TimingKey.WorldContainer: return "World Container";
                 case TimingKey.SMRender: return "SM Render";
                 case TimingKey.SMRenderEveryTick: return "SM RenderEveryTick";
                 case TimingKey.OverlayRefresh: return "Overlay Refresh";
-                case TimingKey.Sim33ms: return "ISim33ms bucket";
-                case TimingKey.Sim200msBucket: return "ISim200ms bucket";
-                case TimingKey.Sim1000ms: return "ISim1000ms bucket";
-                case TimingKey.Sim4000ms: return "ISim4000ms bucket";
                 default: return key.ToString();
             }
         }

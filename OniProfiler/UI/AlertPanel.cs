@@ -40,7 +40,7 @@ namespace OniProfiler.UI
             GUILayout.Label("<b>Alerts</b>", alertStyle);
 
             // Frame time
-            double frameMs = timings.GetCurrentMs(TimingKey.GameUpdate);
+            double frameMs = timings.GetDisplayCurrentMs(TimingKey.GameUpdate);
             if (frameMs > opts.FrameTimeAlertMs)
             {
                 DrawAlert(RedColor,
@@ -49,7 +49,7 @@ namespace OniProfiler.UI
             }
 
             // Sim tick
-            double simMs = timings.GetCurrentMs(TimingKey.Sim200ms);
+            double simMs = timings.GetDisplayCurrentMs(TimingKey.Sim200ms);
             if (simMs > opts.SimTickAlertMs)
             {
                 DrawAlert(AmberColor,

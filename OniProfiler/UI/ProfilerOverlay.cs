@@ -1,6 +1,7 @@
 using OniProfiler.Census;
 using OniProfiler.Core;
 using OniProfiler.Memory;
+using OniProfiler.Recording;
 using OniProfiler.Timing;
 using UnityEngine;
 
@@ -17,13 +18,22 @@ namespace OniProfiler.UI
 
         private TimingBarRenderer barRenderer;
         private AlertPanel alertPanel;
-        private Rect windowRect = new Rect(10, 10, 420, 700);
+        private SpikePanel spikePanel;
+        private Rect windowRect = new Rect(10, 10, 520, 700);
+        private GUIStyle windowStyle;
+        private Texture2D windowBgTex;
 
         private void OnEnable()
         {
             Instance = this;
             barRenderer = new TimingBarRenderer();
             alertPanel = new AlertPanel();
+            spikePanel = new SpikePanel();
+
+            // Semi-transparent dark background for readability over game visuals
+            windowBgTex = new Texture2D(1, 1);
+            windowBgTex.SetPixel(0, 0, new Color(0.05f, 0.05f, 0.08f, 0.88f));
+            windowBgTex.Apply();
         }
 
         private void OnDisable()
@@ -35,9 +45,9 @@ namespace OniProfiler.UI
 
         private void Update()
         {
-            // Use Unity Input directly — PAction registers the default keybind (F8)
+            // Use Unity Input directly — PAction registers the default keybind (backtick)
             // in the game's options UI for rebinding, but we check via Input for reliability
-            if (Input.GetKeyDown(KeyCode.F8))
+            if (Input.GetKeyDown(KeyCode.BackQuote))
             {
                 if (IsVisible) Hide(); else Show();
             }
@@ -45,8 +55,15 @@ namespace OniProfiler.UI
             if (IsVisible)
             {
                 FrameTimings.Instance.RecordFrameEnd();
-                EntityCensus.Update();
+                PlayerLoopTimings.CommitFrame();
                 GCMonitor.Update();
+                SpikeTracker.CheckFrame(Time.unscaledDeltaTime * 1000.0);
+                EntityCensus.Update();
+
+                spikePanel.Update();
+                DataRecorder.RecordFrame(Time.unscaledDeltaTime);
+                if (DataRecorder.IsRecording)
+                    DataRecorder.Tick(Time.unscaledDeltaTime);
             }
         }
 
@@ -56,11 +73,15 @@ namespace OniProfiler.UI
             TimingPatchManager.ApplyPatches();
             ModDetector.Scan();
             alertPanel.RefreshOptions();
+            SpikeTracker.Reset();
+            SpikeTracker.RefreshThreshold();
             FrameTimings.Instance.Reset();
         }
 
         private void Hide()
         {
+            if (DataRecorder.IsRecording)
+                DataRecorder.StopRecording();
             IsVisible = false;
             TimingPatchManager.RemovePatches();
         }
@@ -68,9 +89,17 @@ namespace OniProfiler.UI
         private void OnGUI()
         {
             if (!IsVisible) return;
+
+            if (windowStyle == null)
+            {
+                windowStyle = new GUIStyle(GUI.skin.window);
+                windowStyle.normal.background = windowBgTex;
+                windowStyle.onNormal.background = windowBgTex;
+            }
+
             windowRect = GUILayout.Window(
                 "OniProfiler".GetHashCode(), windowRect, DrawWindow, "OniProfiler",
-                GUILayout.Width(420));
+                windowStyle, GUILayout.Width(520));
         }
 
         private void DrawWindow(int id)
@@ -98,17 +127,46 @@ namespace OniProfiler.UI
 
             GUILayout.Space(4);
 
+            // Spike attribution
+            spikePanel.Draw();
+
+            GUILayout.Space(4);
+
             // Alerts
             alertPanel.Draw(timings, census);
 
             GUI.DragWindow();
         }
 
+        private GUIStyle recordBtnStyle;
+
         private void DrawHeader(FrameTimings timings)
         {
-            var frameMs = timings.GetCurrentMs(TimingKey.GameUpdate);
-            var fps = frameMs > 0 ? 1000.0 / frameMs : 0;
+            GUILayout.BeginHorizontal();
+
+            var frameMs = timings.GetDisplayCurrentMs(TimingKey.GameUpdate);
+            var fps = timings.GetDisplayFps();
             GUILayout.Label($"Frame: {frameMs:F1}ms | FPS: {fps:F0} | Cycle: {GameClock.Instance?.GetCycle() ?? 0}");
+
+            GUILayout.FlexibleSpace();
+
+            if (DataRecorder.IsRecording)
+            {
+                if (recordBtnStyle == null)
+                {
+                    recordBtnStyle = new GUIStyle(GUI.skin.button);
+                    recordBtnStyle.normal.textColor = new Color(1f, 0.3f, 0.3f);
+                }
+                if (GUILayout.Button("\u25cf Stop", recordBtnStyle, GUILayout.Width(60)))
+                    DataRecorder.StopRecording();
+            }
+            else
+            {
+                if (GUILayout.Button("Record", GUILayout.Width(60)))
+                    DataRecorder.StartRecording();
+            }
+
+            GUILayout.EndHorizontal();
         }
 
         private void DrawCensus(EntityCensusData census)
@@ -127,6 +185,8 @@ namespace OniProfiler.UI
             GUILayout.Label("<b>Memory</b>");
             GUILayout.Label($"  Heap: {gc.HeapSizeMB:F1} MB | Alloc rate: {gc.AllocationRateKBps:F0} KB/s");
             GUILayout.Label($"  GC gen0: {gc.Gen0Delta}  gen1: {gc.Gen1Delta}  gen2: {gc.Gen2Delta}");
+            if (gc.AvgGen2Interval > 0.01f)
+                GUILayout.Label($"  GC gen2: every ~{gc.AvgGen2Interval:F1}s (last: {gc.TimeSinceLastGen2:F1}s ago)");
         }
     }
 }

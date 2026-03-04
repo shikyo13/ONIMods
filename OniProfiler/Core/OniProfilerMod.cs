@@ -3,6 +3,7 @@ using KMod;
 using PeterHan.PLib.Actions;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.Options;
+using OniProfiler.Memory;
 using OniProfiler.Timing;
 using OniProfiler.UI;
 
@@ -22,7 +23,9 @@ namespace OniProfiler.Core
             ToggleAction = new PActionManager().CreateAction(
                 "OniProfiler.TogglePanel",
                 "Toggle OniProfiler",
-                new PKeyBinding(KKeyCode.F8, Modifier.None));
+                new PKeyBinding(KKeyCode.BackQuote, Modifier.None));
+
+            GCMonitor.LogCapabilities();
         }
     }
 

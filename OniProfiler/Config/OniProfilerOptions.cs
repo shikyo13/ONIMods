@@ -48,5 +48,13 @@ namespace OniProfiler.Config
             "Alerts")]
         [JsonProperty]
         public bool Gen2GCAlert { get; set; } = true;
+
+        [Option("Spike Threshold (ms)",
+            "Frames slower than this are captured as spikes with full per-system breakdown.",
+            "Alerts")]
+        [Limit(16, 200)]
+        [JsonProperty]
+        public float SpikeThresholdMs { get; set; } = 33f;
+
     }
 }
