@@ -110,17 +110,18 @@ namespace OniProfiler.Timing
             if (declType == typeof(EnergySim) && name == "EnergySim200ms") return TimingKey.EnergySim;
             if (declType == typeof(StateMachineUpdater) && name == "AdvanceOneSimSubTick") return TimingKey.BrainAdvance;
             if (declType == typeof(ChoreConsumer) && name == "FindNextChore") return TimingKey.FindNextChore;
-            if (declType == typeof(FetchManager) && name == "UpdatePickups") return TimingKey.FetchUpdatePickups;
-            if (declType == typeof(Sensor) && name == "Update") return TimingKey.SensorUpdate;
+            if (declType?.Name == "FetchablesByPrefabId" && name == "UpdatePickups") return TimingKey.FetchUpdatePickups;
+            if (declType == typeof(Sensors) && name == "UpdateSensors") return TimingKey.SensorUpdate;
             if (declType == typeof(RoomProber) && name == "Sim1000ms") return TimingKey.RoomProber;
-            if (declType == typeof(GameScheduler) && name == "Sim200ms") return TimingKey.GameScheduler;
+            if (declType == typeof(GameScheduler) && name == "Update") return TimingKey.GameScheduler;
             if (declType == typeof(StateMachineUpdater) && name == "Render") return TimingKey.SMRender;
             if (declType == typeof(StateMachineUpdater) && name == "RenderEveryTick") return TimingKey.SMRenderEveryTick;
 
             // Types resolved by name (may not be available at compile time)
             if (declType?.Name == "PathProber" && name == "UpdateProbe") return TimingKey.PathProbe;
+            if (declType?.Name == "PathProber" && name == "Run") return TimingKey.PathProbe;
+            if (declType?.Name == "WorkOrder" && name == "Execute") return TimingKey.PathProbe_Async;
             if (declType?.Name == "DecorProvider" && name == "Sim1000ms") return TimingKey.DecorRecalc;
-            if (declType?.Name == "WorldContainer" && name == "Sim200ms") return TimingKey.WorldContainer;
             if (declType?.Name == "OverlayScreen" && name == "LateUpdate") return TimingKey.OverlayRefresh;
 
             return null;
