@@ -12,3 +12,4 @@ obj/
 
 # Git worktrees
 .worktrees/
+.reference/
