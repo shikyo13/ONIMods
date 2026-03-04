@@ -10,18 +10,17 @@ namespace OniProfiler.UI
     /// </summary>
     public sealed class TimingBarRenderer
     {
-        private const float BAR_HEIGHT = 14f;
-        private const float BAR_MAX_WIDTH = 390f;
+        private const float BAR_HEIGHT = 18f;
+        private const float BAR_MAX_WIDTH = 490f;
         private const float BUDGET_MS = 16.667f; // 60fps target
 
-        // Category colors
-        private static readonly Color SimColor = new Color(0.3f, 0.5f, 0.9f, 0.9f);     // blue
-        private static readonly Color AIColor = new Color(0.9f, 0.6f, 0.2f, 0.9f);       // orange
-        private static readonly Color WorldColor = new Color(0.6f, 0.4f, 0.8f, 0.9f);    // purple
-        private static readonly Color RenderColor = new Color(0.3f, 0.8f, 0.4f, 0.9f);   // green
-        private static readonly Color SchedulerColor = new Color(0.7f, 0.7f, 0.3f, 0.9f);// yellow
-        private static readonly Color FrameColor = new Color(0.6f, 0.6f, 0.6f, 0.9f);    // gray
-        private static readonly Color OverBudgetColor = new Color(0.9f, 0.2f, 0.2f, 0.9f);
+        // Category colors — low alpha so white text remains readable over dark background
+        private static readonly Color SimColor = new Color(0.3f, 0.5f, 0.9f, 0.35f);
+        private static readonly Color AIColor = new Color(0.9f, 0.6f, 0.2f, 0.35f);
+        private static readonly Color WorldColor = new Color(0.6f, 0.4f, 0.8f, 0.35f);
+        private static readonly Color RenderColor = new Color(0.3f, 0.8f, 0.4f, 0.35f);
+        private static readonly Color FrameColor = new Color(0.6f, 0.6f, 0.6f, 0.35f);
+        private static readonly Color OverBudgetColor = new Color(0.9f, 0.2f, 0.2f, 0.35f);
 
         private Texture2D barTex;
         private GUIStyle labelStyle;
@@ -33,7 +32,7 @@ namespace OniProfiler.UI
             EnsureStyles();
 
             // Summary bar: total frame time as fraction of budget
-            double totalFrame = timings.GetCurrentMs(TimingKey.GameUpdate);
+            double totalFrame = timings.GetDisplayCurrentMs(TimingKey.GameUpdate);
             DrawBudgetBar(totalFrame);
 
             GUILayout.Space(4);
@@ -43,7 +42,6 @@ namespace OniProfiler.UI
             DrawCategorySection("AI & Pathfinding", TimingCategory.AI, timings, AIColor);
             DrawCategorySection("World Systems", TimingCategory.World, timings, WorldColor);
             DrawCategorySection("Rendering", TimingCategory.Rendering, timings, RenderColor);
-            DrawCategorySection("Scheduler Buckets", TimingCategory.Scheduler, timings, SchedulerColor);
         }
 
         private void DrawBudgetBar(double frameMs)
@@ -71,6 +69,20 @@ namespace OniProfiler.UI
         private void DrawCategorySection(string name, TimingCategory category,
             FrameTimings timings, Color color)
         {
+            // Skip entirely if every key in this category is zero
+            bool hasAnyValue = false;
+            for (int i = 0; i < (int)TimingKey.COUNT; i++)
+            {
+                var k = (TimingKey)i;
+                if (FrameTimings.GetCategory(k) != category) continue;
+                if (timings.GetDisplayCurrentMs(k) > 0.001 || timings.GetDisplayAvgMs(k) > 0.001)
+                {
+                    hasAnyValue = true;
+                    break;
+                }
+            }
+            if (!hasAnyValue) return;
+
             GUILayout.Label($"<b>{name}</b>", headerStyle);
 
             for (int i = 0; i < (int)TimingKey.COUNT; i++)
@@ -78,9 +90,9 @@ namespace OniProfiler.UI
                 var key = (TimingKey)i;
                 if (FrameTimings.GetCategory(key) != category) continue;
 
-                double ms = timings.GetCurrentMs(key);
-                double avg = timings.GetAvgMs(key);
-                double max = timings.GetMaxMs(key);
+                double ms = timings.GetDisplayCurrentMs(key);
+                double avg = timings.GetDisplayAvgMs(key);
+                double max = timings.GetDisplayMaxMs(key);
 
                 float fraction = (float)(ms / BUDGET_MS);
                 var rect = GUILayoutUtility.GetRect(BAR_MAX_WIDTH, BAR_HEIGHT);
@@ -91,10 +103,13 @@ namespace OniProfiler.UI
 
                 string displayName = FrameTimings.GetDisplayName(key);
                 string modLabel = ModDetector.GetModLabel(key);
-                string suffix = modLabel != null ? $" ({modLabel})" : "";
+                string suffix = modLabel != null ? $" <color=#888888>[{modLabel}]</color>" : "";
+
+                double allocKB = timings.GetDisplayAllocKB(key);
+                string allocStr = allocKB >= 1.0 ? $"  ~{allocKB:F0}KB/f" : "";
 
                 GUI.Label(rect,
-                    $" {displayName}{suffix}: {ms:F2}ms (avg:{avg:F2} max:{max:F2})",
+                    $" {displayName}  {ms:F2}  avg {avg:F2}  max {max:F2}{allocStr}{suffix}",
                     labelStyle);
             }
         }
