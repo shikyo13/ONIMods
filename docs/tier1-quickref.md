@@ -8,6 +8,8 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 |-|-|-|
 | ReplaceStuff | `Core/ReplaceStuffMod.cs` | v2.1, active |
 | BuildThrough | `Core/BuildThroughMod.cs` | Initial commit |
+| OniProfiler | `Core/OniProfilerMod.cs` | Active — see `OniProfiler/HANDOVER.md` for architecture |
+| GCBudget | `Core/GCBudgetMod.cs` | POC, alloc-gated gen0 GC collections |
 
 ## ReplaceStuff Module Map
 
