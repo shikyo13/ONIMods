@@ -226,7 +226,7 @@ namespace OniProfiler.Recording
                 sb.Append($",{(TimingKey)i}_alloc_kb");
             for (int i = 0; i < (int)LoopPhase.COUNT; i++)
                 sb.Append($",Phase_{PlayerLoopTimings.GetPhaseName((LoopPhase)i)}_ms");
-            sb.Append(",BulkUpdateTop5,CoroutineStarts,CoroutineTop5");
+            sb.Append(",BulkUpdateTop5,CoroutineStarts,CoroutineTop5,WallClockCycle_ms");
             spikeWriter.WriteLine(sb.ToString());
         }
 
@@ -267,6 +267,7 @@ namespace OniProfiler.Recording
             sb.Append(',').Append(s.BulkTop5 ?? "");
             sb.Append(',').Append(s.CoroutineTotal);
             sb.Append(',').Append(s.CoroutineTop5 ?? "");
+            sb.Append(',').Append(s.WallClockCycleMs.ToString("F3"));
 
             try
             {

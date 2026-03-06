@@ -48,4 +48,6 @@ D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Manage
 | Editing ReplaceStuff | `docs/tier2-replacestuff-design.md` |
 | Editing BuildThrough | `docs/tier2-buildthrough-design.md` |
 | Editing OniProfiler | `OniProfiler/HANDOVER.md` |
+| Editing GCBudget | `GCBudget/HANDOVER.md` |
+| Lag spike investigation context | `docs/tier2-lag-investigation.md` |
 | ONI API/Harmony/building questions | `docs/ONI-modding-guide.md` — use section index at top, read only relevant section |

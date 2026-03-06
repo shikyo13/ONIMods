@@ -56,7 +56,7 @@ namespace OniProfiler.UI
             string ageStr = FormatAge(displaySpikeAge);
 
             GUILayout.Label(
-                $"  Last spike: {ageStr} ago — <color=#ff8844>{spike.TotalMs:F1}ms</color>{gcTag}",
+                $"  Last spike: {ageStr} ago — <color=#ff8844>{spike.TotalMs:F1}ms</color> (wall: {spike.WallClockCycleMs:F1}ms){gcTag}",
                 spikeStyle);
 
             // Unaccounted gap — only sum leaf systems to avoid double-counting
