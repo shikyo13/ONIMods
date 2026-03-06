@@ -42,6 +42,18 @@ namespace OniProfiler.Timing
         SMRenderEveryTick,
         OverlayRefresh,
 
+        // LateUpdate subsystems (PreLateUpdate phase)
+        GlobalLateUpdate,    // Global.LateUpdate — wraps AnimBatchUpdate
+        AnimBatchUpdate,     // KBatchedAnimUpdater.LateUpdate — sprite animation tick
+        WorldLateUpdate,     // World.LateUpdate — KAnimBatchManager render
+        PropertyTexUpdate,   // PropertyTextures.LateUpdate — shader property updates
+
+        // Update subsystems (Update phase) — the 300ms Update-phase mystery
+        KCompSpawnUpdate,    // KComponentSpawn.Update — component spawn + render dispatch
+        GlobalUpdate,        // Global.Update — input + AnimEventManager
+        OnDemandUpdate,      // OnDemandUpdater.Update — IUpdateOnDemand loop
+        GridVisAreaUpdate,   // GridVisibleArea.Update — visible area callbacks
+
         COUNT
     }
 
@@ -86,7 +98,9 @@ namespace OniProfiler.Timing
 
         // GC location detection (in-frame vs inter-frame)
         private int gcCountAtUpdateStart;
+        private long gcHeapAtStart;         // Heap size at frame start for heap-drop detection
         private bool gcDuringGameLogic;     // GC fired between Update prefix and LateUpdate postfix
+        private bool lastFrameGCDuringLogic; // Snapshot consumed by SpikeTracker after RecordFrameEnd
 
         // Cached stats (updated every frame)
         private readonly double[] cachedCurrent;
@@ -155,7 +169,7 @@ namespace OniProfiler.Timing
 
         // Inter-frame gap accessors
         public double InterFrameGapMs => interFrameGapMs;
-        public bool GCDuringGameLogic => gcDuringGameLogic;
+        public bool GCDuringGameLogic => lastFrameGCDuringLogic;
 
         /// <summary>
         /// Called from TimingPrefix_GameUpdate at the very start of Game.Update.
@@ -184,16 +198,31 @@ namespace OniProfiler.Timing
         public void RecordGCCheckStart()
         {
             gcCountAtUpdateStart = GC.CollectionCount(0);
-            gcDuringGameLogic = false;
+            gcHeapAtStart = GC.GetTotalMemory(false);
+            // Don't reset gcDuringGameLogic here — it's consumed (read + reset) in RecordFrameEnd()
+        }
+
+        /// <summary>
+        /// Called from Finalizer_GameUpdate after GCBudget's GC.Collect() has run.
+        /// Detects GC via heap-drop (works even in Manual GC mode).
+        /// </summary>
+        public void NotifyGCDuringUpdate()
+        {
+            gcDuringGameLogic = true;
         }
 
         /// <summary>
         /// Called from Postfix_GameLateUpdate. Compares GC count to detect
         /// whether a collection happened during game logic execution.
+        /// Secondary detection path for non-GCBudget GC events between Update and LateUpdate.
         /// </summary>
         public void RecordGCCheckEnd()
         {
-            gcDuringGameLogic = GC.CollectionCount(0) > gcCountAtUpdateStart;
+            // CollectionCount check (works when GCMode is not Manual)
+            bool countBased = GC.CollectionCount(0) > gcCountAtUpdateStart;
+            // Heap-drop check (works in Manual mode where CollectionCount doesn't increment)
+            bool heapDropBased = gcHeapAtStart - GC.GetTotalMemory(false) > 50L * 1024 * 1024;
+            gcDuringGameLogic = countBased || heapDropBased;
         }
 
         /// <summary>
@@ -201,6 +230,10 @@ namespace OniProfiler.Timing
         /// </summary>
         public void RecordFrameEnd()
         {
+            // Snapshot GC flag for SpikeTracker (consumed on read)
+            lastFrameGCDuringLogic = gcDuringGameLogic;
+            gcDuringGameLogic = false;
+
             for (int i = 0; i < keyCount; i++)
             {
                 long ticks = Interlocked.Exchange(ref currentTicks[i], 0);
@@ -328,6 +361,14 @@ namespace OniProfiler.Timing
                 case TimingKey.SMRender:
                 case TimingKey.SMRenderEveryTick:
                 case TimingKey.OverlayRefresh:
+                case TimingKey.GlobalLateUpdate:
+                case TimingKey.AnimBatchUpdate:
+                case TimingKey.WorldLateUpdate:
+                case TimingKey.PropertyTexUpdate:
+                case TimingKey.KCompSpawnUpdate:
+                case TimingKey.GlobalUpdate:
+                case TimingKey.OnDemandUpdate:
+                case TimingKey.GridVisAreaUpdate:
                     return TimingCategory.Rendering;
 
                 default:
@@ -360,6 +401,14 @@ namespace OniProfiler.Timing
                 case TimingKey.SMRender: return "SM Render";
                 case TimingKey.SMRenderEveryTick: return "SM RenderEveryTick";
                 case TimingKey.OverlayRefresh: return "Overlay Refresh";
+                case TimingKey.GlobalLateUpdate: return "Global.LateUpdate";
+                case TimingKey.AnimBatchUpdate: return "Anim Batch Update";
+                case TimingKey.WorldLateUpdate: return "World.LateUpdate";
+                case TimingKey.PropertyTexUpdate: return "Property Textures";
+                case TimingKey.KCompSpawnUpdate: return "KComp Spawn";
+                case TimingKey.GlobalUpdate: return "Global.Update";
+                case TimingKey.OnDemandUpdate: return "OnDemand Updater";
+                case TimingKey.GridVisAreaUpdate: return "Grid VisArea";
                 default: return key.ToString();
             }
         }

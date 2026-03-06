@@ -48,6 +48,10 @@ namespace OniProfiler.Timing
         private static long[] heapStack;
         private static int heapDepth;
 
+        // Heap snapshot at Game.Update prefix — used by finalizer for GC detection
+        [ThreadStatic]
+        private static long gameUpdateHeapAtStart;
+
         private static void RecordAlloc(TimingKey key)
         {
             if (Thread.CurrentThread.ManagedThreadId != mainThreadId) return;
@@ -85,6 +89,7 @@ namespace OniProfiler.Timing
             }
             if (heapStack == null) heapStack = new long[16];
             heapStack[heapDepth++] = GC.GetTotalMemory(false);
+            gameUpdateHeapAtStart = GC.GetTotalMemory(false);
 
             var ft = FrameTimings.Instance;
             ft.RecordUpdateStart(__state);
@@ -92,10 +97,28 @@ namespace OniProfiler.Timing
         }
 
         // ─── Frame level ──────────────────────────────────────────────
+        // Postfix_GameUpdate kept for GetPostfix() lookup but no longer used for Game.Update patching.
+        // Game.Update uses Finalizer_GameUpdate instead (runs after ALL postfixes including GCBudget).
         public static void Postfix_GameUpdate(long __state)
         {
             FrameTimings.Instance.StopTiming(TimingKey.GameUpdate, __state);
             RecordAlloc(TimingKey.GameUpdate);
+        }
+
+        /// <summary>
+        /// Harmony finalizer for Game.Update. Runs in try/finally after ALL postfixes,
+        /// guaranteeing we capture time spent in GCBudget's GC.Collect() postfix.
+        /// Also detects GC via heap-drop for accurate GC_InGameLogic attribution.
+        /// </summary>
+        public static void Finalizer_GameUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.GameUpdate, __state);
+            RecordAlloc(TimingKey.GameUpdate);
+
+            // Detect GC via heap-drop (works in Manual GC mode)
+            long heapNow = GC.GetTotalMemory(false);
+            if (gameUpdateHeapAtStart - heapNow > 50L * 1024 * 1024)
+                FrameTimings.Instance.NotifyGCDuringUpdate();
         }
 
         public static void Postfix_GameLateUpdate(long __state)
@@ -241,6 +264,56 @@ namespace OniProfiler.Timing
         {
             FrameTimings.Instance.StopTiming(TimingKey.OverlayRefresh, __state);
             RecordAlloc(TimingKey.OverlayRefresh);
+        }
+
+        // ─── LateUpdate subsystems (PreLateUpdate phase) ───────────────
+        public static void Postfix_GlobalLateUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.GlobalLateUpdate, __state);
+            RecordAlloc(TimingKey.GlobalLateUpdate);
+        }
+
+        public static void Postfix_AnimBatchUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.AnimBatchUpdate, __state);
+            RecordAlloc(TimingKey.AnimBatchUpdate);
+        }
+
+        public static void Postfix_WorldLateUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.WorldLateUpdate, __state);
+            RecordAlloc(TimingKey.WorldLateUpdate);
+        }
+
+        public static void Postfix_PropertyTexUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.PropertyTexUpdate, __state);
+            RecordAlloc(TimingKey.PropertyTexUpdate);
+        }
+
+        // ─── Update subsystems (Update phase) ────────────────────────
+        public static void Postfix_KCompSpawnUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.KCompSpawnUpdate, __state);
+            RecordAlloc(TimingKey.KCompSpawnUpdate);
+        }
+
+        public static void Postfix_GlobalUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.GlobalUpdate, __state);
+            RecordAlloc(TimingKey.GlobalUpdate);
+        }
+
+        public static void Postfix_OnDemandUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.OnDemandUpdate, __state);
+            RecordAlloc(TimingKey.OnDemandUpdate);
+        }
+
+        public static void Postfix_GridVisAreaUpdate(long __state)
+        {
+            FrameTimings.Instance.StopTiming(TimingKey.GridVisAreaUpdate, __state);
+            RecordAlloc(TimingKey.GridVisAreaUpdate);
         }
 
         // ─── Unused keys get no-op postfixes (GasConduit/LiquidConduit

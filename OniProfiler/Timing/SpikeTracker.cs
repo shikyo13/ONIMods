@@ -15,6 +15,9 @@ namespace OniProfiler.Timing
         public double InterFrameGapMs;  // Time between last LateUpdate end → this Update start
         public bool GCDuringGameLogic;  // True = GC fired during Update/LateUpdate
         public double[] PhaseMs;   // Per-LoopPhase ms snapshot (length = LoopPhase.COUNT)
+        public string BulkTop5;   // Pipe-delimited "TypeA:142.3|TypeB:89.1|..."
+        public string CoroutineTop5; // Pipe-delimited "MethodA:3|MethodB:1|..."
+        public int CoroutineTotal;   // Total StartCoroutine calls this frame
     }
 
     /// <summary>
@@ -97,7 +100,10 @@ namespace OniProfiler.Timing
                 Gen2GC = GCMonitor.Current.Gen2Delta > 0,
                 InterFrameGapMs = timings.InterFrameGapMs,
                 GCDuringGameLogic = timings.GCDuringGameLogic,
-                PhaseMs = phaseMs
+                PhaseMs = phaseMs,
+                BulkTop5 = BulkUpdateTimings.Top5,
+                CoroutineTop5 = CoroutineTimings.Top5,
+                CoroutineTotal = CoroutineTimings.FrameTotal
             };
 
             buffer[writeIndex] = spike;
