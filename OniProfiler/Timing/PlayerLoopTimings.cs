@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using UnityEngine;
 using UnityEngine.LowLevel;
 using UnityEngine.PlayerLoop;
@@ -250,6 +252,8 @@ namespace OniProfiler.Timing
             PlayerLoop.SetPlayerLoop(loop);
             injected = true;
             UnityEngine.Debug.Log($"[OniProfiler] PlayerLoop phase timing injected ({injectedCount}/{PhaseCount} phases)");
+
+            DumpPlayerLoopTree();
         }
 
         /// <summary>
@@ -308,6 +312,48 @@ namespace OniProfiler.Timing
         public static void CommitFrame()
         {
             Array.Copy(phaseDurationMs, snapshotMs, PhaseCount);
+        }
+
+        /// <summary>
+        /// Dumps the full PlayerLoop tree to Player.log and to a file alongside recordings.
+        /// Useful for verifying injection order and discovering other mods' systems.
+        /// </summary>
+        private static void DumpPlayerLoopTree()
+        {
+            var loop = PlayerLoop.GetCurrentPlayerLoop();
+            var sb = new StringBuilder();
+            sb.AppendLine("[OniProfiler] PlayerLoop tree:");
+            DumpSystem(loop, sb, 0);
+            var dump = sb.ToString();
+            UnityEngine.Debug.Log(dump);
+
+            try
+            {
+                string dir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "Klei", "OxygenNotIncluded", "mods", "local", "OniProfiler");
+                Directory.CreateDirectory(dir);
+                File.WriteAllText(Path.Combine(dir, "playerloop_dump.txt"), dump);
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogWarning($"[OniProfiler] Failed to write PlayerLoop dump: {ex.Message}");
+            }
+        }
+
+        private static void DumpSystem(PlayerLoopSystem system, StringBuilder sb, int depth)
+        {
+            if (system.type != null)
+            {
+                sb.Append(' ', depth * 2);
+                sb.AppendLine(system.type.FullName ?? system.type.Name);
+            }
+
+            if (system.subSystemList != null)
+            {
+                foreach (var sub in system.subSystemList)
+                    DumpSystem(sub, sb, depth + 1);
+            }
         }
 
         /// <summary>
