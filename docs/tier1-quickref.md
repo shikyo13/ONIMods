@@ -51,6 +51,16 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 | `Config/BuildThroughOptions.cs` | `Enabled` toggle | `SingletonOptions<BuildThroughOptions>` |
 | `Patches/OffsetTablePatch.cs` | Transpiler: bypass `Grid.Solid` for build/deconstruct errands | `[ThreadStatic] skipSolidCheck`, `IsCellBlocking` helper |
 
+## GCBudget Module Map
+
+| File | Purpose | Key Types |
+|-|-|-|
+| `Core/GCBudgetMod.cs` | Entry point, PLib init | `GCBudgetMod : UserMod2` |
+| `Core/GCBudgetManager.cs` | GC mode control, alloc-gated collection | `Init()`, `OnFrame()`, `DoCollect()`, `Restore()` |
+| `Config/GCBudgetOptions.cs` | PLib options schema | `GCBudgetOptions : SingletonOptions` |
+| `Patches/GameUpdatePatch.cs` | `Game.Update` postfix → `OnFrame()` | `GameUpdatePatch` |
+| `Patches/SavePausePatch.cs` | Save/pause/quit triggers + cleanup | 4 patch classes |
+
 ## ONI Modding Gotchas
 
 - `using HarmonyLib;` — never `using Harmony;` (v1 is dead)

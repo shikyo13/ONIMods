@@ -8,7 +8,8 @@ namespace OniProfiler.Timing
     public struct SpikeEvent
     {
         public float WallTime;     // Time.realtimeSinceStartup when spike occurred
-        public double TotalMs;     // Wall-clock frame delta that triggered this spike
+        public double TotalMs;     // Stopwatch-based frame delta (correlates with SystemMs)
+        public double WallClockCycleMs; // Time.unscaledDeltaTime * 1000 (previous frame's cycle, for reference)
         public double[] SystemMs;  // Per-TimingKey ms snapshot (length = TimingKey.COUNT)
         public double[] AllocKB;   // Per-TimingKey allocation on spike frame (KB)
         public bool Gen2GC;        // True if gen2 collection happened this frame
@@ -71,7 +72,7 @@ namespace OniProfiler.Timing
         /// <summary>
         /// Called every frame after RecordFrameEnd(). One float comparison — negligible cost.
         /// </summary>
-        public static void CheckFrame(double frameDeltaMs)
+        public static void CheckFrame(double frameDeltaMs, double wallClockMs)
         {
             hasNewSpike = false;
 
@@ -95,6 +96,7 @@ namespace OniProfiler.Timing
             {
                 WallTime = Time.realtimeSinceStartup,
                 TotalMs = frameDeltaMs,
+                WallClockCycleMs = wallClockMs,
                 SystemMs = systemMs,
                 AllocKB = allocKB,
                 Gen2GC = GCMonitor.Current.Gen2Delta > 0,

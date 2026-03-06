@@ -58,57 +58,64 @@ All frame-end data collection runs from a PlayerLoop system appended to the **en
 
 **Why not MonoBehaviour.Update()?** Both ProfilerOverlay.Update() and Game.Update() run in the same ScriptRunBehaviourUpdate phase — execution order is non-deterministic. When ProfilerOverlay ran first, it read stale previous-frame timing data.
 
-## Cross-Recording Analysis (13 recordings, 103 spikes)
+## One-Frame Offset Bug (discovered & fixed)
 
-| Category | Count | % | Signature |
-|-|-|-|-|
-| Gen2 GC pauses | 44 | 43% | GC_Gen2=1, unaccounted ~300ms |
-| PathAsync storms | 23 | 22% | GC_Gen2=0, PathAsync=300-356ms |
-| Mystery spikes | 26 | 25% | GC_Gen2=0, PathAsync=0ms, unaccounted ~270ms |
-| Minor (<100ms) | 10 | 10% | Mixed causes, lower severity |
+All pre-fix recordings (18 sessions) had a critical spike attribution bug:
 
-### Mystery Spikes
+`Time.unscaledDeltaTime` is set at frame START (TimeUpdate) = previous frame's cycle. Our `OnFrameEnd` reads it at frame END but captures current-frame diagnostics. Result: spike detection fired one frame late — system data came from the fast recovery frame, not the spike frame.
 
-From recording `20260305_151650` (4 mystery spikes with Phase data):
-- Phase_UpdateScriptRun = 267-280ms (dominates frame)
-- All individually-instrumented systems total ~13ms
-- PathProbe_Async = 0.000ms, GC_Gen2 = 0
-- Unaccounted = 264-279ms
+**Proof** — recording 20260306_091918:
 
-## What Was Just Implemented
+| Source | GameUpdate | PathProbe_Async |
+|-|-|-|
+| Main CSV (Stopwatch max, correct) | 323.7ms | 321.9ms |
+| Spike CSV (unscaledDelta, offset) | 6.0ms | 2.4ms |
 
-### PostLateUpdate Frame-End Probe (spike misattribution fix)
+**Fix**: Stopwatch-based frame delta in `OnFrameEnd` — measures end-of-PostLateUpdate(N) to end-of-PostLateUpdate(N+1). Old `Time.unscaledDeltaTime` preserved as `WallClockCycleMs` for reference.
 
-Previous recordings showed `GameUpdate_ms = 7ms` on 340ms spike frames — ProfilerOverlay.Update() was racing with Game.Update() and reading stale data.
+**Actual spike culprit**: FastTrack PathProbe_Async (321-339ms per spike), visible in main CSV the entire time.
 
-**Fix**: Moved all data collection from `ProfilerOverlay.Update()` to `OnFrameEnd()`, called via a PlayerLoop system at end of PostLateUpdate. This structurally eliminates the race condition.
+See `docs/tier2-lag-investigation.md` for full investigation log.
 
-**Also fixed**: `GCMonitor.GetCurrentGCMode()` — reads GC mode dynamically via reflection instead of stale load-time value (before GCBudget changes it to Manual).
+## What Was Implemented
 
-### Prior improvements (this working session)
-- BulkUpdateTimings: 193 MonoBehaviour.Update() methods individually timed
-- CoroutineTimings: StartCoroutine census (count + top 5 types per frame)
-- 4 LateUpdate subsystem keys: GlobalLateUpdate, AnimBatchUpdate, WorldLateUpdate, PropertyTexUpdate
-- SystemPatches: finalizer with heap-drop GC detection + `gcDuringGameLogic` flag
-- SpikeTracker: captures inter-frame gap, alloc data, bulk/coroutine top-5
+### Stopwatch frame delta (offset bug fix)
+- `ProfilerOverlay.OnFrameEnd()` now uses `Stopwatch.GetTimestamp()` instead of `Time.unscaledDeltaTime`
+- `SpikeEvent.WallClockCycleMs` field preserves the old value for comparison
+- `DataRecorder` spike CSV includes `WallClockCycle_ms` column
+- `SpikePanel` displays both values
+
+### PlayerLoop tree dump
+- `PlayerLoopTimings.DumpPlayerLoopTree()` logs full Unity PlayerLoop hierarchy on injection
+- Writes to `playerloop_dump.txt` alongside recordings
+
+### PostLateUpdate frame-end probe (prior fix)
+- All data collection runs from `OniFrameEnd` system at end of PostLateUpdate
+- Eliminated race between ProfilerOverlay.Update() and Game.Update()
+
+### Instrumentation (prior)
+- 29 game systems via Harmony prefix/postfix
+- 10 PlayerLoop phases via injected probes
+- 193 bulk Update() methods individually timed
+- Coroutine census (StartCoroutine count + top 5 types)
+- 4 LateUpdate subsystem keys
+- Finalizer heap-drop GC detection + `gcDuringGameLogic` flag
+- Inter-frame gap, per-system alloc, bulk/coroutine top-5 in spike events
 
 ## What To Do Next
 
-### Step 1: Capture Recording (user action)
-Run 3-5 minutes with the current build. Check spike data:
-- `GameUpdate_ms` should be ~340ms on spike frames (not 7ms)
-- `GC_Gen2` should be 1 on GC spike frames
-- `GC_InGameLogic` should be 1 on GC spike frames
-- `GC_Mode` in recording .txt should say "Manual"
+### Step 1: Re-record with fixed profiler
+Run 3-5 minutes. Verify:
+- Spike CSV `GameUpdate_ms` ≈ main CSV `GameUpdate_max` (same-second)
+- `PathProbe_Async_ms` ≈ 321-339ms on spike frames (not 2ms)
+- `Unaccounted_ms` < 10ms (not 320ms)
+- `WallClockCycle_ms` ≈ 334ms (one frame delayed, for reference)
+- `playerloop_dump.txt` appears alongside recording files
 
-### Step 2: Analyze
-```powershell
-.\OniProfiler\tools\analyze-spikes.ps1
-```
-
-### Step 3: If mystery spikes persist
-- Check BulkUpdateTop5 for ~270ms culprit MonoBehaviour
-- If Phase_UpdateCoroutines shows ~270ms → coroutines are the culprit
+### Step 2: Investigate FastTrack PathProbe_Async
+- Is batch size configurable?
+- Can async pathfinding be disabled without losing other FastTrack benefits?
+- Consider profiling PathProbe_Async's internal breakdown
 
 ## Known Caveats
 

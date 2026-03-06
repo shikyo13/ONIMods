@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using OniProfiler.Census;
 using OniProfiler.Core;
 using OniProfiler.Memory;
@@ -22,6 +23,11 @@ namespace OniProfiler.UI
         private Rect windowRect = new Rect(10, 10, 520, 700);
         private GUIStyle windowStyle;
         private Texture2D windowBgTex;
+
+        // Stopwatch-based frame delta — measures end-of-PostLateUpdate(N) to end-of-PostLateUpdate(N+1)
+        // so that the wall-clock delta correlates with the current frame's diagnostic data.
+        private static long lastFrameEndTs;
+        private static readonly double ticksToMs = 1000.0 / Stopwatch.Frequency;
 
         private void OnEnable()
         {
@@ -63,16 +69,26 @@ namespace OniProfiler.UI
         {
             if (Instance == null || !Instance.IsVisible) return;
 
+            // Stopwatch-based frame delta: avoids one-frame offset from Time.unscaledDeltaTime
+            // which reflects the previous frame's cycle (set during TimeUpdate at frame start).
+            long now = Stopwatch.GetTimestamp();
+            double frameMs = lastFrameEndTs > 0
+                ? (now - lastFrameEndTs) * ticksToMs
+                : Time.unscaledDeltaTime * 1000.0;
+            lastFrameEndTs = now;
+            double wallClockMs = Time.unscaledDeltaTime * 1000.0;
+            float frameDeltaSec = (float)(frameMs / 1000.0);
+
             FrameTimings.Instance.RecordFrameEnd();
             BulkUpdateTimings.CommitFrame();
             CoroutineTimings.CommitFrame();
             PlayerLoopTimings.CommitFrame();
             GCMonitor.Update();
-            SpikeTracker.CheckFrame(Time.unscaledDeltaTime * 1000.0);
+            SpikeTracker.CheckFrame(frameMs, wallClockMs);
             EntityCensus.Update();
-            DataRecorder.RecordFrame(Time.unscaledDeltaTime);
+            DataRecorder.RecordFrame(frameDeltaSec);
             if (DataRecorder.IsRecording)
-                DataRecorder.Tick(Time.unscaledDeltaTime);
+                DataRecorder.Tick(frameDeltaSec);
         }
 
         private void Show()
@@ -82,6 +98,7 @@ namespace OniProfiler.UI
             TimingPatchManager.ApplyPatches();
             ModDetector.Scan();
             alertPanel.RefreshOptions();
+            lastFrameEndTs = 0;
             SpikeTracker.Reset();
             SpikeTracker.RefreshThreshold();
             FrameTimings.Instance.Reset();
