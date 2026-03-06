@@ -45,37 +45,48 @@ namespace OniProfiler.UI
 
         private void Update()
         {
-            // Use Unity Input directly — PAction registers the default keybind (backtick)
-            // in the game's options UI for rebinding, but we check via Input for reliability
             if (Input.GetKeyDown(KeyCode.BackQuote))
             {
                 if (IsVisible) Hide(); else Show();
             }
 
             if (IsVisible)
-            {
-                FrameTimings.Instance.RecordFrameEnd();
-                PlayerLoopTimings.CommitFrame();
-                GCMonitor.Update();
-                SpikeTracker.CheckFrame(Time.unscaledDeltaTime * 1000.0);
-                EntityCensus.Update();
+                spikePanel.Update();  // UI-only: reads display values
+        }
 
-                spikePanel.Update();
-                DataRecorder.RecordFrame(Time.unscaledDeltaTime);
-                if (DataRecorder.IsRecording)
-                    DataRecorder.Tick(Time.unscaledDeltaTime);
-            }
+        /// <summary>
+        /// Called from the PostLateUpdate frame-end probe — after ALL phases and
+        /// MonoBehaviour callbacks have completed. This guarantees every timing
+        /// accumulator, GC flag, and phase duration reflects current-frame data.
+        /// </summary>
+        internal static void OnFrameEnd()
+        {
+            if (Instance == null || !Instance.IsVisible) return;
+
+            FrameTimings.Instance.RecordFrameEnd();
+            BulkUpdateTimings.CommitFrame();
+            CoroutineTimings.CommitFrame();
+            PlayerLoopTimings.CommitFrame();
+            GCMonitor.Update();
+            SpikeTracker.CheckFrame(Time.unscaledDeltaTime * 1000.0);
+            EntityCensus.Update();
+            DataRecorder.RecordFrame(Time.unscaledDeltaTime);
+            if (DataRecorder.IsRecording)
+                DataRecorder.Tick(Time.unscaledDeltaTime);
         }
 
         private void Show()
         {
             IsVisible = true;
+            PlayerLoopTimings.SetFrameEndCallback(new System.Action(OnFrameEnd));
             TimingPatchManager.ApplyPatches();
             ModDetector.Scan();
             alertPanel.RefreshOptions();
             SpikeTracker.Reset();
             SpikeTracker.RefreshThreshold();
             FrameTimings.Instance.Reset();
+            BulkUpdateTimings.Reset();
+            CoroutineTimings.Reset();
         }
 
         private void Hide()
@@ -83,6 +94,7 @@ namespace OniProfiler.UI
             if (DataRecorder.IsRecording)
                 DataRecorder.StopRecording();
             IsVisible = false;
+            PlayerLoopTimings.SetFrameEndCallback((System.Action)null);
             TimingPatchManager.RemovePatches();
         }
 

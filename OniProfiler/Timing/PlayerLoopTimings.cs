@@ -10,7 +10,9 @@ namespace OniProfiler.Timing
     public enum LoopPhase
     {
         Initialization, EarlyUpdate, FixedUpdate, PreUpdate,
-        Update, PreLateUpdate, PostLateUpdate, COUNT
+        Update, PreLateUpdate, PostLateUpdate,
+        UpdateScriptRun, UpdateDirector, UpdateCoroutines,
+        COUNT
     }
 
     /// <summary>
@@ -25,9 +27,9 @@ namespace OniProfiler.Timing
     public static class PlayerLoopTimings
     {
         private static readonly int PhaseCount = (int)LoopPhase.COUNT;
-        private static readonly long[] phaseStartTs = new long[7];
-        private static readonly double[] phaseDurationMs = new double[7];
-        private static readonly double[] snapshotMs = new double[7];
+        private static readonly long[] phaseStartTs = new long[PhaseCount];
+        private static readonly double[] phaseDurationMs = new double[PhaseCount];
+        private static readonly double[] snapshotMs = new double[PhaseCount];
         private static double ticksToMs;
         private static bool injected;
 
@@ -50,6 +52,20 @@ namespace OniProfiler.Timing
         private struct OniEnd_PreLateUpdate { }
         private struct OniBegin_PostLateUpdate { }
         private struct OniEnd_PostLateUpdate { }
+        private struct OniBegin_UpdateScriptRun { }
+        private struct OniEnd_UpdateScriptRun { }
+        private struct OniBegin_UpdateDirector { }
+        private struct OniEnd_UpdateDirector { }
+        private struct OniBegin_UpdateCoroutines { }
+        private struct OniEnd_UpdateCoroutines { }
+        private struct OniFrameEnd { }
+
+        private static System.Action frameEndCallback;
+
+        public static void SetFrameEndCallback(System.Action callback)
+        {
+            frameEndCallback = callback;
+        }
 
         private static readonly HashSet<Type> markerTypes = new HashSet<Type>
         {
@@ -60,6 +76,10 @@ namespace OniProfiler.Timing
             typeof(OniBegin_Update), typeof(OniEnd_Update),
             typeof(OniBegin_PreLateUpdate), typeof(OniEnd_PreLateUpdate),
             typeof(OniBegin_PostLateUpdate), typeof(OniEnd_PostLateUpdate),
+            typeof(OniBegin_UpdateScriptRun), typeof(OniEnd_UpdateScriptRun),
+            typeof(OniBegin_UpdateDirector), typeof(OniEnd_UpdateDirector),
+            typeof(OniBegin_UpdateCoroutines), typeof(OniEnd_UpdateCoroutines),
+            typeof(OniFrameEnd),
         };
 
         // Maps Unity phase type → (LoopPhase index, begin marker type, end marker type)
@@ -133,10 +153,103 @@ namespace OniProfiler.Timing
                 }
             }
 
+            // Sub-phase injection: wrap ScriptRunBehaviourUpdate and DirectorUpdate within Update
+            for (int i = 0; i < topSystems.Length; i++)
+            {
+                if (topSystems[i].type != typeof(Update)) continue;
+
+                var subs = topSystems[i].subSystemList;
+                if (subs == null) break;
+
+                var subList = new List<PlayerLoopSystem>(subs);
+
+                // Walk backwards so insertions don't shift unprocessed indices
+                for (int j = subList.Count - 1; j >= 0; j--)
+                {
+                    var name = subList[j].type?.Name;
+                    if (name == "ScriptRunBehaviourUpdate")
+                    {
+                        int idx = (int)LoopPhase.UpdateScriptRun;
+                        subList.Insert(j + 1, new PlayerLoopSystem
+                        {
+                            type = typeof(OniEnd_UpdateScriptRun),
+                            updateDelegate = () =>
+                            {
+                                long elapsed = Stopwatch.GetTimestamp() - phaseStartTs[idx];
+                                phaseDurationMs[idx] = elapsed * ticksToMs;
+                            }
+                        });
+                        subList.Insert(j, new PlayerLoopSystem
+                        {
+                            type = typeof(OniBegin_UpdateScriptRun),
+                            updateDelegate = () => { phaseStartTs[idx] = Stopwatch.GetTimestamp(); }
+                        });
+                        injectedCount++;
+                    }
+                    else if (name == "ScriptRunDelayedDynamicFrameRate")
+                    {
+                        int idx = (int)LoopPhase.UpdateCoroutines;
+                        subList.Insert(j + 1, new PlayerLoopSystem
+                        {
+                            type = typeof(OniEnd_UpdateCoroutines),
+                            updateDelegate = () =>
+                            {
+                                long elapsed = Stopwatch.GetTimestamp() - phaseStartTs[idx];
+                                phaseDurationMs[idx] = elapsed * ticksToMs;
+                            }
+                        });
+                        subList.Insert(j, new PlayerLoopSystem
+                        {
+                            type = typeof(OniBegin_UpdateCoroutines),
+                            updateDelegate = () => { phaseStartTs[idx] = Stopwatch.GetTimestamp(); }
+                        });
+                        injectedCount++;
+                    }
+                    else if (name == "DirectorUpdate")
+                    {
+                        int idx = (int)LoopPhase.UpdateDirector;
+                        subList.Insert(j + 1, new PlayerLoopSystem
+                        {
+                            type = typeof(OniEnd_UpdateDirector),
+                            updateDelegate = () =>
+                            {
+                                long elapsed = Stopwatch.GetTimestamp() - phaseStartTs[idx];
+                                phaseDurationMs[idx] = elapsed * ticksToMs;
+                            }
+                        });
+                        subList.Insert(j, new PlayerLoopSystem
+                        {
+                            type = typeof(OniBegin_UpdateDirector),
+                            updateDelegate = () => { phaseStartTs[idx] = Stopwatch.GetTimestamp(); }
+                        });
+                        injectedCount++;
+                    }
+                }
+
+                topSystems[i].subSystemList = subList.ToArray();
+                break;
+            }
+
+            // Frame-end probe: runs after ALL phases, ALL MonoBehaviour callbacks
+            for (int i = 0; i < topSystems.Length; i++)
+            {
+                if (topSystems[i].type != typeof(PostLateUpdate)) continue;
+                var subs = topSystems[i].subSystemList;
+                var extended = new PlayerLoopSystem[subs.Length + 1];
+                Array.Copy(subs, extended, subs.Length);
+                extended[subs.Length] = new PlayerLoopSystem
+                {
+                    type = typeof(OniFrameEnd),
+                    updateDelegate = () => { var cb = frameEndCallback; if (cb != null) cb(); }
+                };
+                topSystems[i].subSystemList = extended;
+                break;
+            }
+
             loop.subSystemList = topSystems;
             PlayerLoop.SetPlayerLoop(loop);
             injected = true;
-            UnityEngine.Debug.Log($"[OniProfiler] PlayerLoop phase timing injected ({injectedCount}/7 phases)");
+            UnityEngine.Debug.Log($"[OniProfiler] PlayerLoop phase timing injected ({injectedCount}/{PhaseCount} phases)");
         }
 
         /// <summary>
@@ -147,6 +260,7 @@ namespace OniProfiler.Timing
         public static void Remove()
         {
             if (!injected) return;
+            frameEndCallback = (System.Action)null;
 
             var loop = PlayerLoop.GetCurrentPlayerLoop();
             var topSystems = loop.subSystemList;
@@ -188,11 +302,8 @@ namespace OniProfiler.Timing
         }
 
         /// <summary>
-        /// Snapshots current phase durations for consumers. Called once per frame from
-        /// ProfilerOverlay.Update(). Phases that already completed this frame (Initialization
-        /// through PreUpdate) reflect current-frame values; later phases (Update, PreLateUpdate,
-        /// PostLateUpdate) reflect previous-frame values. This one-frame staleness is acceptable
-        /// for spike attribution.
+        /// Snapshots current phase durations for consumers. Called once per frame from the
+        /// PostLateUpdate frame-end probe — all 7 phases reflect current-frame values.
         /// </summary>
         public static void CommitFrame()
         {
@@ -213,6 +324,9 @@ namespace OniProfiler.Timing
                 case LoopPhase.Update:           return "Update";
                 case LoopPhase.PreLateUpdate:    return "PreLateUpdate";
                 case LoopPhase.PostLateUpdate:   return "PostLateUpdate";
+                case LoopPhase.UpdateScriptRun:  return "UpdateScriptRun";
+                case LoopPhase.UpdateDirector:   return "UpdateDirector";
+                case LoopPhase.UpdateCoroutines: return "UpdateCoroutines";
                 default: return phase.ToString();
             }
         }

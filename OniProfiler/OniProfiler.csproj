@@ -66,4 +66,11 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+
+  <Target Name="CleanSystemShims" AfterTargets="Build">
+    <ItemGroup>
+      <SystemShims Include="$(OutputPath)System.*.dll" />
+    </ItemGroup>
+    <Delete Files="@(SystemShims)" />
+  </Target>
 </Project>

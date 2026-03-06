@@ -158,7 +158,7 @@ namespace OniProfiler.Recording
                     $"Cycle: {GameClock.Instance?.GetCycle() ?? 0}\n" +
                     $"Mods: {GetActiveModList()}\n" +
                     $"GC_Incremental: {GCMonitor.IsIncrementalAvailable}\n" +
-                    $"GC_Mode: {GCMonitor.GCModeString}\n" +
+                    $"GC_Mode: {GCMonitor.GetCurrentGCMode()}\n" +
                     $"GC_SliceMs: {GCMonitor.IncrementalSliceMs:F3}\n");
             }
             catch (Exception ex)
@@ -226,6 +226,7 @@ namespace OniProfiler.Recording
                 sb.Append($",{(TimingKey)i}_alloc_kb");
             for (int i = 0; i < (int)LoopPhase.COUNT; i++)
                 sb.Append($",Phase_{PlayerLoopTimings.GetPhaseName((LoopPhase)i)}_ms");
+            sb.Append(",BulkUpdateTop5,CoroutineStarts,CoroutineTop5");
             spikeWriter.WriteLine(sb.ToString());
         }
 
@@ -240,12 +241,14 @@ namespace OniProfiler.Recording
             sb.Append(',').Append(s.TotalMs.ToString("F3"));
             sb.Append(',').Append(s.Gen2GC ? 1 : 0);
 
-            // Unaccounted = total - sum of non-frame systems
+            // Unaccounted = total - sum of leaf systems only.
+            // Wrapper systems (GameUpdate, GameLateUpdate, BrainAdvance, SMRender,
+            // SMRenderEveryTick) enclose other measured systems — including them
+            // would double-count nested timings (e.g. SMRenderEveryTick wraps FindNextChore).
             double accounted = 0;
             for (int i = 0; i < (int)TimingKey.COUNT; i++)
             {
-                var k = (TimingKey)i;
-                if (k != TimingKey.GameUpdate && k != TimingKey.GameLateUpdate)
+                if (!IsWrapper((TimingKey)i))
                     accounted += s.SystemMs[i];
             }
             sb.Append(',').Append((s.TotalMs - accounted).ToString("F3"));
@@ -261,6 +264,10 @@ namespace OniProfiler.Recording
             for (int i = 0; i < (int)LoopPhase.COUNT; i++)
                 sb.Append(',').Append(s.PhaseMs != null ? s.PhaseMs[i].ToString("F3") : "0");
 
+            sb.Append(',').Append(s.BulkTop5 ?? "");
+            sb.Append(',').Append(s.CoroutineTotal);
+            sb.Append(',').Append(s.CoroutineTop5 ?? "");
+
             try
             {
                 spikeWriter.WriteLine(sb.ToString());
@@ -271,6 +278,15 @@ namespace OniProfiler.Recording
                 Debug.LogWarning($"[OniProfiler] Spike write failed: {ex.Message}");
             }
         }
+
+        private static bool IsWrapper(TimingKey k) =>
+            k == TimingKey.GameUpdate ||
+            k == TimingKey.GameLateUpdate ||
+            k == TimingKey.BrainAdvance ||
+            k == TimingKey.SMRender ||
+            k == TimingKey.SMRenderEveryTick ||
+            k == TimingKey.GlobalLateUpdate ||
+            k == TimingKey.KCompSpawnUpdate;
 
         private static void WriteRow()
         {

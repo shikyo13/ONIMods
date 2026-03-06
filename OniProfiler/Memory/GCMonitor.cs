@@ -69,6 +69,21 @@ namespace OniProfiler.Memory
             }
         }
 
+        /// <summary>
+        /// Reads the current GC mode dynamically via reflection, rather than using the
+        /// stale value captured at mod load (before GCBudget may have changed it).
+        /// </summary>
+        public static string GetCurrentGCMode()
+        {
+            try
+            {
+                var gcType = Type.GetType("UnityEngine.Scripting.GarbageCollector, UnityEngine.CoreModule");
+                var modeProp = gcType?.GetProperty("GCMode", BindingFlags.Public | BindingFlags.Static);
+                return modeProp?.GetValue(null)?.ToString() ?? GCModeString;
+            }
+            catch { return GCModeString; }
+        }
+
         private static int prevGen0;
         private static int prevGen1;
         private static int prevGen2;
@@ -109,6 +124,12 @@ namespace OniProfiler.Memory
             data.Gen0Delta = gen0 - prevGen0;
             data.Gen1Delta = gen1 - prevGen1;
             data.Gen2Delta = gen2 - prevGen2;
+
+            // Manual GC mode: CollectionCount() may not increment.
+            // Detect via heap drop — if heap shrank >50MB, a collection occurred.
+            long heapDrop = prevHeapBytes - heapBytes;
+            if (heapDrop > 50L * 1024 * 1024 && data.Gen2Delta == 0)
+                data.Gen2Delta = 1;
 
             float currentTime = UnityEngine.Time.realtimeSinceStartup;
 

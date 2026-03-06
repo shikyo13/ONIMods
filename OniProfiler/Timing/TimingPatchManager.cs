@@ -10,10 +10,10 @@ namespace OniProfiler.Timing
     /// Dynamically applies and removes all timing Harmony patches on panel toggle.
     /// When the profiler is closed, zero patches are active — zero overhead.
     ///
-    /// All patches use Priority.First for prefix (captures start time before other mods'
-    /// prefixes do replacement work) and Priority.Last for postfix (captures total elapsed
-    /// time after all other postfixes). This ensures accurate timing even when performance
-    /// mods like FastTrack replace vanilla methods via prefix-returning-false.
+    /// Prefix priority: Priority.First (0) — runs before all other prefixes (outermost).
+    /// Postfix priority: Priority.Last (800) — runs after all other postfixes (outermost).
+    /// Game.Update: uses a **finalizer** instead of postfix — guaranteed to run after ALL
+    /// postfixes (including GCBudget's GC.Collect), solving the timing misattribution bug.
     /// </summary>
     public static class TimingPatchManager
     {
@@ -69,8 +69,26 @@ namespace OniProfiler.Timing
             TryPatch(typeof(StateMachineUpdater), "RenderEveryTick", TimingKey.SMRenderEveryTick);
             TryPatchByName("OverlayScreen", "LateUpdate", TimingKey.OverlayRefresh);
 
+            // LateUpdate subsystems (PreLateUpdate phase) — the 300ms mystery zone
+            TryPatchByName("Global", "LateUpdate", TimingKey.GlobalLateUpdate);
+            TryPatchByName("KBatchedAnimUpdater", "LateUpdate", TimingKey.AnimBatchUpdate);
+            TryPatch(typeof(World), "LateUpdate", TimingKey.WorldLateUpdate);
+            TryPatchByName("PropertyTextures", "LateUpdate", TimingKey.PropertyTexUpdate);
+
+            // Update subsystems (Update phase) — the 300ms Update-phase mystery
+            TryPatchByName("KComponentSpawn", "Update", TimingKey.KCompSpawnUpdate);
+            TryPatchByName("Global", "Update", TimingKey.GlobalUpdate);
+            TryPatchByName("OnDemandUpdater", "Update", TimingKey.OnDemandUpdate);
+            TryPatchByName("GridVisibleArea", "Update", TimingKey.GridVisAreaUpdate);
+
             // Async patches — only if FastTrack is present
             ApplyAsyncPatches();
+
+            // Bulk-discover and patch ALL remaining MonoBehaviour.Update() methods
+            BulkUpdateTimings.DiscoverAndPatch(harmony);
+
+            // Coroutine census — tracks StartCoroutine calls per frame
+            CoroutineTimings.Patch(harmony);
 
             // PlayerLoop phase timing — brackets each top-level phase with Stopwatch probes
             PlayerLoopTimings.Inject();
@@ -107,6 +125,7 @@ namespace OniProfiler.Timing
                     prefix: new HarmonyMethod(prefix) { priority = Priority.First },
                     postfix: new HarmonyMethod(postfix) { priority = Priority.Last });
                 patchedMethods.Add(method);
+                Debug.Log($"[OniProfiler] Patched {method.DeclaringType?.Name}.{method.Name} → {key}");
             }
             catch (Exception e)
             {
@@ -118,15 +137,23 @@ namespace OniProfiler.Timing
         {
             if (type == null) return;
             var method = AccessTools.Method(type, methodName);
-            if (method == null) return;
+            if (method == null)
+            {
+                Debug.LogWarning($"[OniProfiler] Method not found: {type.Name}.{methodName}");
+                return;
+            }
             PatchMethod(method, key);
         }
 
         private static void TryPatchByName(string typeName, string methodName, TimingKey key)
         {
             var type = AccessTools.TypeByName(typeName);
-            if (type != null)
-                TryPatch(type, methodName, key);
+            if (type == null)
+            {
+                Debug.LogWarning($"[OniProfiler] Type not found: {typeName}");
+                return;
+            }
+            TryPatch(type, methodName, key);
         }
 
         private static void TryPatchByName(string typeName, string methodName, Type[] argTypes, TimingKey key)
@@ -147,20 +174,37 @@ namespace OniProfiler.Timing
             if (method == null) return;
 
             var prefix = AccessTools.Method(typeof(SystemPatches), nameof(SystemPatches.TimingPrefix_GameUpdate));
-            var postfix = SystemPatches.GetPostfix(TimingKey.GameUpdate);
-            if (prefix == null || postfix == null) return;
+            var finalizer = AccessTools.Method(typeof(SystemPatches), nameof(SystemPatches.Finalizer_GameUpdate));
+            if (prefix == null || finalizer == null) return;
 
             try
             {
                 harmony.Patch(method,
                     prefix: new HarmonyMethod(prefix) { priority = Priority.First },
-                    postfix: new HarmonyMethod(postfix) { priority = Priority.Last });
+                    finalizer: new HarmonyMethod(finalizer));
                 patchedMethods.Add(method);
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"[OniProfiler] Failed to patch Game.Update: {e.Message}");
             }
+
+            // Diagnostic: log all patches on Game.Update so we can verify ordering
+            try
+            {
+                var patches = Harmony.GetPatchInfo(method);
+                if (patches != null)
+                {
+                    Debug.Log("[OniProfiler] Game.Update patches:");
+                    foreach (var p in patches.Prefixes)
+                        Debug.Log($"  Prefix: {p.owner} priority={p.priority} method={p.PatchMethod.Name}");
+                    foreach (var p in patches.Postfixes)
+                        Debug.Log($"  Postfix: {p.owner} priority={p.priority} method={p.PatchMethod.Name}");
+                    foreach (var p in patches.Finalizers)
+                        Debug.Log($"  Finalizer: {p.owner} priority={p.priority} method={p.PatchMethod.Name}");
+                }
+            }
+            catch { /* diagnostic only — don't break patching */ }
         }
 
         /// <summary>

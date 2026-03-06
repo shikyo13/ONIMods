@@ -59,13 +59,13 @@ namespace OniProfiler.UI
                 $"  Last spike: {ageStr} ago — <color=#ff8844>{spike.TotalMs:F1}ms</color>{gcTag}",
                 spikeStyle);
 
-            // Unaccounted gap (GC stop-the-world + OS overhead)
+            // Unaccounted gap — only sum leaf systems to avoid double-counting
+            // nested wrappers (e.g. SMRenderEveryTick wraps FindNextChore)
             double accountedMs = 0;
             for (int i = 0; i < (int)TimingKey.COUNT; i++)
             {
-                var k = (TimingKey)i;
-                if (k == TimingKey.GameUpdate || k == TimingKey.GameLateUpdate) continue;
-                accountedMs += spike.SystemMs[i];
+                if (!IsWrapper((TimingKey)i))
+                    accountedMs += spike.SystemMs[i];
             }
             double unaccountedMs = spike.TotalMs - accountedMs;
             if (unaccountedMs > 0.5)
@@ -116,6 +116,15 @@ namespace OniProfiler.UI
                     labelStyle);
             }
         }
+
+        private static bool IsWrapper(TimingKey k) =>
+            k == TimingKey.GameUpdate ||
+            k == TimingKey.GameLateUpdate ||
+            k == TimingKey.BrainAdvance ||
+            k == TimingKey.SMRender ||
+            k == TimingKey.SMRenderEveryTick ||
+            k == TimingKey.GlobalLateUpdate ||
+            k == TimingKey.KCompSpawnUpdate;
 
         private void DrawPhaseBreakdown(SpikeEvent spike)
         {
