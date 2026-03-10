@@ -10,6 +10,7 @@ C# class libraries using Harmony 2.0 to patch Oxygen Not Included at runtime. .N
 | `BuildThrough/` | Build/deconstruct through walls |
 | `OniProfiler/` | Real-time performance profiler (F8 toggle) |
 | `GCBudget/` | Alloc-gated GC collection mod (POC) |
+| `DuplicantStatusBar/` | Persistent dupe status bar HUD (colonist bar) |
 | `docs/` | Tiered documentation (see routing table below) |
 
 ## Build & Deploy
@@ -49,5 +50,6 @@ D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Manage
 | Editing BuildThrough | `docs/tier2-buildthrough-design.md` |
 | Editing OniProfiler | `OniProfiler/HANDOVER.md` |
 | Editing GCBudget | `GCBudget/HANDOVER.md` |
+| Editing DuplicantStatusBar | `DuplicantStatusBar/HANDOVER.md` |
 | Lag spike investigation context | `docs/tier2-lag-investigation.md` |
 | ONI API/Harmony/building questions | `docs/ONI-modding-guide.md` — use section index at top, read only relevant section |
