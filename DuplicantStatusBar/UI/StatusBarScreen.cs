@@ -15,6 +15,7 @@ namespace DuplicantStatusBar.UI
         private TMPro.TextMeshProUGUI collapseLabel;
         private readonly List<DupePortraitWidget> widgets = new List<DupePortraitWidget>();
 
+        private GridLayoutGroup grid;
         private RectTransform headerRT;
         private float updateTimer;
         private bool isCollapsed;
@@ -28,10 +29,16 @@ namespace DuplicantStatusBar.UI
         private Vector2 dragStartLocal;
         private Vector2 dragStartAnchored;
 
+        // Resize state
+        private bool isResizing;
+        private float resizeStartY;
+        private int resizeStartSize;
+
         private const float UPDATE_INTERVAL = 0.25f;
         private const string PX = "DSB_PosX";
         private const string PY = "DSB_PosY";
         private const string PC = "DSB_Collapsed";
+        private const string PS = "DSB_PortSize";
 
         private void Start()
         {
@@ -60,6 +67,7 @@ namespace DuplicantStatusBar.UI
             }
 
             HandleDrag();
+            HandleResize();
         }
 
         private void OnDestroy()
@@ -119,6 +127,7 @@ namespace DuplicantStatusBar.UI
 
             BuildHeader(panelGO);
             BuildContent(panelGO);
+            BuildResizeHandle(panelGO);
             DupeTooltip.Init(canvasGO.transform);
         }
 
@@ -185,15 +194,62 @@ namespace DuplicantStatusBar.UI
             contentArea.transform.SetParent(parent.transform, false);
             contentRT = contentArea.AddComponent<RectTransform>();
 
-            var hlg = contentArea.AddComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 4;
-            hlg.childForceExpandWidth = false;
-            hlg.childForceExpandHeight = false;
-            hlg.childAlignment = TextAnchor.UpperCenter;
+            grid = contentArea.AddComponent<GridLayoutGroup>();
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.spacing = new Vector2(4, 4);
+            grid.childAlignment = TextAnchor.UpperCenter;
+            grid.constraintCount = 1; // updated in UpdateGridLayout
 
             var fit = contentArea.AddComponent<ContentSizeFitter>();
             fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        private void UpdateGridLayout(int dupeCount, int size)
+        {
+            int totalW = size + 10;
+            int totalH = size + 22;
+            grid.cellSize = new Vector2(totalW, totalH);
+
+            var opts = StatusBarOptions.Instance;
+            int maxPerRow = opts.MaxDupesPerRow;
+            float available = Screen.width * 0.8f;
+            int fitCount = Mathf.Max(1, Mathf.FloorToInt(available / (totalW + 4)));
+            int columnCount = maxPerRow > 0
+                ? Mathf.Min(maxPerRow, fitCount)
+                : fitCount;
+            columnCount = Mathf.Min(columnCount, dupeCount);
+            grid.constraintCount = Mathf.Max(1, columnCount);
+        }
+
+        private void BuildResizeHandle(GameObject parent)
+        {
+            var gripGO = new GameObject("ResizeGrip");
+            gripGO.transform.SetParent(parent.transform, false);
+            var gripRT = gripGO.AddComponent<RectTransform>();
+            gripRT.anchorMin = new Vector2(1f, 0f);
+            gripRT.anchorMax = new Vector2(1f, 0f);
+            gripRT.pivot = new Vector2(1f, 0f);
+            gripRT.sizeDelta = new Vector2(12f, 12f);
+            gripRT.anchoredPosition = Vector2.zero;
+
+            var gripImg = gripGO.AddComponent<Image>();
+            gripImg.color = new Color(0.5f, 0.5f, 0.55f, 0.6f);
+            gripImg.raycastTarget = true;
+
+            // Small "grip dots" text
+            var dotsGO = new GameObject("Dots");
+            dotsGO.transform.SetParent(gripGO.transform, false);
+            var dots = dotsGO.AddComponent<TMPro.TextMeshProUGUI>();
+            dots.text = "\u2261"; // triple bar
+            dots.fontSize = 10;
+            dots.color = new Color(0.8f, 0.8f, 0.8f);
+            dots.alignment = TMPro.TextAlignmentOptions.Center;
+            dots.raycastTarget = false;
+            var dotsRT = dotsGO.GetComponent<RectTransform>();
+            dotsRT.anchorMin = Vector2.zero;
+            dotsRT.anchorMax = Vector2.one;
+            dotsRT.sizeDelta = Vector2.zero;
         }
 
         // ── Collapse ────────────────────────────────────────────
@@ -242,6 +298,48 @@ namespace DuplicantStatusBar.UI
                 headerRT, Input.mousePosition);
         }
 
+        // ── Resize ────────────────────────────────────────────────
+
+        private bool IsOverResizeGrip()
+        {
+            var grip = barPanel.Find("ResizeGrip");
+            if (grip == null) return false;
+            return RectTransformUtility.RectangleContainsScreenPoint(
+                grip as RectTransform, Input.mousePosition);
+        }
+
+        private void HandleResize()
+        {
+            if (barPanel == null) return;
+
+            if (Input.GetMouseButtonDown(0) && !isDragging && IsOverResizeGrip())
+            {
+                isResizing = true;
+                resizeStartY = Input.mousePosition.y;
+                resizeStartSize = lastComputedSize > 0 ? lastComputedSize : StatusBarOptions.Instance.PortraitSize;
+            }
+
+            if (isResizing && Input.GetMouseButton(0))
+            {
+                float deltaY = resizeStartY - Input.mousePosition.y; // down = positive = bigger
+                int newSize = Mathf.Clamp(
+                    resizeStartSize + Mathf.RoundToInt(deltaY * 0.5f),
+                    24, 96);
+                if (newSize != lastComputedSize)
+                {
+                    lastComputedSize = newSize;
+                    lastDupeCount = -1; // force refresh
+                }
+            }
+
+            if (isResizing && Input.GetMouseButtonUp(0))
+            {
+                isResizing = false;
+                PlayerPrefs.SetInt(PS, lastComputedSize);
+                PlayerPrefs.Save();
+            }
+        }
+
         private bool ShouldReSort()
         {
             var snaps = DupeStatusTracker.Snapshots;
@@ -276,6 +374,8 @@ namespace DuplicantStatusBar.UI
             }
             int size = lastComputedSize;
 
+            UpdateGridLayout(snaps.Count, size);
+
             // Add widgets if needed
             while (widgets.Count < snaps.Count)
                 widgets.Add(DupePortraitWidget.Create(contentRT, size));
@@ -293,28 +393,14 @@ namespace DuplicantStatusBar.UI
                 widgets[i].SetSnapshot(snaps[i], size);
         }
 
-        /// <summary>
-        /// Auto-shrink portraits when they'd overflow ~80% of screen width.
-        /// Shrinks from configured size down to minimum 28px.
-        /// </summary>
         private int ComputePortraitSize(int dupeCount)
         {
             int configured = StatusBarOptions.Instance.PortraitSize;
             if (dupeCount <= 0) return configured;
 
-            const int MIN_SIZE = 28;
-            const int SPACING = 3;
-            const int PADDING = 8;
-            const int WIDGET_EXTRA = 10; // card name padding beyond portrait size
-
-            float available = Screen.width * 0.8f;
-            float needed = dupeCount * (configured + WIDGET_EXTRA + SPACING) + PADDING;
-
-            if (needed <= available) return configured;
-
-            int shrunk = Mathf.FloorToInt(
-                (available - PADDING) / dupeCount - WIDGET_EXTRA - SPACING);
-            return Mathf.Max(shrunk, MIN_SIZE);
+            // With GridLayout, no need to shrink — rows wrap automatically
+            // Only clamp to valid range
+            return Mathf.Clamp(configured, 24, 96);
         }
 
         // ── Persistence ─────────────────────────────────────────
@@ -341,6 +427,10 @@ namespace DuplicantStatusBar.UI
             contentArea.SetActive(!isCollapsed);
             if (isCollapsed && collapseLabel != null)
                 collapseLabel.text = "+";
+            if (PlayerPrefs.HasKey(PS))
+            {
+                lastComputedSize = PlayerPrefs.GetInt(PS, StatusBarOptions.Instance.PortraitSize);
+            }
         }
     }
 }

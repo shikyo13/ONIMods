@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using DuplicantStatusBar.Config;
 using DuplicantStatusBar.Data;
 
 namespace DuplicantStatusBar.UI
@@ -147,7 +148,8 @@ namespace DuplicantStatusBar.UI
             int totalH = size + 22;
 
             // Show portrait or initials based on card size
-            bool usePortrait = size >= PORTRAIT_THRESHOLD && snapshot.Identity != null;
+            bool usePortrait = StatusBarOptions.Instance.DisplayMode == DisplayMode.Portraits
+                && size >= PORTRAIT_THRESHOLD && snapshot.Identity != null;
 
             if (usePortrait)
             {
