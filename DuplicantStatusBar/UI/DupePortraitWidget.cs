@@ -23,11 +23,18 @@ namespace DuplicantStatusBar.UI
         private Image portraitImage;
         private int currentIdentityId;
         private string currentHat;
+        private int currentCardSz;
         private const int PORTRAIT_THRESHOLD = 36;
 
         private DupeSnapshot currentSnapshot;
         private float pulseTimer;
         private bool isPulsing;
+
+        private float badgeHoldTimer;
+        private AlertType heldAlert = AlertType.None;
+
+        private Color targetBorderColor;
+        private Color targetFillColor;
 
         private static Sprite _circle;
 
@@ -148,7 +155,7 @@ namespace DuplicantStatusBar.UI
                 var resume = snapshot.Identity.GetComponent<MinionResume>();
                 string hat = resume?.CurrentHat ?? "";
 
-                if (id != currentIdentityId || hat != currentHat)
+                if (id != currentIdentityId || hat != currentHat || cardSz != currentCardSz)
                 {
                     // Destroy old texture to prevent leak
                     DestroyPortraitSprite();
@@ -157,6 +164,7 @@ namespace DuplicantStatusBar.UI
                         snapshot.Identity, cardSz);
                     currentIdentityId = id;
                     currentHat = hat;
+                    currentCardSz = cardSz;
                 }
 
                 portraitImage.gameObject.SetActive(true);
@@ -166,21 +174,25 @@ namespace DuplicantStatusBar.UI
             {
                 portraitImage.gameObject.SetActive(false);
                 initialText.gameObject.SetActive(true);
-                initialText.text = !string.IsNullOrEmpty(snapshot.Name)
+                var initials = !string.IsNullOrEmpty(snapshot.Name)
                     ? snapshot.Name.Substring(0, Math.Min(2, snapshot.Name.Length))
                     : "?";
+                if (initialText.text != initials)
+                    initialText.text = initials;
                 initialText.fontSize = size * 0.5f;
             }
 
             // Name below card
-            nameLabel.text = snapshot.Name ?? "???";
+            var displayName = snapshot.Name ?? "???";
+            if (nameLabel.text != displayName)
+                nameLabel.text = displayName;
 
-            // Border = full stress tier color
+            // Border = full stress tier color (smoothed)
             var tc = TierColor(snapshot.Tier);
-            borderImage.color = tc;
+            targetBorderColor = tc;
 
-            // Background = dark base blended with stress color
-            bgFill.color = Color.Lerp(
+            // Background = dark base blended with stress color (smoothed)
+            targetFillColor = Color.Lerp(
                 new Color(0.12f, 0.12f, 0.15f), tc, 0.25f);
 
             // Pulse on critical
@@ -188,18 +200,8 @@ namespace DuplicantStatusBar.UI
                      || snapshot.HighestAlert == AlertType.LowHP
                      || snapshot.HighestAlert == AlertType.Overstressed;
 
-            // Alert badge
-            if (snapshot.HighestAlert != AlertType.None)
-            {
-                alertBadge.gameObject.SetActive(true);
-                alertBadge.color = AlertColor(snapshot.HighestAlert);
-                badgeSymbol.text = snapshot.HighestAlert == AlertType.Overjoyed
-                    ? "*" : "!";
-            }
-            else
-            {
-                alertBadge.gameObject.SetActive(false);
-            }
+            // Alert badge with hysteresis
+            UpdateBadge(snapshot.HighestAlert);
 
             // Resize
             rootLayout.preferredWidth = totalW;
@@ -224,13 +226,66 @@ namespace DuplicantStatusBar.UI
             DestroyPortraitSprite();
         }
 
+        private void UpdateBadge(AlertType newAlert)
+        {
+            if (newAlert != AlertType.None)
+            {
+                // New alert or different alert: show immediately
+                heldAlert = newAlert;
+                badgeHoldTimer = HoldTime(newAlert);
+                alertBadge.gameObject.SetActive(true);
+                alertBadge.color = AlertColor(newAlert);
+                var sym = newAlert == AlertType.Overjoyed ? "*" : "!";
+                if (badgeSymbol.text != sym)
+                    badgeSymbol.text = sym;
+            }
+            else if (heldAlert != AlertType.None)
+            {
+                // Alert cleared — hold badge for minimum duration
+                // (timer decremented in Update)
+                if (badgeHoldTimer <= 0f)
+                {
+                    heldAlert = AlertType.None;
+                    alertBadge.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private static float HoldTime(AlertType alert)
+        {
+            switch (alert)
+            {
+                case AlertType.Suffocating:
+                case AlertType.LowHP:
+                    return 0f;
+                case AlertType.Overjoyed:
+                    return 1f;
+                default:
+                    return 3f;
+            }
+        }
+
         private void Update()
         {
-            if (!isPulsing) return;
-            pulseTimer += Time.unscaledDeltaTime * 3f;
-            float a = 0.6f + 0.4f * Mathf.Sin(pulseTimer);
-            var c = borderImage.color;
-            borderImage.color = new Color(c.r, c.g, c.b, a);
+            float dt = Time.unscaledDeltaTime;
+
+            // Smooth color transitions
+            float t = 1f - Mathf.Exp(-dt / 0.3f);
+            borderImage.color = Color.Lerp(borderImage.color, targetBorderColor, t);
+            bgFill.color = Color.Lerp(bgFill.color, targetFillColor, t);
+
+            // Pulse on critical
+            if (isPulsing)
+            {
+                pulseTimer += dt * 3f;
+                float a = 0.6f + 0.4f * Mathf.Sin(pulseTimer);
+                var c = borderImage.color;
+                borderImage.color = new Color(c.r, c.g, c.b, a);
+            }
+
+            // Badge hold timer countdown
+            if (badgeHoldTimer > 0f)
+                badgeHoldTimer -= dt;
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -260,7 +315,7 @@ namespace DuplicantStatusBar.UI
             switch (tier)
             {
                 case StressTier.Calm:     return Hex(0x4ade80);
-                case StressTier.Mild:     return Hex(0xa3e635);
+                case StressTier.Mild:     return Hex(0x84cc16);
                 case StressTier.Stressed: return Hex(0xfbbf24);
                 case StressTier.High:     return Hex(0xf97316);
                 case StressTier.Critical: return Hex(0xef4444);
@@ -279,6 +334,9 @@ namespace DuplicantStatusBar.UI
                 case AlertType.Overstressed: return Hex(0xe879f9);
                 case AlertType.Diseased:     return Hex(0xa855f7);
                 case AlertType.Overjoyed:    return Hex(0xfbbf24);
+                case AlertType.Irradiated:    return Hex(0x86efac);
+                case AlertType.Starving:      return Hex(0xea580c);
+                case AlertType.BladderUrgent: return Hex(0xeab308);
                 default: return Color.clear;
             }
         }

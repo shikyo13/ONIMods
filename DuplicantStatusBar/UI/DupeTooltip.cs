@@ -53,7 +53,8 @@ namespace DuplicantStatusBar.UI
 
             var sb = new StringBuilder(256);
             sb.AppendLine($"<b>{snap.Name}</b>");
-            sb.AppendLine($"Task: {snap.ChoreDescription}");
+            var task = string.IsNullOrEmpty(snap.ChoreDescription) ? "Idle" : snap.ChoreDescription;
+            sb.AppendLine($"Task: {task}");
             sb.AppendLine();
 
             var sc = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.TierColor(snap.Tier));
@@ -67,6 +68,12 @@ namespace DuplicantStatusBar.UI
 
             float tempC = snap.BodyTemperature - 273.15f;
             sb.AppendLine($"Body Temp: {tempC:F1} C");
+
+            var blc = snap.BladderPercent >= 70f ? "EAB308" : "4ADE80";
+            sb.AppendLine($"Bladder: <color=#{blc}>{snap.BladderPercent:F0}%</color>");
+
+            if (snap.IsStarving)
+                sb.AppendLine("<color=#EA580C>Starving!</color>");
 
             if (snap.HighestAlert != AlertType.None)
             {
@@ -104,13 +111,16 @@ namespace DuplicantStatusBar.UI
         {
             switch (alert)
             {
-                case AlertType.Suffocating:  return "!! SUFFOCATING";
-                case AlertType.LowHP:        return "!! LOW HEALTH";
-                case AlertType.Scalding:     return "! Scalding";
-                case AlertType.Hypothermia:  return "! Hypothermia";
-                case AlertType.Overstressed: return "!! OVERSTRESSED";
-                case AlertType.Diseased:     return "! Diseased";
-                case AlertType.Overjoyed:    return "* Overjoyed";
+                case AlertType.Suffocating:  return "Suffocating";
+                case AlertType.LowHP:        return "Low Health";
+                case AlertType.Scalding:     return "Scalding";
+                case AlertType.Hypothermia:  return "Hypothermia";
+                case AlertType.Irradiated:   return "Irradiated";
+                case AlertType.Starving:     return "Starving";
+                case AlertType.Overstressed: return "Overstressed";
+                case AlertType.BladderUrgent: return "Bladder Urgent";
+                case AlertType.Diseased:     return "Diseased";
+                case AlertType.Overjoyed:    return "Overjoyed";
                 default: return "";
             }
         }
