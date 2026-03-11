@@ -12,7 +12,10 @@ namespace DuplicantStatusBar.Data
         None,
         Overjoyed,
         Diseased,
+        BladderUrgent,
         Overstressed,
+        Irradiated,
+        Starving,
         Hypothermia,
         Scalding,
         LowHP,
@@ -33,6 +36,9 @@ namespace DuplicantStatusBar.Data
         public MinionIdentity Identity;
         public bool IsDiseased;
         public bool IsOverjoyed;
+        public float BladderPercent;
+        public bool IsStarving;
+        public bool IsIrradiated;
     }
 
     public static class DupeStatusTracker
@@ -41,6 +47,7 @@ namespace DuplicantStatusBar.Data
         private static Klei.AI.Amount stressAmount;
         private static Klei.AI.Amount healthAmount;
         private static Klei.AI.Amount breathAmount;
+        private static Klei.AI.Amount bladderAmount;
 
         public static IReadOnlyList<DupeSnapshot> Snapshots => snapshots;
 
@@ -119,6 +126,18 @@ namespace DuplicantStatusBar.Data
                 var joySMI = go.GetSMI<JoyBehaviourMonitor.Instance>();
                 snap.IsOverjoyed = joySMI != null && joySMI.IsInsideState(joySMI.sm.overjoyed);
 
+                // Bladder
+                var bladderInst = bladderAmount?.Lookup(go);
+                if (bladderInst != null) snap.BladderPercent = bladderInst.value;
+
+                // Starving
+                var calSMI = go.GetSMI<CalorieMonitor.Instance>();
+                snap.IsStarving = calSMI != null && calSMI.IsStarving();
+
+                // Radiation sickness (DLC-safe — null in base game)
+                var radSMI = go.GetSMI<RadiationMonitor.Instance>();
+                snap.IsIrradiated = radSMI != null && radSMI.sm.isSick.Get(radSMI);
+
                 // Compute derived values
                 snap.Tier = ComputeTier(snap.StressPercent, options);
                 snap.HighestAlert = ComputeAlert(snap, options);
@@ -126,7 +145,6 @@ namespace DuplicantStatusBar.Data
                 snapshots.Add(snap);
             }
 
-            SortSnapshots(options.SortOrder);
         }
 
         private static void EnsureAmounts()
@@ -137,6 +155,7 @@ namespace DuplicantStatusBar.Data
             stressAmount = db.Amounts.Stress;
             healthAmount = db.Amounts.HitPoints;
             breathAmount = db.Amounts.Breath;
+            bladderAmount = db.Amounts.Bladder;
         }
 
         private static StressTier ComputeTier(float stress, StatusBarOptions opts)
@@ -158,8 +177,14 @@ namespace DuplicantStatusBar.Data
                 return AlertType.Scalding;
             if (opts.AlertHypothermia && snap.BodyTemperature < 263.15f)
                 return AlertType.Hypothermia;
+            if (opts.AlertIrradiated && snap.IsIrradiated)
+                return AlertType.Irradiated;
+            if (opts.AlertStarving && snap.IsStarving)
+                return AlertType.Starving;
             if (opts.AlertOverstressed && snap.StressPercent >= 100f)
                 return AlertType.Overstressed;
+            if (opts.AlertBladder && snap.BladderPercent >= 90f)
+                return AlertType.BladderUrgent;
             if (opts.AlertDiseased && snap.IsDiseased)
                 return AlertType.Diseased;
             if (opts.AlertOverjoyed && snap.IsOverjoyed)
@@ -167,12 +192,17 @@ namespace DuplicantStatusBar.Data
             return AlertType.None;
         }
 
-        private static void SortSnapshots(SortOrder order)
+        public static void SortSnapshots()
         {
+            var order = StatusBarOptions.Instance.SortOrder;
             switch (order)
             {
                 case SortOrder.StressDescending:
-                    snapshots.Sort((a, b) => b.StressPercent.CompareTo(a.StressPercent));
+                    snapshots.Sort((a, b) =>
+                    {
+                        int cmp = b.StressPercent.CompareTo(a.StressPercent);
+                        return cmp != 0 ? cmp : string.Compare(a.Name, b.Name, StringComparison.Ordinal);
+                    });
                     break;
                 case SortOrder.Alphabetical:
                     snapshots.Sort((a, b) =>

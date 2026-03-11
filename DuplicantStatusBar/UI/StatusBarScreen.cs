@@ -15,8 +15,13 @@ namespace DuplicantStatusBar.UI
         private TMPro.TextMeshProUGUI collapseLabel;
         private readonly List<DupePortraitWidget> widgets = new List<DupePortraitWidget>();
 
+        private RectTransform headerRT;
         private float updateTimer;
         private bool isCollapsed;
+        private float sortTimer = 3f;
+        private float[] lastStressValues = new float[0];
+        private int lastDupeCount = -1;
+        private int lastComputedSize;
 
         // Drag state
         private bool isDragging;
@@ -44,6 +49,14 @@ namespace DuplicantStatusBar.UI
                 updateTimer = UPDATE_INTERVAL;
                 DupeStatusTracker.Update();
                 RefreshWidgets();
+            }
+
+            sortTimer -= Time.unscaledDeltaTime;
+            if (sortTimer <= 0f)
+            {
+                sortTimer = 3f;
+                if (ShouldReSort())
+                    DupeStatusTracker.SortSnapshots();
             }
 
             HandleDrag();
@@ -113,7 +126,7 @@ namespace DuplicantStatusBar.UI
         {
             var header = new GameObject("Header");
             header.transform.SetParent(parent.transform, false);
-            header.AddComponent<RectTransform>();
+            headerRT = header.AddComponent<RectTransform>();
 
             var hlg = header.AddComponent<HorizontalLayoutGroup>();
             hlg.spacing = 4;
@@ -224,10 +237,31 @@ namespace DuplicantStatusBar.UI
 
         private bool IsOverHeader()
         {
-            var header = barPanel.Find("Header");
-            if (header == null) return false;
+            if (headerRT == null) return false;
             return RectTransformUtility.RectangleContainsScreenPoint(
-                header as RectTransform, Input.mousePosition);
+                headerRT, Input.mousePosition);
+        }
+
+        private bool ShouldReSort()
+        {
+            var snaps = DupeStatusTracker.Snapshots;
+            if (lastStressValues.Length != snaps.Count)
+            {
+                lastStressValues = new float[snaps.Count];
+                for (int i = 0; i < snaps.Count; i++)
+                    lastStressValues[i] = snaps[i].StressPercent;
+                return true;
+            }
+            for (int i = 0; i < snaps.Count; i++)
+            {
+                if (Mathf.Abs(snaps[i].StressPercent - lastStressValues[i]) > 5f)
+                {
+                    for (int j = 0; j < snaps.Count; j++)
+                        lastStressValues[j] = snaps[j].StressPercent;
+                    return true;
+                }
+            }
+            return false;
         }
 
         // ── Widget Sync ─────────────────────────────────────────
@@ -235,7 +269,12 @@ namespace DuplicantStatusBar.UI
         private void RefreshWidgets()
         {
             var snaps = DupeStatusTracker.Snapshots;
-            int size = ComputePortraitSize(snaps.Count);
+            if (snaps.Count != lastDupeCount)
+            {
+                lastDupeCount = snaps.Count;
+                lastComputedSize = ComputePortraitSize(snaps.Count);
+            }
+            int size = lastComputedSize;
 
             // Add widgets if needed
             while (widgets.Count < snaps.Count)
@@ -268,7 +307,7 @@ namespace DuplicantStatusBar.UI
             const int PADDING = 8;
             const int WIDGET_EXTRA = 10; // card name padding beyond portrait size
 
-            float available = 1920f * 0.8f;
+            float available = Screen.width * 0.8f;
             float needed = dupeCount * (configured + WIDGET_EXTRA + SPACING) + PADDING;
 
             if (needed <= available) return configured;
