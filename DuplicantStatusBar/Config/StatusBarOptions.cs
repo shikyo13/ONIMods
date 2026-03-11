@@ -41,6 +41,7 @@ namespace DuplicantStatusBar.Config
 
         [Option("Display Mode", "Show portraits or initial letters.", "Appearance")]
         [JsonProperty]
+        [RestartRequired]
         public DisplayMode DisplayMode { get; set; } = DisplayMode.Portraits;
 
         [Option("Calm Threshold", "Stress below this % is Calm (green).", "Stress Tiers")]
