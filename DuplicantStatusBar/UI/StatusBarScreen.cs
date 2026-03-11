@@ -18,12 +18,14 @@ namespace DuplicantStatusBar.UI
 
         private GridLayoutGroup grid;
         private RectTransform headerRT;
+        private RectTransform resizeGripRT;
         private float updateTimer;
         private bool isCollapsed;
         private float sortTimer = 3f;
         private float[] lastStressValues = new float[0];
         internal int lastDupeCount = -1;
         internal int lastComputedSize;
+        internal bool forceRefresh;
 
         // Drag state
         private bool isDragging;
@@ -122,7 +124,7 @@ namespace DuplicantStatusBar.UI
 
             BuildHeader(panelGO);
             BuildContent(panelGO);
-            BuildResizeHandle(panelGO);
+            BuildResizeHandle(canvasGO);
             DupeTooltip.Init(canvasGO.transform);
         }
 
@@ -217,43 +219,79 @@ namespace DuplicantStatusBar.UI
             grid.constraintCount = Mathf.Max(1, columnCount);
         }
 
-        private void BuildResizeHandle(GameObject parent)
+        private void BuildResizeHandle(GameObject canvasGO)
         {
+            // Parent is Canvas (NOT BarPanel) to avoid VLG interference.
+            // Position tracked in LateUpdate.
             var gripGO = new GameObject("ResizeGrip");
-            gripGO.transform.SetParent(parent.transform, false);
-            var gripRT = gripGO.AddComponent<RectTransform>();
+            gripGO.transform.SetParent(canvasGO.transform, false);
+            resizeGripRT = gripGO.AddComponent<RectTransform>();
 
-            // Float freely over the VLG — ignore layout so anchors work
-            var le = gripGO.AddComponent<LayoutElement>();
-            le.ignoreLayout = true;
-
-            gripRT.anchorMin = new Vector2(1f, 0f);
-            gripRT.anchorMax = new Vector2(1f, 0f);
-            gripRT.pivot = new Vector2(1f, 0f);
-            gripRT.sizeDelta = new Vector2(14f, 14f);
-            gripRT.anchoredPosition = Vector2.zero;
+            resizeGripRT.pivot = new Vector2(1f, 0f);
+            resizeGripRT.sizeDelta = new Vector2(16f, 16f);
 
             var gripImg = gripGO.AddComponent<Image>();
-            gripImg.color = new Color(0.5f, 0.5f, 0.55f, 0.6f);
+            gripImg.sprite = MakeResizeGripSprite(32);
+            gripImg.color = Color.white;
             gripImg.raycastTarget = true;
 
-            // Attach EventSystem-based resize handler
             var handle = gripGO.AddComponent<ResizeHandle>();
             handle.screen = this;
+        }
 
-            // Corner grip glyph (≡ is safe in Liberation Sans SDF, ◢ may be missing)
-            var dotsGO = new GameObject("Dots");
-            dotsGO.transform.SetParent(gripGO.transform, false);
-            var dots = dotsGO.AddComponent<TMPro.TextMeshProUGUI>();
-            dots.text = "\u2261"; // ≡
-            dots.fontSize = 11;
-            dots.color = new Color(0.8f, 0.8f, 0.8f);
-            dots.alignment = TMPro.TextAlignmentOptions.Center;
-            dots.raycastTarget = false;
-            var dotsRT = dotsGO.GetComponent<RectTransform>();
-            dotsRT.anchorMin = Vector2.zero;
-            dotsRT.anchorMax = Vector2.one;
-            dotsRT.sizeDelta = Vector2.zero;
+        private void LateUpdate()
+        {
+            // Track resize grip to BarPanel's bottom-right corner
+            if (resizeGripRT == null || barPanel == null) return;
+
+            if (isCollapsed)
+            {
+                resizeGripRT.gameObject.SetActive(false);
+                return;
+            }
+
+            resizeGripRT.gameObject.SetActive(true);
+            Vector3[] corners = new Vector3[4];
+            barPanel.GetWorldCorners(corners);
+            resizeGripRT.position = corners[3];
+        }
+
+        private static Sprite MakeResizeGripSprite(int sz)
+        {
+            var tex = new Texture2D(sz, sz, TextureFormat.RGBA32, false);
+            var pixels = new Color32[sz * sz];
+
+            // Two / lines near bottom-right corner.
+            // In texture space (y=0 bottom): / lines follow x - y = constant.
+            // Bottom-right corner is (sz-1, 0) where x-y = sz-1.
+            float c1 = sz * 0.7f;   // shorter line, closer to corner
+            float c2 = sz * 0.35f;  // longer line, further from corner
+            float hw = 1.2f;        // half-width for anti-aliasing
+
+            for (int y = 0; y < sz; y++)
+            {
+                for (int x = 0; x < sz; x++)
+                {
+                    float diag = x - y;
+                    float d1 = Mathf.Abs(diag - c1);
+                    float d2 = Mathf.Abs(diag - c2);
+                    float a = Mathf.Max(
+                        Mathf.Clamp01(1f - d1 / hw),
+                        Mathf.Clamp01(1f - d2 / hw));
+
+                    // Clip: keep 2px margin on all edges
+                    if (x < 2 || x > sz - 3 || y < 2 || y > sz - 3)
+                        a = 0f;
+
+                    pixels[y * sz + x] = new Color32(180, 180, 180,
+                        (byte)(a * 220));
+                }
+            }
+
+            tex.SetPixels32(pixels);
+            tex.Apply();
+            return Sprite.Create(tex,
+                new Rect(0, 0, sz, sz), new Vector2(1f, 0f));
         }
 
         // ── Collapse ────────────────────────────────────────────
@@ -327,7 +365,7 @@ namespace DuplicantStatusBar.UI
                 if (newSize != screen.lastComputedSize)
                 {
                     screen.lastComputedSize = newSize;
-                    screen.lastDupeCount = -1; // force layout refresh
+                    screen.forceRefresh = true;
                 }
             }
 
@@ -367,9 +405,13 @@ namespace DuplicantStatusBar.UI
             var snaps = DupeStatusTracker.Snapshots;
             if (snaps.Count != lastDupeCount)
             {
+                bool resizeDrag = lastDupeCount == -1 && lastComputedSize > 0;
                 lastDupeCount = snaps.Count;
-                lastComputedSize = ComputePortraitSize(snaps.Count);
+                if (!resizeDrag)
+                    lastComputedSize = ComputePortraitSize(snaps.Count);
             }
+            if (forceRefresh)
+                forceRefresh = false;
             int size = lastComputedSize;
 
             UpdateGridLayout(snaps.Count, size);
