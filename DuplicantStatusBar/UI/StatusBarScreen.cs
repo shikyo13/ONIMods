@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DuplicantStatusBar.Config;
 using DuplicantStatusBar.Data;
@@ -17,23 +18,17 @@ namespace DuplicantStatusBar.UI
 
         private GridLayoutGroup grid;
         private RectTransform headerRT;
-        private RectTransform resizeGripRT;
         private float updateTimer;
         private bool isCollapsed;
         private float sortTimer = 3f;
         private float[] lastStressValues = new float[0];
-        private int lastDupeCount = -1;
-        private int lastComputedSize;
+        internal int lastDupeCount = -1;
+        internal int lastComputedSize;
 
         // Drag state
         private bool isDragging;
         private Vector2 dragStartLocal;
         private Vector2 dragStartAnchored;
-
-        // Resize state
-        private bool isResizing;
-        private float resizeStartY;
-        private int resizeStartSize;
 
         private const float UPDATE_INTERVAL = 0.25f;
         private const string PX = "DSB_PosX";
@@ -68,7 +63,6 @@ namespace DuplicantStatusBar.UI
             }
 
             HandleDrag();
-            HandleResize();
         }
 
         private void OnDestroy()
@@ -227,27 +221,31 @@ namespace DuplicantStatusBar.UI
         {
             var gripGO = new GameObject("ResizeGrip");
             gripGO.transform.SetParent(parent.transform, false);
-            resizeGripRT = gripGO.AddComponent<RectTransform>();
+            var gripRT = gripGO.AddComponent<RectTransform>();
 
             // Float freely over the VLG — ignore layout so anchors work
             var le = gripGO.AddComponent<LayoutElement>();
             le.ignoreLayout = true;
 
-            resizeGripRT.anchorMin = new Vector2(1f, 0f);
-            resizeGripRT.anchorMax = new Vector2(1f, 0f);
-            resizeGripRT.pivot = new Vector2(1f, 0f);
-            resizeGripRT.sizeDelta = new Vector2(14f, 14f);
-            resizeGripRT.anchoredPosition = Vector2.zero;
+            gripRT.anchorMin = new Vector2(1f, 0f);
+            gripRT.anchorMax = new Vector2(1f, 0f);
+            gripRT.pivot = new Vector2(1f, 0f);
+            gripRT.sizeDelta = new Vector2(14f, 14f);
+            gripRT.anchoredPosition = Vector2.zero;
 
             var gripImg = gripGO.AddComponent<Image>();
             gripImg.color = new Color(0.5f, 0.5f, 0.55f, 0.6f);
             gripImg.raycastTarget = true;
 
-            // Corner grip glyph
+            // Attach EventSystem-based resize handler
+            var handle = gripGO.AddComponent<ResizeHandle>();
+            handle.screen = this;
+
+            // Corner grip glyph (≡ is safe in Liberation Sans SDF, ◢ may be missing)
             var dotsGO = new GameObject("Dots");
             dotsGO.transform.SetParent(gripGO.transform, false);
             var dots = dotsGO.AddComponent<TMPro.TextMeshProUGUI>();
-            dots.text = "\u25E2"; // ◢ bottom-right triangle
+            dots.text = "\u2261"; // ≡
             dots.fontSize = 11;
             dots.color = new Color(0.8f, 0.8f, 0.8f);
             dots.alignment = TMPro.TextAlignmentOptions.Center;
@@ -304,43 +302,38 @@ namespace DuplicantStatusBar.UI
                 headerRT, Input.mousePosition);
         }
 
-        // ── Resize ────────────────────────────────────────────────
+        // ── Resize (EventSystem-driven) ──────────────────────────
 
-        private bool IsOverResizeGrip()
+        private sealed class ResizeHandle : MonoBehaviour,
+            IPointerDownHandler, IDragHandler, IPointerUpHandler
         {
-            if (resizeGripRT == null) return false;
-            return RectTransformUtility.RectangleContainsScreenPoint(
-                resizeGripRT, Input.mousePosition);
-        }
+            internal StatusBarScreen screen;
+            private float startY;
+            private int startSize;
 
-        private void HandleResize()
-        {
-            if (barPanel == null) return;
-
-            if (Input.GetMouseButtonDown(0) && !isDragging && IsOverResizeGrip())
+            public void OnPointerDown(PointerEventData e)
             {
-                isResizing = true;
-                resizeStartY = Input.mousePosition.y;
-                resizeStartSize = lastComputedSize > 0 ? lastComputedSize : StatusBarOptions.Instance.PortraitSize;
+                startY = e.position.y;
+                startSize = screen.lastComputedSize > 0
+                    ? screen.lastComputedSize
+                    : StatusBarOptions.Instance.PortraitSize;
             }
 
-            if (isResizing && Input.GetMouseButton(0))
+            public void OnDrag(PointerEventData e)
             {
-                float deltaY = resizeStartY - Input.mousePosition.y; // down = positive = bigger
+                float deltaY = startY - e.position.y; // down = bigger
                 int newSize = Mathf.Clamp(
-                    resizeStartSize + Mathf.RoundToInt(deltaY * 0.5f),
-                    24, 96);
-                if (newSize != lastComputedSize)
+                    startSize + Mathf.RoundToInt(deltaY * 0.5f), 24, 96);
+                if (newSize != screen.lastComputedSize)
                 {
-                    lastComputedSize = newSize;
-                    lastDupeCount = -1; // force refresh
+                    screen.lastComputedSize = newSize;
+                    screen.lastDupeCount = -1; // force layout refresh
                 }
             }
 
-            if (isResizing && Input.GetMouseButtonUp(0))
+            public void OnPointerUp(PointerEventData e)
             {
-                isResizing = false;
-                PlayerPrefs.SetInt(PS, lastComputedSize);
+                PlayerPrefs.SetInt(PS, screen.lastComputedSize);
                 PlayerPrefs.Save();
             }
         }

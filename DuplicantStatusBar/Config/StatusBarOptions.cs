@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using PeterHan.PLib.Options;
 
@@ -18,7 +19,7 @@ namespace DuplicantStatusBar.Config
 
     [JsonObject(MemberSerialization.OptIn)]
     [ModInfo("Duplicant Status Bar")]
-    public sealed class StatusBarOptions : SingletonOptions<StatusBarOptions>
+    public sealed class StatusBarOptions : SingletonOptions<StatusBarOptions>, IOptions
     {
         [Option("Sort Order", "How to sort duplicants in the bar.", "General")]
         [JsonProperty]
@@ -41,7 +42,6 @@ namespace DuplicantStatusBar.Config
 
         [Option("Display Mode", "Show portraits or initial letters.", "Appearance")]
         [JsonProperty]
-        [RestartRequired]
         public DisplayMode DisplayMode { get; set; } = DisplayMode.Portraits;
 
         [Option("Calm Threshold", "Stress below this % is Calm (green).", "Stress Tiers")]
@@ -103,5 +103,13 @@ namespace DuplicantStatusBar.Config
         [Option("Bladder Alert", "Show badge when dupe urgently needs a bathroom.", "Alerts")]
         [JsonProperty]
         public bool AlertBladder { get; set; } = true;
+
+        // IOptions — live update when user changes settings
+        public void OnOptionsChanged()
+        {
+            instance = POptions.ReadSettings<StatusBarOptions>() ?? new StatusBarOptions();
+        }
+
+        public IEnumerable<IOptionsEntry> CreateOptions() => null;
     }
 }
