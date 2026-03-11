@@ -17,6 +17,7 @@ namespace DuplicantStatusBar.UI
 
         private GridLayoutGroup grid;
         private RectTransform headerRT;
+        private RectTransform resizeGripRT;
         private float updateTimer;
         private bool isCollapsed;
         private float sortTimer = 3f;
@@ -226,23 +227,28 @@ namespace DuplicantStatusBar.UI
         {
             var gripGO = new GameObject("ResizeGrip");
             gripGO.transform.SetParent(parent.transform, false);
-            var gripRT = gripGO.AddComponent<RectTransform>();
-            gripRT.anchorMin = new Vector2(1f, 0f);
-            gripRT.anchorMax = new Vector2(1f, 0f);
-            gripRT.pivot = new Vector2(1f, 0f);
-            gripRT.sizeDelta = new Vector2(12f, 12f);
-            gripRT.anchoredPosition = Vector2.zero;
+            resizeGripRT = gripGO.AddComponent<RectTransform>();
+
+            // Float freely over the VLG — ignore layout so anchors work
+            var le = gripGO.AddComponent<LayoutElement>();
+            le.ignoreLayout = true;
+
+            resizeGripRT.anchorMin = new Vector2(1f, 0f);
+            resizeGripRT.anchorMax = new Vector2(1f, 0f);
+            resizeGripRT.pivot = new Vector2(1f, 0f);
+            resizeGripRT.sizeDelta = new Vector2(14f, 14f);
+            resizeGripRT.anchoredPosition = Vector2.zero;
 
             var gripImg = gripGO.AddComponent<Image>();
             gripImg.color = new Color(0.5f, 0.5f, 0.55f, 0.6f);
             gripImg.raycastTarget = true;
 
-            // Small "grip dots" text
+            // Corner grip glyph
             var dotsGO = new GameObject("Dots");
             dotsGO.transform.SetParent(gripGO.transform, false);
             var dots = dotsGO.AddComponent<TMPro.TextMeshProUGUI>();
-            dots.text = "\u2261"; // triple bar
-            dots.fontSize = 10;
+            dots.text = "\u25E2"; // ◢ bottom-right triangle
+            dots.fontSize = 11;
             dots.color = new Color(0.8f, 0.8f, 0.8f);
             dots.alignment = TMPro.TextAlignmentOptions.Center;
             dots.raycastTarget = false;
@@ -302,10 +308,9 @@ namespace DuplicantStatusBar.UI
 
         private bool IsOverResizeGrip()
         {
-            var grip = barPanel.Find("ResizeGrip");
-            if (grip == null) return false;
+            if (resizeGripRT == null) return false;
             return RectTransformUtility.RectangleContainsScreenPoint(
-                grip as RectTransform, Input.mousePosition);
+                resizeGripRT, Input.mousePosition);
         }
 
         private void HandleResize()
