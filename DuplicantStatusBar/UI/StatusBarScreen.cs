@@ -52,6 +52,7 @@ namespace DuplicantStatusBar.UI
         private void OnDestroy()
         {
             DupeTooltip.Cleanup();
+            PortraitCompositor.ClearCaches();
             SaveState();
         }
 

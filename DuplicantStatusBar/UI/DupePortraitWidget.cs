@@ -19,6 +19,12 @@ namespace DuplicantStatusBar.UI
         private LayoutElement rootLayout;
         private LayoutElement cardLayout;
 
+        // Portrait: compositor-generated sprite displayed via Image
+        private Image portraitImage;
+        private int currentIdentityId;
+        private string currentHat;
+        private const int PORTRAIT_THRESHOLD = 36;
+
         private DupeSnapshot currentSnapshot;
         private float pulseTimer;
         private bool isPulsing;
@@ -74,7 +80,14 @@ namespace DuplicantStatusBar.UI
             bgFill.raycastTarget = false;
             Stretch(bgFill.rectTransform, -4f);
 
-            // Large initial letter (placeholder for portrait)
+            // Portrait: compositor-generated sprite via Image
+            portraitImage = AddImage(cardGO.transform, "Portrait");
+            portraitImage.preserveAspect = true;
+            portraitImage.raycastTarget = false;
+            Stretch(portraitImage.rectTransform, -4f);
+            portraitImage.gameObject.SetActive(false);
+
+            // Large initial letter (fallback when portrait too small)
             initialText = AddText(cardGO.transform, "Initial");
             initialText.fontSize = size * 0.55f;
             initialText.color = new Color(0.9f, 0.9f, 0.9f);
@@ -126,11 +139,38 @@ namespace DuplicantStatusBar.UI
             int totalW = size + 10;
             int totalH = size + 22;
 
-            // Initial (2-letter abbreviation)
-            initialText.text = !string.IsNullOrEmpty(snapshot.Name)
-                ? snapshot.Name.Substring(0, Math.Min(2, snapshot.Name.Length))
-                : "?";
-            initialText.fontSize = size * 0.5f;
+            // Show portrait or initials based on card size
+            bool usePortrait = size >= PORTRAIT_THRESHOLD && snapshot.Identity != null;
+
+            if (usePortrait)
+            {
+                int id = snapshot.Identity.GetInstanceID();
+                var resume = snapshot.Identity.GetComponent<MinionResume>();
+                string hat = resume?.CurrentHat ?? "";
+
+                if (id != currentIdentityId || hat != currentHat)
+                {
+                    // Destroy old texture to prevent leak
+                    DestroyPortraitSprite();
+
+                    portraitImage.sprite = PortraitCompositor.ComposePortrait(
+                        snapshot.Identity, cardSz);
+                    currentIdentityId = id;
+                    currentHat = hat;
+                }
+
+                portraitImage.gameObject.SetActive(true);
+                initialText.gameObject.SetActive(false);
+            }
+            else
+            {
+                portraitImage.gameObject.SetActive(false);
+                initialText.gameObject.SetActive(true);
+                initialText.text = !string.IsNullOrEmpty(snapshot.Name)
+                    ? snapshot.Name.Substring(0, Math.Min(2, snapshot.Name.Length))
+                    : "?";
+                initialText.fontSize = size * 0.5f;
+            }
 
             // Name below card
             nameLabel.text = snapshot.Name ?? "???";
@@ -166,6 +206,22 @@ namespace DuplicantStatusBar.UI
             rootLayout.preferredHeight = totalH;
             cardLayout.preferredWidth = cardSz;
             cardLayout.preferredHeight = cardSz;
+        }
+
+        private void DestroyPortraitSprite()
+        {
+            if (portraitImage.sprite != null)
+            {
+                var oldTex = portraitImage.sprite.texture;
+                Destroy(portraitImage.sprite);
+                Destroy(oldTex);
+                portraitImage.sprite = null;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            DestroyPortraitSprite();
         }
 
         private void Update()
