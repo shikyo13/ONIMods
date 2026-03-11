@@ -20,6 +20,10 @@ namespace DuplicantStatusBar.UI
         private static readonly Dictionary<Sprite, Texture2D> spriteCache
             = new Dictionary<Sprite, Texture2D>();
 
+        // Always composite at fixed native resolution — the UI Image
+        // component scales the result down via bilinear filtering.
+        private const int COMPOSE_SIZE = 125;
+
         public static Sprite ComposePortrait(MinionIdentity identity, int size)
         {
             if (identity == null) return null;
@@ -33,7 +37,7 @@ namespace DuplicantStatusBar.UI
             bool hasHat = !string.IsNullOrEmpty(hatId);
 
             // Create output texture (transparent)
-            var output = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            var output = new Texture2D(COMPOSE_SIZE, COMPOSE_SIZE, TextureFormat.RGBA32, false);
             output.filterMode = FilterMode.Bilinear;
             ClearTexture(output);
 
@@ -58,7 +62,7 @@ namespace DuplicantStatusBar.UI
 
             output.Apply();
             var sprite = Sprite.Create(output,
-                new Rect(0, 0, size, size),
+                new Rect(0, 0, COMPOSE_SIZE, COMPOSE_SIZE),
                 new Vector2(0.5f, 0.5f));
             return sprite;
         }
