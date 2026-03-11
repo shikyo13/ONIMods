@@ -75,5 +75,17 @@ namespace DuplicantStatusBar.Config
         [Option("Overjoyed Alert", "Show badge during joy reactions.", "Alerts")]
         [JsonProperty]
         public bool AlertOverjoyed { get; set; } = true;
+
+        [Option("Irradiated Alert", "Show badge when dupe has radiation sickness.", "Alerts")]
+        [JsonProperty]
+        public bool AlertIrradiated { get; set; } = true;
+
+        [Option("Starving Alert", "Show badge when dupe is starving.", "Alerts")]
+        [JsonProperty]
+        public bool AlertStarving { get; set; } = true;
+
+        [Option("Bladder Alert", "Show badge when dupe urgently needs a bathroom.", "Alerts")]
+        [JsonProperty]
+        public bool AlertBladder { get; set; } = true;
     }
 }
