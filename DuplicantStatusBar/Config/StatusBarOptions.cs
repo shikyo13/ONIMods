@@ -3,6 +3,12 @@ using PeterHan.PLib.Options;
 
 namespace DuplicantStatusBar.Config
 {
+    public enum DisplayMode
+    {
+        [Option("Portraits")] Portraits,
+        [Option("Initials Only")] Initials
+    }
+
     public enum SortOrder
     {
         [Option("Stress (highest first)")] StressDescending,
@@ -19,14 +25,23 @@ namespace DuplicantStatusBar.Config
         public SortOrder SortOrder { get; set; } = SortOrder.StressDescending;
 
         [Option("Portrait Size", "Size of each portrait in pixels.", "Appearance")]
-        [Limit(24, 48)]
+        [Limit(24, 96)]
         [JsonProperty]
         public int PortraitSize { get; set; } = 36;
+
+        [Option("Max Dupes Per Row", "Maximum portraits per row (0 = auto-fit to screen width).", "Appearance")]
+        [Limit(0, 50)]
+        [JsonProperty]
+        public int MaxDupesPerRow { get; set; } = 0;
 
         [Option("Bar Opacity (%)", "Opacity of the status bar background.", "Appearance")]
         [Limit(10, 100)]
         [JsonProperty]
         public int BarOpacity { get; set; } = 90;
+
+        [Option("Display Mode", "Show portraits or initial letters.", "Appearance")]
+        [JsonProperty]
+        public DisplayMode DisplayMode { get; set; } = DisplayMode.Portraits;
 
         [Option("Calm Threshold", "Stress below this % is Calm (green).", "Stress Tiers")]
         [Limit(5, 50)]
