@@ -114,7 +114,7 @@ namespace DuplicantStatusBar.UI
 
             // Large initial letter (fallback when portrait too small)
             initialText = AddText(cardGO.transform, "Initial");
-            initialText.fontSize = size * 0.55f;
+            initialText.fontSize = size * 0.5f;
             initialText.color = new Color(0.9f, 0.9f, 0.9f);
             initialText.alignment = TextAlignmentOptions.Center;
             initialText.fontStyle = FontStyles.Bold;
@@ -306,19 +306,18 @@ namespace DuplicantStatusBar.UI
         {
             float dt = Time.unscaledDeltaTime;
 
-            // Smooth color transitions
+            // Smooth color transitions (RGB only — alpha handled by pulse)
             float t = 1f - Mathf.Exp(-dt / 0.3f);
-            borderImage.color = Color.Lerp(borderImage.color, targetBorderColor, t);
+            var lerpedBorder = Color.Lerp(borderImage.color, targetBorderColor, t);
+            float borderAlpha = isPulsing
+                ? 0.6f + 0.4f * Mathf.Sin(pulseTimer)
+                : Mathf.Lerp(borderImage.color.a, targetBorderColor.a, t);
+            borderImage.color = new Color(lerpedBorder.r, lerpedBorder.g, lerpedBorder.b, borderAlpha);
             bgFill.color = Color.Lerp(bgFill.color, targetFillColor, t);
 
             // Pulse on critical
             if (isPulsing)
-            {
                 pulseTimer = (pulseTimer + dt * 3f) % (2f * Mathf.PI);
-                float a = 0.6f + 0.4f * Mathf.Sin(pulseTimer);
-                var c = borderImage.color;
-                borderImage.color = new Color(c.r, c.g, c.b, a);
-            }
 
             // Badge hold timer countdown
             if (badgeHoldTimer > 0f)
