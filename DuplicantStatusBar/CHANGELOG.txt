@@ -1,0 +1,70 @@
+[h1]Duplicant Status Bar — Changelog[/h1]
+
+[h2]v2.1.3 — Pause-Safe Timers + Distinct Alert Colors[/h2]
+[list]
+[*] Idle and stuck timers no longer tick while the game is paused — no more false alerts from reading tooltips
+[*] Redesigned alert color palette: 12 alerts now span the full color wheel instead of clustering in orange/amber, making badges instantly distinguishable at a glance
+[/list]
+
+[h2]v2.1.2 — Stuck & Idle Detection[/h2]
+[list]
+[*] Stuck alert: detects dupes who can't path to the Printing Pod for 10+ seconds
+[*] Idle alert: fires when a dupe has been idle for 30+ seconds
+[*] Both alerts configurable via mod options with per-alert toggles
+[/list]
+
+[h2]v2.1.1 — UI Hardening[/h2]
+[list]
+[*] Panel position clamped to screen on load and after dragging — no more stuck-off-screen panels after resolution changes
+[*] Drag now uses Unity EventSystem interfaces instead of raw Input polling — no more conflicts with building placement or other game clicks
+[*] Tooltip clamped to screen bounds — stays visible when hovering dupes near edges
+[*] Batched circle sprite generation (SetPixels32) and reused StringBuilder for less GC pressure
+[*] Removed redundant horizontal ContentSizeFitter that fought anchor-based stretching
+[/list]
+
+[h2]v2.1 — Visual Overhaul + Health[/h2]
+[list]
+[*] Complete visual overhaul: ONI-native color palette, rounded corners via procedural 9-slice sprites, game font (GRAYSTROKE REGULAR SDF)
+[*] Burgundy header with bevel highlights, panel Mask for rounded clipping
+[*] Health fill bar — anchor-based vertical drain with 3-segment color gradient (green → yellow → orange → red), hidden at full HP
+[*] Dark-red damage overlay above portrait proportional to missing HP
+[*] Multi-badge alert system — up to 3 simultaneous badges with adaptive sizing and per-alert hold timers
+[*] Bitmask-based AlertMask on snapshots for multiple concurrent alerts
+[*] Tooltip lists all active conditions with color-coded entries
+[*] Multi-row wrapping with configurable MaxBarWidth (default 50% screen) and MaxBarRows (default 3)
+[*] ScrollRect with thin rounded scrollbar when rows overflow
+[*] Minimum portrait size lowered to 16px for large colonies
+[*] Live opacity update, portrait size change detection without restart
+[*] Scalding/hypothermia alerts now use ScaldingMonitor SMI instead of body temperature
+[*] Auto-deploy MSBuild target
+[/list]
+
+[h2]v1.2 — Grid Layout + Resize[/h2]
+[list]
+[*] GridLayoutGroup replaces HorizontalLayoutGroup — rows wrap automatically
+[*] Drag-to-resize handle at bottom-right corner (24–96px range, persisted)
+[*] MaxDupesPerRow config option (0 = auto)
+[*] DisplayMode option: Portraits / Initials (updates live, no restart)
+[/list]
+
+[h2]v1.1 — Stability + New Alerts[/h2]
+[list]
+[*] Cached headerRT and Screen.width (no per-frame lookups)
+[*] Sort damping: 3s timer + 5% dead-zone to prevent jitter
+[*] Size stability: skip recompute on same dupe count
+[*] New alerts: Irradiated, Starving, Bladder Urgent (with config toggles)
+[*] Tooltip: bladder%, starving status, idle fallback
+[*] Badge hysteresis (0/1/3s hold times by urgency)
+[*] Exponential color smoothing
+[*] Dirty-check on TMP text to avoid unnecessary rebuilds
+[*] Colorblind fix: Mild tier color adjusted
+[/list]
+
+[h2]v1.0 — Initial Release[/h2]
+[list]
+[*] Persistent dupe status bar HUD with stress-colored borders
+[*] Alert badges (suffocating, low HP, scalding, hypothermia, overstressed, diseased, overjoyed)
+[*] Texture-composited portraits (KAnim atlas → Texture2D → UI.Image)
+[*] Draggable panel, click-to-select, hover tooltip
+[*] PLib options integration
+[/list]
