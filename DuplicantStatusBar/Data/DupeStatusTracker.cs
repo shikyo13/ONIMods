@@ -19,7 +19,9 @@ namespace DuplicantStatusBar.Data
         Hypothermia,
         Scalding,
         LowHP,
-        Suffocating
+        Suffocating,
+        Stuck,
+        Idle
     }
 
     public struct DupeSnapshot
@@ -42,14 +44,16 @@ namespace DuplicantStatusBar.Data
         public bool IsIrradiated;
         public bool IsScalding;
         public bool IsHypothermic;
+        public bool IsStuck;
+        public bool IsIdle;
 
         public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (1 << (int)a)) != 0;
 
         public static readonly AlertType[] AlertPriority = {
             AlertType.Suffocating, AlertType.LowHP, AlertType.Scalding,
-            AlertType.Hypothermia, AlertType.Irradiated, AlertType.Starving,
-            AlertType.Overstressed, AlertType.BladderUrgent, AlertType.Diseased,
-            AlertType.Overjoyed
+            AlertType.Hypothermia, AlertType.Stuck, AlertType.Irradiated,
+            AlertType.Starving, AlertType.Overstressed, AlertType.BladderUrgent,
+            AlertType.Diseased, AlertType.Overjoyed, AlertType.Idle
         };
     }
 
@@ -60,6 +64,17 @@ namespace DuplicantStatusBar.Data
         private static Klei.AI.Amount healthAmount;
         private static Klei.AI.Amount breathAmount;
         private static Klei.AI.Amount bladderAmount;
+
+        // Stuck/Idle detection state
+        private static readonly Dictionary<int, float> stuckTimers = new Dictionary<int, float>();
+        private static readonly Dictionary<int, float> idleTimers = new Dictionary<int, float>();
+        private static float stuckCheckTimer;
+        private static int cachedPodCell = -1;
+        private static float podCacheTimer;
+        private const float STUCK_CHECK_INTERVAL = 2f;
+        private const float STUCK_THRESHOLD = 10f;
+        private const float IDLE_THRESHOLD = 30f;
+        private const float POD_CACHE_INTERVAL = 30f;
 
         public static IReadOnlyList<DupeSnapshot> Snapshots => snapshots;
 
@@ -77,12 +92,34 @@ namespace DuplicantStatusBar.Data
             if (dupes == null) return;
 
             var options = StatusBarOptions.Instance;
+            float dt = Time.unscaledDeltaTime;
+
+            // Advance stuck check timer
+            bool doStuckCheck = false;
+            stuckCheckTimer += dt;
+            if (stuckCheckTimer >= STUCK_CHECK_INTERVAL)
+            {
+                stuckCheckTimer -= STUCK_CHECK_INTERVAL;
+                doStuckCheck = true;
+
+                // Refresh pod cell cache periodically
+                podCacheTimer += STUCK_CHECK_INTERVAL;
+                if (podCacheTimer >= POD_CACHE_INTERVAL || cachedPodCell == -1)
+                {
+                    podCacheTimer = 0f;
+                    cachedPodCell = FindPodCell(worldId);
+                }
+            }
+
+            // Track live dupe IDs for stale-entry cleanup
+            HashSet<int> liveIds = null;
 
             foreach (var identity in dupes)
             {
                 if (identity == null || identity.gameObject == null) continue;
 
                 var go = identity.gameObject;
+                int id = go.GetInstanceID();
                 var snap = new DupeSnapshot
                 {
                     Name = go.GetProperName() ?? "???",
@@ -155,6 +192,39 @@ namespace DuplicantStatusBar.Data
                 snap.IsScalding = scaldSMI != null && scaldSMI.IsScalding();
                 snap.IsHypothermic = scaldSMI != null && scaldSMI.IsScolding();
 
+                // Idle detection: accumulate time when chore is "Idle"
+                if (snap.ChoreDescription == "Idle")
+                {
+                    idleTimers.TryGetValue(id, out float elapsed);
+                    idleTimers[id] = elapsed + dt;
+                }
+                else
+                {
+                    idleTimers[id] = 0f;
+                }
+                idleTimers.TryGetValue(id, out float idleElapsed);
+                snap.IsIdle = idleElapsed >= IDLE_THRESHOLD;
+
+                // Stuck detection: check every STUCK_CHECK_INTERVAL
+                if (doStuckCheck && cachedPodCell >= 0)
+                {
+                    var nav = go.GetComponent<Navigator>();
+                    if (nav != null)
+                    {
+                        int cost = nav.GetNavigationCost(cachedPodCell);
+                        stuckTimers.TryGetValue(id, out float stuckElapsed);
+                        stuckTimers[id] = cost < 0
+                            ? stuckElapsed + STUCK_CHECK_INTERVAL
+                            : 0f;
+                    }
+                }
+                stuckTimers.TryGetValue(id, out float stuckTime);
+                snap.IsStuck = stuckTime >= STUCK_THRESHOLD;
+
+                // Track live IDs
+                if (liveIds == null) liveIds = new HashSet<int>();
+                liveIds.Add(id);
+
                 // Compute derived values
                 snap.Tier = ComputeTier(snap.StressPercent, options);
                 ComputeAlerts(snap, options, out var mask, out var highest);
@@ -164,7 +234,40 @@ namespace DuplicantStatusBar.Data
                 snapshots.Add(snap);
             }
 
+            // Prune stale timer entries for dead/departed dupes
+            if (liveIds != null)
+                PruneTimers(liveIds);
+
             SortSnapshots();
+        }
+
+        private static int FindPodCell(int worldId)
+        {
+            var telepads = Components.Telepads.GetWorldItems(worldId);
+            if (telepads != null && telepads.Count > 0)
+                return Grid.PosToCell(telepads[0].transform.position);
+            return -1;
+        }
+
+        private static void PruneTimers(HashSet<int> liveIds)
+        {
+            // Only prune occasionally (piggybacks on stuck check interval)
+            if (stuckTimers.Count > liveIds.Count + 5)
+                RemoveStaleKeys(stuckTimers, liveIds);
+            if (idleTimers.Count > liveIds.Count + 5)
+                RemoveStaleKeys(idleTimers, liveIds);
+        }
+
+        private static void RemoveStaleKeys(Dictionary<int, float> dict, HashSet<int> liveIds)
+        {
+            var stale = new List<int>();
+            foreach (var key in dict.Keys)
+            {
+                if (!liveIds.Contains(key))
+                    stale.Add(key);
+            }
+            for (int i = 0; i < stale.Count; i++)
+                dict.Remove(stale[i]);
         }
 
         private static void EnsureAmounts()
@@ -213,6 +316,10 @@ namespace DuplicantStatusBar.Data
                 mask |= (ushort)(1 << (int)AlertType.Diseased);
             if (opts.AlertOverjoyed && snap.IsOverjoyed)
                 mask |= (ushort)(1 << (int)AlertType.Overjoyed);
+            if (opts.AlertStuck && snap.IsStuck)
+                mask |= (ushort)(1 << (int)AlertType.Stuck);
+            if (opts.AlertIdle && snap.IsIdle)
+                mask |= (ushort)(1 << (int)AlertType.Idle);
 
             // Highest = first set bit in priority order
             foreach (var a in DupeSnapshot.AlertPriority)

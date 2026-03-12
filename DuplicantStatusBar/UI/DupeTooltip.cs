@@ -140,6 +140,8 @@ namespace DuplicantStatusBar.UI
                 case AlertType.BladderUrgent: return "Bladder Urgent";
                 case AlertType.Diseased:     return "Diseased";
                 case AlertType.Overjoyed:    return "Overjoyed";
+                case AlertType.Stuck:        return "Stuck";
+                case AlertType.Idle:         return "Idle";
                 default: return "";
             }
         }

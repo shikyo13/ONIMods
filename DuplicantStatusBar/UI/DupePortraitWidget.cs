@@ -36,7 +36,7 @@ namespace DuplicantStatusBar.UI
 
         private ushort heldMask;
         private ushort currentAlertMask;
-        private float[] holdTimers = new float[11]; // indexed by (int)AlertType
+        private float[] holdTimers = new float[14]; // indexed by (int)AlertType
 
         private Color targetBorderColor;
         private Color targetFillColor;
@@ -328,7 +328,9 @@ namespace DuplicantStatusBar.UI
 
                 badgeImages[slot].gameObject.SetActive(true);
                 badgeImages[slot].color = AlertColor(a);
-                var sym = a == AlertType.Overjoyed ? "*" : "!";
+                var sym = a == AlertType.Overjoyed ? "*"
+                        : a == AlertType.Idle      ? "?"
+                        : "!";
                 if (badgeSymbols[slot].text != sym)
                     badgeSymbols[slot].text = sym;
                 slot++;
@@ -434,6 +436,8 @@ namespace DuplicantStatusBar.UI
                 case AlertType.Irradiated:    return Hex(0x86efac);
                 case AlertType.Starving:      return Hex(0xea580c);
                 case AlertType.BladderUrgent: return Hex(0xeab308);
+                case AlertType.Stuck:         return Hex(0xF59E0B);
+                case AlertType.Idle:          return Hex(0x9CA3AF);
                 default: return Color.clear;
             }
         }
