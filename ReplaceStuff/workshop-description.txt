@@ -1,0 +1,34 @@
+[h1]ReplaceStuff[/h1]
+
+One-click building upgrades. Select the new building, click the old one, done.
+
+Vanilla ONI has no upgrade path for furniture. Want to swap your Cots for Comfy Beds? You deconstruct the old one (materials scatter on the floor), wait for the errand to finish, then queue the new build, wait again, and hope nobody sleeps on the floor in between. Multiply that by 16 beds across 3 barracks and you're babysitting errands for ten cycles. Same story for generators, toilets, doors, storage bins, and wash stations.
+
+ReplaceStuff fixes this by hooking into the game's built-in tile replacement system and extending it to furniture. When you place a new building over a compatible old one, the game swaps them in a single construction errand — no gap, no scattered materials, no homeless dupes. The old building's materials are refunded automatically.
+
+[h2]Supported Replacement Groups[/h2]
+Buildings can only replace others with the same footprint:
+[list]
+[*] [b]Beds[/b] (2x2) — Cot ↔ Comfy Bed
+[*] [b]Doors[/b] (1x2) — Manual Airlock ↔ Mechanized Airlock ↔ Pneumatic Door (+ Fast Insulated Self Sealing AirLock mod)
+[*] [b]Generators 2x2[/b] — Manual Generator ↔ Wood Burner
+[*] [b]Generators 4x3[/b] — Hydrogen Generator ↔ Natural Gas Generator
+[*] [b]Storage[/b] (1x2) — Storage Bin ↔ Smart Storage Bin
+[*] [b]Toilets[/b] (2x3) — Outhouse ↔ Lavatory
+[*] [b]Wash Stations[/b] (2x3) — Wash Basin ↔ Hand Sanitizer
+[/list]
+
+[h2]Features[/h2]
+[list]
+[*] [b]Same-frame swap[/b] — old building deconstructed and new one built in a single errand, no gap in service
+[*] [b]Material refund[/b] — materials from the old building are returned automatically
+[*] [b]"Replacing X → Y" tooltip[/b] — hover over the placement ghost to see exactly what's being replaced
+[*] [b]Multi-cell cleanup[/b] — correctly handles buildings that span multiple tile cells
+[*] [b]Modded door support[/b] — compatible with Fast Insulated Self Sealing AirLock (auto-detected, no config needed)
+[*] [b]Configurable[/b] — toggle building replacement on/off via PLib mod options
+[/list]
+
+[h2]Compatibility[/h2]
+Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Uses vanilla's own replacement system — no custom state machines or save data modifications.
+
+Source: https://github.com/shikyo13/ONIMods

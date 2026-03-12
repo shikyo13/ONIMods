@@ -46,10 +46,19 @@ D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Manage
 | When | Read |
 |-|-|
 | Every session | `docs/tier1-quickref.md` (~100 lines) |
-| Editing ReplaceStuff | `docs/tier2-replacestuff-design.md` |
-| Editing BuildThrough | `docs/tier2-buildthrough-design.md` |
+| Editing ReplaceStuff | `ReplaceStuff/HANDOVER.md` + `docs/tier2-replacestuff-design.md` |
+| Editing BuildThrough | `BuildThrough/HANDOVER.md` + `docs/tier2-buildthrough-design.md` |
 | Editing OniProfiler | `OniProfiler/HANDOVER.md` |
 | Editing GCBudget | `GCBudget/HANDOVER.md` |
 | Editing DuplicantStatusBar | `DuplicantStatusBar/HANDOVER.md` |
 | Lag spike investigation context | `docs/tier2-lag-investigation.md` |
 | ONI API/Harmony/building questions | `docs/ONI-modding-guide.md` — use section index at top, read only relevant section |
+| Creating a new HANDOVER | `docs/HANDOVER-TEMPLATE.md` |
+
+## When Releasing a Version
+
+- [ ] Update mod's `HANDOVER.md` (architecture + version)
+- [ ] Update/create `CHANGELOG.txt` (BBCode, newest first)
+- [ ] Update/create `workshop-description.txt` (Steam BBCode)
+- [ ] Bump version in `docs/tier1-quickref.md`
+- [ ] Update `MEMORY.md` project state entry
