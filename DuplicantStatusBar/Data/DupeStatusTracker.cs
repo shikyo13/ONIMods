@@ -96,6 +96,7 @@ namespace DuplicantStatusBar.Data
             float now = Time.unscaledTime;
             float dt = lastUpdateTime < 0f ? 0f : now - lastUpdateTime;
             lastUpdateTime = now;
+            if (Time.timeScale == 0f) dt = 0f;  // freeze timers when paused
 
             // Advance stuck check timer
             bool doStuckCheck = false;
