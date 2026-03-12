@@ -26,7 +26,7 @@ namespace DuplicantStatusBar.Config
         public SortOrder SortOrder { get; set; } = SortOrder.StressDescending;
 
         [Option("Portrait Size", "Size of each portrait in pixels.", "Appearance")]
-        [Limit(24, 96)]
+        [Limit(16, 96)]
         [JsonProperty]
         public int PortraitSize { get; set; } = 36;
 
@@ -34,6 +34,16 @@ namespace DuplicantStatusBar.Config
         [Limit(0, 50)]
         [JsonProperty]
         public int MaxDupesPerRow { get; set; } = 0;
+
+        [Option("Max Bar Width (%)", "Maximum bar width as percentage of screen (triggers row wrapping).", "Appearance")]
+        [Limit(20, 100)]
+        [JsonProperty]
+        public int MaxBarWidth { get; set; } = 50;
+
+        [Option("Max Rows", "Maximum visible rows before scrolling (0 = unlimited).", "Appearance")]
+        [Limit(0, 10)]
+        [JsonProperty]
+        public int MaxBarRows { get; set; } = 3;
 
         [Option("Bar Opacity (%)", "Opacity of the status bar background.", "Appearance")]
         [Limit(10, 100)]
