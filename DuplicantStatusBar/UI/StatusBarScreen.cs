@@ -20,6 +20,10 @@ namespace DuplicantStatusBar.UI
         private GridLayoutGroup grid;
         private RectTransform headerRT;
         private RectTransform resizeGripRT;
+        private ScrollRect scrollRect;
+        private LayoutElement scrollViewLayout;
+        private GameObject scrollbarGO;
+        private GameObject scrollViewGO;
         private float updateTimer;
         private bool isCollapsed;
         internal int lastDupeCount = -1;
@@ -49,6 +53,7 @@ namespace DuplicantStatusBar.UI
         private Vector2 dragStartLocal;
         private Vector2 dragStartAnchored;
 
+        private const int MIN_CARD_SIZE = 16;
         private const float UPDATE_INTERVAL = 0.25f;
         private const string PX = "DSB_PosX";
         private const string PY = "DSB_PosY";
@@ -232,20 +237,86 @@ namespace DuplicantStatusBar.UI
 
         private void BuildContent(GameObject parent)
         {
+            // ScrollView container
+            scrollViewGO = new GameObject("ScrollView");
+            scrollViewGO.transform.SetParent(parent.transform, false);
+            scrollViewGO.AddComponent<RectTransform>();
+            scrollRect = scrollViewGO.AddComponent<ScrollRect>();
+            scrollViewLayout = scrollViewGO.AddComponent<LayoutElement>();
+
+            // Viewport (clips scrolling content)
+            var viewportGO = new GameObject("Viewport");
+            viewportGO.transform.SetParent(scrollViewGO.transform, false);
+            var viewportRT = viewportGO.AddComponent<RectTransform>();
+            viewportRT.anchorMin = Vector2.zero;
+            viewportRT.anchorMax = Vector2.one;
+            viewportRT.sizeDelta = Vector2.zero;
+            viewportRT.pivot = new Vector2(0f, 1f);
+            var viewportImg = viewportGO.AddComponent<Image>();
+            viewportImg.color = Color.clear;
+            viewportGO.AddComponent<Mask>().showMaskGraphic = false;
+
+            // Content (grid) inside viewport
             contentArea = new GameObject("Content");
-            contentArea.transform.SetParent(parent.transform, false);
+            contentArea.transform.SetParent(viewportGO.transform, false);
             contentRT = contentArea.AddComponent<RectTransform>();
+            contentRT.anchorMin = new Vector2(0f, 1f);
+            contentRT.anchorMax = new Vector2(1f, 1f);
+            contentRT.pivot = new Vector2(0.5f, 1f);
 
             grid = contentArea.AddComponent<GridLayoutGroup>();
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.spacing = new Vector2(4, 4);
             grid.padding = new RectOffset(4, 4, 4, 4);
             grid.childAlignment = TextAnchor.UpperCenter;
-            grid.constraintCount = 1; // updated in UpdateGridLayout
+            grid.constraintCount = 1;
 
             var fit = contentArea.AddComponent<ContentSizeFitter>();
             fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            // Vertical scrollbar
+            scrollbarGO = new GameObject("VScrollbar");
+            scrollbarGO.transform.SetParent(scrollViewGO.transform, false);
+            var scrollbarRT = scrollbarGO.AddComponent<RectTransform>();
+            scrollbarRT.anchorMin = new Vector2(1f, 0f);
+            scrollbarRT.anchorMax = new Vector2(1f, 1f);
+            scrollbarRT.pivot = new Vector2(1f, 0.5f);
+            scrollbarRT.sizeDelta = new Vector2(6f, 0f);
+
+            var slideArea = new GameObject("SlidingArea");
+            slideArea.transform.SetParent(scrollbarGO.transform, false);
+            var slideRT = slideArea.AddComponent<RectTransform>();
+            slideRT.anchorMin = Vector2.zero;
+            slideRT.anchorMax = Vector2.one;
+            slideRT.sizeDelta = Vector2.zero;
+
+            var handleGO = new GameObject("Handle");
+            handleGO.transform.SetParent(slideArea.transform, false);
+            var handleRT = handleGO.AddComponent<RectTransform>();
+            handleRT.anchorMin = Vector2.zero;
+            handleRT.anchorMax = Vector2.one;
+            handleRT.sizeDelta = Vector2.zero;
+            var handleImg = handleGO.AddComponent<Image>();
+            handleImg.sprite = DupePortraitWidget.RoundedRect;
+            handleImg.type = Image.Type.Sliced;
+            handleImg.color = new Color(0.5f, 0.5f, 0.5f, 0.35f);
+
+            var scrollbar = scrollbarGO.AddComponent<Scrollbar>();
+            scrollbar.handleRect = handleRT;
+            scrollbar.direction = Scrollbar.Direction.BottomToTop;
+            scrollbar.targetGraphic = handleImg;
+
+            // Wire ScrollRect
+            scrollRect.content = contentRT;
+            scrollRect.viewport = viewportRT;
+            scrollRect.verticalScrollbar = scrollbar;
+            scrollRect.horizontal = false;
+            scrollRect.vertical = false;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.scrollSensitivity = 20f;
+
+            scrollbarGO.SetActive(false);
         }
 
         private void UpdateGridLayout(int dupeCount, int size)
@@ -255,14 +326,34 @@ namespace DuplicantStatusBar.UI
             grid.cellSize = new Vector2(totalW, totalH);
 
             var opts = StatusBarOptions.Instance;
-            int maxPerRow = opts.MaxDupesPerRow;
-            float available = Screen.width * 0.8f;
+            float canvasW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+            float available = canvasW * (opts.MaxBarWidth / 100f);
             int fitCount = Mathf.Max(1, Mathf.FloorToInt(available / (totalW + 4)));
+            int maxPerRow = opts.MaxDupesPerRow;
             int columnCount = maxPerRow > 0
                 ? Mathf.Min(maxPerRow, fitCount)
                 : fitCount;
             columnCount = Mathf.Min(columnCount, dupeCount);
             grid.constraintCount = Mathf.Max(1, columnCount);
+
+            int cols = Mathf.Max(1, columnCount);
+            int spacing = (int)grid.spacing.y;
+            int rows = Mathf.CeilToInt((float)dupeCount / cols);
+            int maxRows = opts.MaxBarRows;
+            bool needsScroll = maxRows > 0 && rows > maxRows;
+            int displayRows = needsScroll ? maxRows : rows;
+
+            float viewH = Mathf.Max(0, displayRows * (totalH + spacing)
+                        - spacing + grid.padding.top + grid.padding.bottom);
+            scrollViewLayout.preferredHeight = viewH;
+            scrollRect.vertical = needsScroll;
+            scrollbarGO.SetActive(needsScroll);
+
+            int hSpacing = (int)grid.spacing.x;
+            float viewW = cols * totalW + Mathf.Max(0, cols - 1) * hSpacing
+                        + grid.padding.left + grid.padding.right;
+            if (needsScroll) viewW += 8f;
+            scrollViewLayout.preferredWidth = viewW;
         }
 
         private void BuildResizeHandle(GameObject canvasGO)
@@ -345,7 +436,7 @@ namespace DuplicantStatusBar.UI
         private void ToggleCollapse()
         {
             isCollapsed = !isCollapsed;
-            contentArea.SetActive(!isCollapsed);
+            scrollViewGO.SetActive(!isCollapsed);
             collapseLabel.text = isCollapsed ? "+" : "\u2212";
             SaveState();
         }
@@ -407,7 +498,7 @@ namespace DuplicantStatusBar.UI
             {
                 float deltaY = startY - e.position.y; // down = bigger
                 int newSize = Mathf.Clamp(
-                    startSize + Mathf.RoundToInt(deltaY * 0.5f), 24, 96);
+                    startSize + Mathf.RoundToInt(deltaY * 0.5f), MIN_CARD_SIZE, 96);
                 if (newSize != screen.lastComputedSize)
                 {
                     screen.lastComputedSize = newSize;
@@ -484,7 +575,7 @@ namespace DuplicantStatusBar.UI
 
             // With GridLayout, no need to shrink — rows wrap automatically
             // Only clamp to valid range
-            return Mathf.Clamp(configured, 24, 96);
+            return Mathf.Clamp(configured, MIN_CARD_SIZE, 96);
         }
 
         // ── Persistence ─────────────────────────────────────────
@@ -509,7 +600,7 @@ namespace DuplicantStatusBar.UI
                     PlayerPrefs.GetFloat(PY, -5));
             }
             isCollapsed = PlayerPrefs.GetInt(PC, 0) == 1;
-            contentArea.SetActive(!isCollapsed);
+            scrollViewGO.SetActive(!isCollapsed);
             if (isCollapsed && collapseLabel != null)
                 collapseLabel.text = "+";
             if (PlayerPrefs.HasKey(PS))
