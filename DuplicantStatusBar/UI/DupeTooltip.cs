@@ -10,6 +10,7 @@ namespace DuplicantStatusBar.UI
         private static GameObject tooltipGO;
         private static TMPro.TextMeshProUGUI tooltipText;
         private static RectTransform tooltipRT;
+        private static readonly StringBuilder sb = new StringBuilder(256);
 
         public static void Init(Transform canvasRoot)
         {
@@ -55,7 +56,7 @@ namespace DuplicantStatusBar.UI
             tooltipGO.SetActive(true);
             tooltipGO.transform.SetAsLastSibling();
 
-            var sb = new StringBuilder(256);
+            sb.Clear();
             sb.AppendLine($"<b>{snap.Name}</b>");
             var task = string.IsNullOrEmpty(snap.ChoreDescription) ? "Idle" : snap.ChoreDescription;
             sb.AppendLine($"Task: {task}");
@@ -96,6 +97,18 @@ namespace DuplicantStatusBar.UI
             float cx = (corners[0].x + corners[2].x) * 0.5f;
             float bot = corners[0].y;
             tooltipRT.position = new Vector3(cx, bot - 4f, 0f);
+
+            // Clamp to screen bounds
+            Canvas.ForceUpdateCanvases();
+            Vector3[] ttCorners = new Vector3[4];
+            tooltipRT.GetWorldCorners(ttCorners);
+
+            Vector3 pos = tooltipRT.position;
+            if (ttCorners[0].x < 0f) pos.x -= ttCorners[0].x;
+            if (ttCorners[2].x > Screen.width) pos.x -= (ttCorners[2].x - Screen.width);
+            if (ttCorners[0].y < 0f) pos.y -= ttCorners[0].y;
+            if (ttCorners[2].y > Screen.height) pos.y -= (ttCorners[2].y - Screen.height);
+            tooltipRT.position = pos;
         }
 
         public static void Hide()

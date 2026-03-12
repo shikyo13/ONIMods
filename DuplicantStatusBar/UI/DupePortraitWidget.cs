@@ -518,15 +518,17 @@ namespace DuplicantStatusBar.UI
         private static Sprite MakeCircle(int sz)
         {
             var tex = new Texture2D(sz, sz, TextureFormat.RGBA32, false);
+            var pixels = new Color32[sz * sz];
             float c = sz * 0.5f, r = c - 1f;
             for (int y = 0; y < sz; y++)
                 for (int x = 0; x < sz; x++)
                 {
                     float d = Vector2.Distance(
                         new Vector2(x + 0.5f, y + 0.5f), new Vector2(c, c));
-                    tex.SetPixel(x, y, new Color(1f, 1f, 1f,
-                        Mathf.Clamp01(r - d + 0.5f)));
+                    byte a = (byte)(Mathf.Clamp01(r - d + 0.5f) * 255);
+                    pixels[y * sz + x] = new Color32(255, 255, 255, a);
                 }
+            tex.SetPixels32(pixels);
             tex.Apply();
             return Sprite.Create(tex,
                 new Rect(0, 0, sz, sz), new Vector2(0.5f, 0.5f));
