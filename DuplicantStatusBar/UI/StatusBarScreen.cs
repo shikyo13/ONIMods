@@ -48,11 +48,6 @@ namespace DuplicantStatusBar.UI
             }
         }
 
-        // Drag state
-        private bool isDragging;
-        private Vector2 dragStartLocal;
-        private Vector2 dragStartAnchored;
-
         private const int MIN_CARD_SIZE = 16;
         private const float UPDATE_INTERVAL = 0.25f;
         private const string PX = "DSB_PosX";
@@ -77,8 +72,6 @@ namespace DuplicantStatusBar.UI
                 DupeStatusTracker.Update();
                 RefreshWidgets();
             }
-
-            HandleDrag();
         }
 
         private void OnDestroy()
@@ -155,7 +148,9 @@ namespace DuplicantStatusBar.UI
 
             var headerBg = header.AddComponent<Image>();
             headerBg.color = new Color(0.420f, 0.200f, 0.314f); // #6B3350 ONI burgundy
-            headerBg.raycastTarget = false;
+
+            var dragHandler = header.AddComponent<HeaderDragHandler>();
+            dragHandler.screen = this;
 
             var hlg = header.AddComponent<HorizontalLayoutGroup>();
             hlg.spacing = 4;
@@ -272,7 +267,7 @@ namespace DuplicantStatusBar.UI
             grid.constraintCount = 1;
 
             var fit = contentArea.AddComponent<ContentSizeFitter>();
-            fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fit.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // Vertical scrollbar
@@ -441,40 +436,35 @@ namespace DuplicantStatusBar.UI
             SaveState();
         }
 
-        // ── Drag ────────────────────────────────────────────────
+        // ── Drag (EventSystem-driven) ─────────────────────────────
 
-        private void HandleDrag()
+        private sealed class HeaderDragHandler : MonoBehaviour,
+            IPointerDownHandler, IDragHandler, IEndDragHandler
         {
-            if (barPanel == null || canvasRT == null) return;
+            internal StatusBarScreen screen;
+            private Vector2 dragStartLocal;
+            private Vector2 dragStartAnchored;
 
-            if (Input.GetMouseButtonDown(0) && IsOverHeader())
+            public void OnPointerDown(PointerEventData e)
             {
-                isDragging = true;
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    canvasRT, Input.mousePosition, null, out dragStartLocal);
-                dragStartAnchored = barPanel.anchoredPosition;
+                    screen.canvasRT, e.position, null, out dragStartLocal);
+                dragStartAnchored = screen.barPanel.anchoredPosition;
             }
 
-            if (isDragging && Input.GetMouseButton(0))
+            public void OnDrag(PointerEventData e)
             {
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    canvasRT, Input.mousePosition, null, out Vector2 current);
-                barPanel.anchoredPosition =
+                    screen.canvasRT, e.position, null, out Vector2 current);
+                screen.barPanel.anchoredPosition =
                     dragStartAnchored + (current - dragStartLocal);
             }
 
-            if (isDragging && Input.GetMouseButtonUp(0))
+            public void OnEndDrag(PointerEventData e)
             {
-                isDragging = false;
-                SaveState();
+                screen.ClampPanelPosition();
+                screen.SaveState();
             }
-        }
-
-        private bool IsOverHeader()
-        {
-            if (headerRT == null) return false;
-            return RectTransformUtility.RectangleContainsScreenPoint(
-                headerRT, Input.mousePosition);
         }
 
         // ── Resize (EventSystem-driven) ──────────────────────────
@@ -543,7 +533,7 @@ namespace DuplicantStatusBar.UI
                 bool resizeDrag = lastDupeCount == -1 && lastComputedSize > 0;
                 lastDupeCount = snaps.Count;
                 if (!resizeDrag && !PlayerPrefs.HasKey(PS))
-                    lastComputedSize = ComputePortraitSize(snaps.Count);
+                    lastComputedSize = Mathf.Clamp(StatusBarOptions.Instance.PortraitSize, MIN_CARD_SIZE, 96);
             }
             if (forceRefresh)
                 forceRefresh = false;
@@ -568,14 +558,14 @@ namespace DuplicantStatusBar.UI
                 widgets[i].SetSnapshot(snaps[i], size);
         }
 
-        private int ComputePortraitSize(int dupeCount)
+        private void ClampPanelPosition()
         {
-            int configured = StatusBarOptions.Instance.PortraitSize;
-            if (dupeCount <= 0) return configured;
-
-            // With GridLayout, no need to shrink — rows wrap automatically
-            // Only clamp to valid range
-            return Mathf.Clamp(configured, MIN_CARD_SIZE, 96);
+            if (barPanel == null || canvasRT == null) return;
+            var half = canvasRT.rect.size * 0.5f;
+            var pos = barPanel.anchoredPosition;
+            pos.x = Mathf.Clamp(pos.x, -half.x, half.x);
+            pos.y = Mathf.Clamp(pos.y, -half.y, 0f);
+            barPanel.anchoredPosition = pos;
         }
 
         // ── Persistence ─────────────────────────────────────────
@@ -598,6 +588,7 @@ namespace DuplicantStatusBar.UI
                 barPanel.anchoredPosition = new Vector2(
                     PlayerPrefs.GetFloat(PX, 0),
                     PlayerPrefs.GetFloat(PY, -5));
+                ClampPanelPosition();
             }
             isCollapsed = PlayerPrefs.GetInt(PC, 0) == 1;
             scrollViewGO.SetActive(!isCollapsed);
