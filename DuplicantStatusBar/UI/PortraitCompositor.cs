@@ -24,6 +24,10 @@ namespace DuplicantStatusBar.UI
         // component scales the result down via bilinear filtering.
         private const int COMPOSE_SIZE = 125;
 
+        /// <summary>
+        /// Composites a dupe's accessories from KAnim atlas textures into a single Sprite.
+        /// Layers: headshape -> eyes (flipped) -> mouth (frame 22) -> hair/hat. Always renders at 125px, UI Image scales down.
+        /// </summary>
         public static Sprite ComposePortrait(MinionIdentity identity, int size)
         {
             if (identity == null) return null;

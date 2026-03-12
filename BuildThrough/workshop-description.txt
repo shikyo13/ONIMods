@@ -1,0 +1,18 @@
+[h1]BuildThrough[/h1]
+
+In vanilla ONI, duplicants refuse to build or deconstruct anything if a solid tile stands between them and the construction site. Want to upgrade an insulated tile behind a wall? You have to tear things apart, build temporary ladders, or rearrange your base just so a dupe can reach the errand. For something as simple as swapping a tile, that's a lot of busywork.
+
+BuildThrough fixes this. Dupes can now build and deliver materials through solid tiles, and deconstruct buildings on the other side of walls. No more dismantling half your base for a simple upgrade.
+
+[h2]Features[/h2]
+[list]
+[*] [b]Selective bypass[/b] — only construction and deconstruction errands reach through walls; normal dupe pathing is completely unaffected
+[*] [b]No gameplay exploits[/b] — dupes still need to carry materials and path to an adjacent cell; this just removes the "line of sight through solid" restriction on work errands
+[*] [b]Graceful fallback[/b] — if a game update changes the targeted code, the mod logs a warning and falls back to vanilla behavior instead of crashing
+[*] [b]Configurable[/b] — single Enabled toggle in PLib mod options (restart required)
+[/list]
+
+[h2]Compatibility[/h2]
+Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Does not modify save data.
+
+Source: https://github.com/shikyo13/ONIMods

@@ -1,0 +1,9 @@
+[h1]BuildThrough — Changelog[/h1]
+
+[h2]v1.0 — Initial Release[/h2]
+[list]
+[*] Transpiler patch allows dupes to build and deconstruct through solid tiles
+[*] Selective bypass: only affects construction/deconstruction errands, normal pathing unaffected
+[*] Graceful fallback if IL pattern changes in game updates
+[*] PLib options with Enabled toggle (restart required)
+[/list]

@@ -5,8 +5,14 @@ using DuplicantStatusBar.Config;
 
 namespace DuplicantStatusBar.Data
 {
+    /// <summary>
+    /// Stress severity tiers mapped to border colors (green->lime->yellow->orange->red).
+    /// </summary>
     public enum StressTier { Calm, Mild, Stressed, High, Critical }
 
+    /// <summary>
+    /// Alert types ordered by internal priority. Bitmask-compatible — each value maps to a bit position in AlertMask.
+    /// </summary>
     public enum AlertType
     {
         None,
@@ -24,6 +30,9 @@ namespace DuplicantStatusBar.Data
         Idle
     }
 
+    /// <summary>
+    /// Immutable snapshot of a single duplicant's status, captured every 0.25s by the tracker.
+    /// </summary>
     public struct DupeSnapshot
     {
         public string Name;
@@ -47,8 +56,10 @@ namespace DuplicantStatusBar.Data
         public bool IsStuck;
         public bool IsIdle;
 
+        /// <summary>Tests whether a specific alert is active in this snapshot's bitmask.</summary>
         public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (1 << (int)a)) != 0;
 
+        /// <summary>Priority-ordered alert types. First match in this array becomes HighestAlert.</summary>
         public static readonly AlertType[] AlertPriority = {
             AlertType.Suffocating, AlertType.LowHP, AlertType.Scalding,
             AlertType.Hypothermia, AlertType.Stuck, AlertType.Irradiated,
@@ -57,6 +68,10 @@ namespace DuplicantStatusBar.Data
         };
     }
 
+    /// <summary>
+    /// Polls all living duplicants on the active world every 0.25s, producing DupeSnapshot structs.
+    /// Includes stuck/idle detection with configurable thresholds.
+    /// </summary>
     public static class DupeStatusTracker
     {
         private static readonly List<DupeSnapshot> snapshots = new List<DupeSnapshot>(35);
@@ -77,8 +92,12 @@ namespace DuplicantStatusBar.Data
         private const float IDLE_THRESHOLD = 30f;
         private const float POD_CACHE_INTERVAL = 30f;
 
+        /// <summary>Current frame's dupe snapshots, sorted per user's SortOrder setting.</summary>
         public static IReadOnlyList<DupeSnapshot> Snapshots => snapshots;
 
+        /// <summary>
+        /// Polls all dupes, computes stress tiers and alert masks, advances stuck/idle timers, and sorts results.
+        /// </summary>
         public static void Update()
         {
             snapshots.Clear();
@@ -336,6 +355,7 @@ namespace DuplicantStatusBar.Data
             }
         }
 
+        /// <summary>Re-sorts the snapshot list according to the current SortOrder option.</summary>
         public static void SortSnapshots()
         {
             var order = StatusBarOptions.Instance.SortOrder;

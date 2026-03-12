@@ -4,12 +4,14 @@ using PeterHan.PLib.Options;
 
 namespace DuplicantStatusBar.Config
 {
+    /// <summary>Controls whether dupe widgets show full portraits or letter initials.</summary>
     public enum DisplayMode
     {
         [Option("Portraits")] Portraits,
         [Option("Initials Only")] Initials
     }
 
+    /// <summary>Determines how duplicants are ordered in the status bar.</summary>
     public enum SortOrder
     {
         [Option("Stress (highest first)")] StressDescending,
@@ -17,6 +19,9 @@ namespace DuplicantStatusBar.Config
         [Option("Job Role")] Role
     }
 
+    /// <summary>
+    /// PLib options schema for the Duplicant Status Bar. Live-reloaded via OnOptionsChanged — no restart required.
+    /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     [ModInfo("Duplicant Status Bar")]
     public sealed class StatusBarOptions : SingletonOptions<StatusBarOptions>, IOptions
