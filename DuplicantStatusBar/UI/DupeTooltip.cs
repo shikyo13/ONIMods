@@ -64,7 +64,10 @@ namespace DuplicantStatusBar.UI
             var sc = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.TierColor(snap.Tier));
             sb.AppendLine($"Stress: <color=#{sc}>{snap.StressPercent:F0}%</color>");
 
-            var hc = snap.HealthPercent < 30f ? "EF4444" : "4ADE80";
+            var hc = snap.HealthPercent >= 100f ? "4ADE80"
+                   : snap.HealthPercent >= 60f  ? "FBBF24"
+                   : snap.HealthPercent >= 30f  ? "F97316"
+                   : "EF4444";
             sb.AppendLine($"Health: <color=#{hc}>{snap.HealthPercent:F0}%</color>");
 
             var bc = snap.BreathPercent < 30f ? "60A5FA" : "4ADE80";
