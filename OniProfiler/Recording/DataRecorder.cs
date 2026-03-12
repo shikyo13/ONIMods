@@ -31,6 +31,11 @@ namespace OniProfiler.Recording
         // Per-interval allocation accumulator (KB summed across all frames in interval)
         private static readonly double[] intervalAllocKB = new double[(int)TimingKey.COUNT];
 
+        // Per-interval GC collection accumulators (summed across all frames in interval)
+        private static int intervalGen0;
+        private static int intervalGen1;
+        private static int intervalGen2;
+
         public static void StartRecording()
         {
             if (IsRecording) return;
@@ -62,6 +67,9 @@ namespace OniProfiler.Recording
                 currentFps = 0;
                 intervalMinFrameMs = double.MaxValue;
                 intervalMaxFrameMs = 0;
+                intervalGen0 = 0;
+                intervalGen1 = 0;
+                intervalGen2 = 0;
                 for (int i = 0; i < (int)TimingKey.COUNT; i++)
                 {
                     intervalMax[i] = 0;
@@ -119,10 +127,16 @@ namespace OniProfiler.Recording
                 intervalAllocKB[i] += timings.GetCurrentAllocKB((TimingKey)i);
             }
 
-            // Overall frame time min/max
-            double frameMs = timings.GetCurrentMs(TimingKey.GameUpdate);
+            // Overall frame time min/max (wall-clock, includes GC pauses)
+            double frameMs = deltaTime * 1000.0;
             if (frameMs < intervalMinFrameMs) intervalMinFrameMs = frameMs;
             if (frameMs > intervalMaxFrameMs) intervalMaxFrameMs = frameMs;
+
+            // Accumulate GC deltas across all frames in interval
+            var gc = GCMonitor.Current;
+            intervalGen0 += gc.Gen0Delta;
+            intervalGen1 += gc.Gen1Delta;
+            intervalGen2 += gc.Gen2Delta;
 
             if (fpsTimer >= 0.25f)
             {
@@ -329,16 +343,19 @@ namespace OniProfiler.Recording
             for (int i = 0; i < (int)TimingKey.COUNT; i++)
                 sb.Append(',').Append(intervalAllocKB[i].ToString("F1"));
 
-            // 5 GC fields
+            // 5 GC fields (interval totals, not single-frame deltas)
             sb.Append(',').Append(gc.HeapSizeMB.ToString("F1"));
             sb.Append(',').Append(gc.AllocationRateKBps.ToString("F0"));
-            sb.Append(',').Append(gc.Gen0Delta);
-            sb.Append(',').Append(gc.Gen1Delta);
-            sb.Append(',').Append(gc.Gen2Delta);
+            sb.Append(',').Append(intervalGen0);
+            sb.Append(',').Append(intervalGen1);
+            sb.Append(',').Append(intervalGen2);
 
             // Reset per-interval tracking
             intervalMinFrameMs = double.MaxValue;
             intervalMaxFrameMs = 0;
+            intervalGen0 = 0;
+            intervalGen1 = 0;
+            intervalGen2 = 0;
             for (int i = 0; i < (int)TimingKey.COUNT; i++)
             {
                 intervalMax[i] = 0;

@@ -49,14 +49,17 @@ namespace OniProfiler.Timing
             TryPatch(typeof(EnergySim), "EnergySim200ms", TimingKey.EnergySim);
 
             // AI & Pathfinding
-            // PathProber: FastTrack patches Run(Navigator, List<int>) with prefix→false.
-            // Patching Run instead of UpdateProbe ensures we wrap FastTrack's replacement.
-            // Fall back to UpdateProbe if Run overload not found (vanilla-only / older builds).
             TryPatchPathProber();
             TryPatch(typeof(StateMachineUpdater), "AdvanceOneSimSubTick", TimingKey.BrainAdvance);
             TryPatch(typeof(ChoreConsumer), "FindNextChore", TimingKey.FindNextChore);
             TryPatchByName("FetchManager+FetchablesByPrefabId", "UpdatePickups", TimingKey.FetchUpdatePickups);
             TryPatch(typeof(Sensors), "UpdateSensors", TimingKey.SensorUpdate);
+            
+            // Cache Invalidation Probes
+            TryPatchByName("NavTable", "Update", TimingKey.NavGridUpdate);
+            TryPatchByName("GameNavGrids", "Update", TimingKey.NavGridUpdate);
+            TryPatch(typeof(MinionGroupProber), "Rebuild", TimingKey.GroupProberRebuild);
+            TryPatchByName("Pathfinding", "Update", TimingKey.PathfindingUpdate);
 
             // World
             TryPatch(typeof(RoomProber), "Sim1000ms", TimingKey.RoomProber);
@@ -243,6 +246,9 @@ namespace OniProfiler.Timing
 
             // AsyncPathProber.WorkOrder.Execute — background thread path probing
             TryPatchByName("AsyncPathProber+WorkOrder", "Execute", TimingKey.PathProbe_Async);
+
+            // FastTrack FastGroupProber
+            TryPatchByName("PeterHan.FastTrack.SensorPatches.FastGroupProber", "Update", TimingKey.GroupProberRebuild);
         }
 
         /// <summary>
