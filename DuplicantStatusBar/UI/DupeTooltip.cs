@@ -79,14 +79,13 @@ namespace DuplicantStatusBar.UI
             var blc = snap.BladderPercent >= 70f ? "EAB308" : "4ADE80";
             sb.AppendLine($"Bladder: <color=#{blc}>{snap.BladderPercent:F0}%</color>");
 
-            if (snap.IsStarving)
-                sb.AppendLine("<color=#EA580C>Starving!</color>");
-
-            if (snap.HighestAlert != AlertType.None)
+            bool anyAlert = false;
+            foreach (var alert in DupeSnapshot.AlertPriority)
             {
-                var ac = ColorUtility.ToHtmlStringRGB(
-                    DupePortraitWidget.AlertColor(snap.HighestAlert));
-                sb.Append($"\n<color=#{ac}>{AlertLabel(snap.HighestAlert)}</color>");
+                if (!snap.HasAlert(alert)) continue;
+                if (!anyAlert) { sb.AppendLine(); anyAlert = true; }
+                var ac = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.AlertColor(alert));
+                sb.AppendLine($"<color=#{ac}>{AlertLabel(alert)}</color>");
             }
 
             tooltipText.text = sb.ToString();

@@ -31,6 +31,7 @@ namespace DuplicantStatusBar.Data
         public float BodyTemperature;
         public StressTier Tier;
         public AlertType HighestAlert;
+        public ushort AlertMask;
         public string ChoreDescription;
         public KSelectable Selectable;
         public MinionIdentity Identity;
@@ -41,6 +42,15 @@ namespace DuplicantStatusBar.Data
         public bool IsIrradiated;
         public bool IsScalding;
         public bool IsHypothermic;
+
+        public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (1 << (int)a)) != 0;
+
+        public static readonly AlertType[] AlertPriority = {
+            AlertType.Suffocating, AlertType.LowHP, AlertType.Scalding,
+            AlertType.Hypothermia, AlertType.Irradiated, AlertType.Starving,
+            AlertType.Overstressed, AlertType.BladderUrgent, AlertType.Diseased,
+            AlertType.Overjoyed
+        };
     }
 
     public static class DupeStatusTracker
@@ -147,7 +157,9 @@ namespace DuplicantStatusBar.Data
 
                 // Compute derived values
                 snap.Tier = ComputeTier(snap.StressPercent, options);
-                snap.HighestAlert = ComputeAlert(snap, options);
+                ComputeAlerts(snap, options, out var mask, out var highest);
+                snap.AlertMask = mask;
+                snap.HighestAlert = highest;
 
                 snapshots.Add(snap);
             }
@@ -175,29 +187,42 @@ namespace DuplicantStatusBar.Data
             return StressTier.Calm;
         }
 
-        private static AlertType ComputeAlert(DupeSnapshot snap, StatusBarOptions opts)
+        private static void ComputeAlerts(DupeSnapshot snap, StatusBarOptions opts,
+            out ushort mask, out AlertType highest)
         {
+            mask = 0;
+            highest = AlertType.None;
+
             if (opts.AlertSuffocating && snap.BreathPercent < 30f)
-                return AlertType.Suffocating;
+                mask |= (ushort)(1 << (int)AlertType.Suffocating);
             if (opts.AlertLowHP && snap.HealthPercent < 30f)
-                return AlertType.LowHP;
+                mask |= (ushort)(1 << (int)AlertType.LowHP);
             if (opts.AlertScalding && snap.IsScalding)
-                return AlertType.Scalding;
+                mask |= (ushort)(1 << (int)AlertType.Scalding);
             if (opts.AlertHypothermia && snap.IsHypothermic)
-                return AlertType.Hypothermia;
+                mask |= (ushort)(1 << (int)AlertType.Hypothermia);
             if (opts.AlertIrradiated && snap.IsIrradiated)
-                return AlertType.Irradiated;
+                mask |= (ushort)(1 << (int)AlertType.Irradiated);
             if (opts.AlertStarving && snap.IsStarving)
-                return AlertType.Starving;
+                mask |= (ushort)(1 << (int)AlertType.Starving);
             if (opts.AlertOverstressed && snap.StressPercent >= 100f)
-                return AlertType.Overstressed;
+                mask |= (ushort)(1 << (int)AlertType.Overstressed);
             if (opts.AlertBladder && snap.BladderPercent >= 90f)
-                return AlertType.BladderUrgent;
+                mask |= (ushort)(1 << (int)AlertType.BladderUrgent);
             if (opts.AlertDiseased && snap.IsDiseased)
-                return AlertType.Diseased;
+                mask |= (ushort)(1 << (int)AlertType.Diseased);
             if (opts.AlertOverjoyed && snap.IsOverjoyed)
-                return AlertType.Overjoyed;
-            return AlertType.None;
+                mask |= (ushort)(1 << (int)AlertType.Overjoyed);
+
+            // Highest = first set bit in priority order
+            foreach (var a in DupeSnapshot.AlertPriority)
+            {
+                if ((mask & (1 << (int)a)) != 0)
+                {
+                    highest = a;
+                    break;
+                }
+            }
         }
 
         public static void SortSnapshots()

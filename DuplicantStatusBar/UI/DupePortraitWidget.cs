@@ -16,8 +16,9 @@ namespace DuplicantStatusBar.UI
         private Image healthFill;
         private TextMeshProUGUI initialText;
         private Image damageOverlay;
-        private Image alertBadge;
-        private TextMeshProUGUI badgeSymbol;
+        private const int MAX_BADGES = 3;
+        private Image[] badgeImages = new Image[MAX_BADGES];
+        private TextMeshProUGUI[] badgeSymbols = new TextMeshProUGUI[MAX_BADGES];
         private TextMeshProUGUI nameLabel;
         private LayoutElement rootLayout;
         private LayoutElement cardLayout;
@@ -33,8 +34,9 @@ namespace DuplicantStatusBar.UI
         private float pulseTimer;
         private bool isPulsing;
 
-        private float badgeHoldTimer;
-        private AlertType heldAlert = AlertType.None;
+        private ushort heldMask;
+        private ushort currentAlertMask;
+        private float[] holdTimers = new float[11]; // indexed by (int)AlertType
 
         private Color targetBorderColor;
         private Color targetFillColor;
@@ -135,29 +137,30 @@ namespace DuplicantStatusBar.UI
             dort.offsetMax = new Vector2(-2f, -2f);
             damageOverlay.gameObject.SetActive(false);
 
-            // ── Alert badge (circular, top-right) ─────────
-            alertBadge = AddImage(cardGO.transform, "Badge");
-            alertBadge.sprite = Circle;
-            alertBadge.type = Image.Type.Simple;
-            alertBadge.raycastTarget = false;
-            var brt = alertBadge.rectTransform;
-            brt.anchorMin = new Vector2(1f, 1f);
-            brt.anchorMax = new Vector2(1f, 1f);
-            brt.pivot = new Vector2(0.5f, 0.5f);
-            float badgeSz = Mathf.Max(10f, cardSz * 0.30f);
-            brt.sizeDelta = new Vector2(badgeSz, badgeSz);
-            brt.anchoredPosition = new Vector2(-badgeSz * 0.15f, -badgeSz * 0.15f);
+            // ── Alert badges (circular, top-right, up to MAX_BADGES) ─────────
+            for (int i = 0; i < MAX_BADGES; i++)
+            {
+                var badge = AddImage(cardGO.transform, $"Badge{i}");
+                badge.sprite = Circle;
+                badge.type = Image.Type.Simple;
+                badge.raycastTarget = false;
+                var brt = badge.rectTransform;
+                brt.anchorMin = new Vector2(1f, 1f);
+                brt.anchorMax = new Vector2(1f, 1f);
+                brt.pivot = new Vector2(0.5f, 0.5f);
+                badge.gameObject.SetActive(false);
+                badgeImages[i] = badge;
 
-            badgeSymbol = AddText(alertBadge.transform, "Sym");
-            badgeSymbol.fontSize = Mathf.Max(7f, badgeSz * 0.6f);
-            badgeSymbol.color = Color.white;
-            badgeSymbol.alignment = TextAlignmentOptions.Center;
-            badgeSymbol.fontStyle = FontStyles.Bold;
-            badgeSymbol.raycastTarget = false;
-            if (StatusBarScreen.GameFont != null) badgeSymbol.font = StatusBarScreen.GameFont;
-            Stretch(badgeSymbol.rectTransform);
-
-            alertBadge.gameObject.SetActive(false);
+                var sym = AddText(badge.transform, "Sym");
+                sym.fontSize = 7f;
+                sym.color = Color.white;
+                sym.alignment = TextAlignmentOptions.Center;
+                sym.fontStyle = FontStyles.Bold;
+                sym.raycastTarget = false;
+                if (StatusBarScreen.GameFont != null) sym.font = StatusBarScreen.GameFont;
+                Stretch(sym.rectTransform);
+                badgeSymbols[i] = sym;
+            }
 
             // ── Name label (below card) ───────────────────
             nameLabel = AddText(transform, "Name");
@@ -248,17 +251,17 @@ namespace DuplicantStatusBar.UI
                 dort.anchorMax = new Vector2(1f, 1f);
                 dort.offsetMin = new Vector2(2f, 0f);
                 dort.offsetMax = new Vector2(-2f, -2f);
-                float damageAlpha = Mathf.Lerp(0.35f, 0.55f, 1f - hp);
+                float damageAlpha = Mathf.Lerp(0.40f, 0.65f, 1f - hp);
                 damageOverlay.color = new Color(0.15f, 0f, 0f, damageAlpha);
             }
 
             // Pulse on critical
             isPulsing = snapshot.Tier == StressTier.Critical
-                     || snapshot.HighestAlert == AlertType.LowHP
-                     || snapshot.HighestAlert == AlertType.Overstressed;
+                     || snapshot.HasAlert(AlertType.LowHP)
+                     || snapshot.HasAlert(AlertType.Overstressed);
 
-            // Alert badge with hysteresis
-            UpdateBadge(snapshot.HighestAlert);
+            // Multi-badge with per-alert hysteresis
+            UpdateBadges(snapshot.AlertMask);
 
             // Resize
             rootLayout.preferredWidth = totalW;
@@ -267,11 +270,22 @@ namespace DuplicantStatusBar.UI
             cardLayout.preferredHeight = cardSz;
             nameLayout.preferredWidth = totalW;
 
-            // Scale badge with card size
-            float badgeSize = Mathf.Max(10f, cardSz * 0.30f);
-            alertBadge.rectTransform.sizeDelta = new Vector2(badgeSize, badgeSize);
-            alertBadge.rectTransform.anchoredPosition = new Vector2(-badgeSize * 0.15f, -badgeSize * 0.15f);
-            badgeSymbol.fontSize = Mathf.Max(7f, badgeSize * 0.6f);
+            // Scale & position badges
+            int badgeCount = BitCount((ushort)(heldMask));
+            float badgeFrac = badgeCount <= 1 ? 0.28f : badgeCount == 2 ? 0.24f : 0.21f;
+            float badgeSize = Mathf.Max(9f, cardSz * badgeFrac);
+            float gap = 1f;
+            int slot = 0;
+            for (int i = 0; i < MAX_BADGES; i++)
+            {
+                if (!badgeImages[i].gameObject.activeSelf) continue;
+                var brt = badgeImages[i].rectTransform;
+                brt.sizeDelta = new Vector2(badgeSize, badgeSize);
+                float xOff = -(badgeSize * 0.15f) - slot * (badgeSize + gap);
+                brt.anchoredPosition = new Vector2(xOff, -badgeSize * 0.15f);
+                badgeSymbols[i].fontSize = Mathf.Max(7f, badgeSize * 0.6f);
+                slot++;
+            }
         }
 
         private void DestroyPortraitSprite()
@@ -290,29 +304,39 @@ namespace DuplicantStatusBar.UI
             DestroyPortraitSprite();
         }
 
-        private void UpdateBadge(AlertType newAlert)
+        private void UpdateBadges(ushort activeMask)
         {
-            if (newAlert != AlertType.None)
+            currentAlertMask = activeMask;
+
+            // Set bits and reset hold timers for active alerts
+            foreach (var a in DupeSnapshot.AlertPriority)
             {
-                // New alert or different alert: show immediately
-                heldAlert = newAlert;
-                badgeHoldTimer = HoldTime(newAlert);
-                alertBadge.gameObject.SetActive(true);
-                alertBadge.color = AlertColor(newAlert);
-                var sym = newAlert == AlertType.Overjoyed ? "*" : "!";
-                if (badgeSymbol.text != sym)
-                    badgeSymbol.text = sym;
-            }
-            else if (heldAlert != AlertType.None)
-            {
-                // Alert cleared — hold badge for minimum duration
-                // (timer decremented in Update)
-                if (badgeHoldTimer <= 0f)
+                int bit = 1 << (int)a;
+                if ((activeMask & bit) != 0)
                 {
-                    heldAlert = AlertType.None;
-                    alertBadge.gameObject.SetActive(false);
+                    heldMask |= (ushort)bit;
+                    holdTimers[(int)a] = HoldTime(a);
                 }
             }
+
+            // Walk heldMask in priority order, populate up to MAX_BADGES slots
+            int slot = 0;
+            foreach (var a in DupeSnapshot.AlertPriority)
+            {
+                if (slot >= MAX_BADGES) break;
+                if ((heldMask & (1 << (int)a)) == 0) continue;
+
+                badgeImages[slot].gameObject.SetActive(true);
+                badgeImages[slot].color = AlertColor(a);
+                var sym = a == AlertType.Overjoyed ? "*" : "!";
+                if (badgeSymbols[slot].text != sym)
+                    badgeSymbols[slot].text = sym;
+                slot++;
+            }
+
+            // Hide unused slots
+            for (int i = slot; i < MAX_BADGES; i++)
+                badgeImages[i].gameObject.SetActive(false);
         }
 
         private static float HoldTime(AlertType alert)
@@ -346,9 +370,19 @@ namespace DuplicantStatusBar.UI
             if (isPulsing)
                 pulseTimer = (pulseTimer + dt * 3f) % (2f * Mathf.PI);
 
-            // Badge hold timer countdown
-            if (badgeHoldTimer > 0f)
-                badgeHoldTimer -= dt;
+            // Per-alert hold timer decay (only for held-but-no-longer-active alerts)
+            ushort expiredBits = (ushort)(heldMask & ~currentAlertMask);
+            if (expiredBits != 0)
+            {
+                foreach (var a in DupeSnapshot.AlertPriority)
+                {
+                    int bit = 1 << (int)a;
+                    if ((expiredBits & bit) == 0) continue;
+                    holdTimers[(int)a] -= dt;
+                    if (holdTimers[(int)a] <= 0f)
+                        heldMask &= (ushort)~bit;
+                }
+            }
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -408,10 +442,10 @@ namespace DuplicantStatusBar.UI
         {
             // 3-segment gradient: green → yellow → orange → red
             // Alpha increases as health drops (0.75 → 0.90)
-            var green  = new Color(0.298f, 0.686f, 0.314f, 0.75f);
-            var yellow = new Color(0.937f, 0.792f, 0.373f, 0.80f);
-            var orange = new Color(0.902f, 0.486f, 0.255f, 0.85f);
-            var red    = new Color(0.890f, 0.247f, 0.278f, 0.90f);
+            var green  = new Color(0.298f, 0.780f, 0.314f, 0.78f);
+            var yellow = new Color(1.000f, 0.835f, 0.180f, 0.84f);
+            var orange = new Color(1.000f, 0.400f, 0.120f, 0.90f);
+            var red    = new Color(0.960f, 0.180f, 0.180f, 0.95f);
 
             if (hp > 0.6f)
                 return Color.Lerp(yellow, green, (hp - 0.6f) / 0.4f);
@@ -499,6 +533,13 @@ namespace DuplicantStatusBar.UI
         }
 
         // ── Helpers ─────────────────────────────────────
+
+        private static int BitCount(ushort v)
+        {
+            int c = 0;
+            while (v != 0) { c++; v &= (ushort)(v - 1); }
+            return c;
+        }
 
         private static Image AddImage(Transform parent, string name)
         {
