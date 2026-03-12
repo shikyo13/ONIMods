@@ -15,6 +15,7 @@ namespace DuplicantStatusBar.UI
         private Image bgFill;
         private Image healthFill;
         private TextMeshProUGUI initialText;
+        private Image damageOverlay;
         private Image alertBadge;
         private TextMeshProUGUI badgeSymbol;
         private TextMeshProUGUI nameLabel;
@@ -122,6 +123,18 @@ namespace DuplicantStatusBar.UI
             if (StatusBarScreen.GameFont != null) initialText.font = StatusBarScreen.GameFont;
             Stretch(initialText.rectTransform);
 
+            // Damage overlay (above portrait + initials — dark red tint over missing HP)
+            damageOverlay = AddImage(cardGO.transform, "DamageOverlay");
+            damageOverlay.type = Image.Type.Simple;
+            damageOverlay.color = new Color(0.15f, 0f, 0f, 0.45f);
+            damageOverlay.raycastTarget = false;
+            var dort = damageOverlay.rectTransform;
+            dort.anchorMin = new Vector2(0f, 1f);
+            dort.anchorMax = new Vector2(1f, 1f);
+            dort.offsetMin = new Vector2(2f, 0f);
+            dort.offsetMax = new Vector2(-2f, -2f);
+            damageOverlay.gameObject.SetActive(false);
+
             // ── Alert badge (circular, top-right) ─────────
             alertBadge = AddImage(cardGO.transform, "Badge");
             alertBadge.sprite = Circle;
@@ -217,13 +230,27 @@ namespace DuplicantStatusBar.UI
             targetFillColor = Color.Lerp(
                 new Color(0.08f, 0.10f, 0.14f), tc, 0.30f);
 
-            // Health fill
+            // Health fill (below portrait)
             float hp = Mathf.Clamp01(snapshot.HealthPercent / 100f);
             var hfrt = healthFill.rectTransform;
             hfrt.anchorMax = new Vector2(1f, hp);
             hfrt.offsetMax = new Vector2(-2f, 0f);
             healthFill.color = HealthColor(hp);
             healthFill.gameObject.SetActive(hp < 0.995f);
+
+            // Damage overlay (above portrait — covers missing HP from top down)
+            bool showDamage = hp < 0.995f;
+            damageOverlay.gameObject.SetActive(showDamage);
+            if (showDamage)
+            {
+                var dort = damageOverlay.rectTransform;
+                dort.anchorMin = new Vector2(0f, hp);
+                dort.anchorMax = new Vector2(1f, 1f);
+                dort.offsetMin = new Vector2(2f, 0f);
+                dort.offsetMax = new Vector2(-2f, -2f);
+                float damageAlpha = Mathf.Lerp(0.35f, 0.55f, 1f - hp);
+                damageOverlay.color = new Color(0.15f, 0f, 0f, damageAlpha);
+            }
 
             // Pulse on critical
             isPulsing = snapshot.Tier == StressTier.Critical
@@ -380,11 +407,11 @@ namespace DuplicantStatusBar.UI
         private static Color HealthColor(float hp)
         {
             // 3-segment gradient: green → yellow → orange → red
-            // Alpha increases as health drops (0.55 → 0.70)
-            var green  = new Color(0.298f, 0.686f, 0.314f, 0.55f);
-            var yellow = new Color(0.937f, 0.792f, 0.373f, 0.60f);
-            var orange = new Color(0.902f, 0.486f, 0.255f, 0.65f);
-            var red    = new Color(0.890f, 0.247f, 0.278f, 0.70f);
+            // Alpha increases as health drops (0.75 → 0.90)
+            var green  = new Color(0.298f, 0.686f, 0.314f, 0.75f);
+            var yellow = new Color(0.937f, 0.792f, 0.373f, 0.80f);
+            var orange = new Color(0.902f, 0.486f, 0.255f, 0.85f);
+            var red    = new Color(0.890f, 0.247f, 0.278f, 0.90f);
 
             if (hp > 0.6f)
                 return Color.Lerp(yellow, green, (hp - 0.6f) / 0.4f);
