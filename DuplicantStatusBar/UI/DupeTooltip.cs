@@ -19,7 +19,9 @@ namespace DuplicantStatusBar.UI
             tooltipRT.pivot = new Vector2(0.5f, 1f);
 
             var bg = panel.AddComponent<Image>();
-            bg.color = new Color(0.1f, 0.1f, 0.13f, 0.95f);
+            bg.sprite = DupePortraitWidget.RoundedRect;
+            bg.type = Image.Type.Sliced;
+            bg.color = new Color(0.118f, 0.165f, 0.220f, 0.95f); // #1E2A38
             bg.raycastTarget = false;
 
             var vlg = panel.AddComponent<VerticalLayoutGroup>();
@@ -35,7 +37,9 @@ namespace DuplicantStatusBar.UI
             textGO.transform.SetParent(panel.transform, false);
             tooltipText = textGO.AddComponent<TMPro.TextMeshProUGUI>();
             tooltipText.fontSize = 12;
-            tooltipText.color = new Color(0.9f, 0.9f, 0.9f);
+            tooltipText.color = new Color(0.910f, 0.929f, 0.949f); // #E8EDF2
+            var gameFont = StatusBarScreen.GameFont;
+            if (gameFont != null) tooltipText.font = gameFont;
             tooltipText.alignment = TMPro.TextAlignmentOptions.TopLeft;
             tooltipText.richText = true;
             tooltipText.raycastTarget = false;

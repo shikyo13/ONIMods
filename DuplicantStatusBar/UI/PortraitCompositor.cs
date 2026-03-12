@@ -16,9 +16,9 @@ namespace DuplicantStatusBar.UI
         private static readonly Dictionary<Texture2D, Texture2D> readableCache
             = new Dictionary<Texture2D, Texture2D>();
 
-        // Cache extracted sprite regions
-        private static readonly Dictionary<Sprite, Texture2D> spriteCache
-            = new Dictionary<Sprite, Texture2D>();
+        // Cache extracted sprite pixel regions by (symbol hash, frame index)
+        private static readonly Dictionary<long, Texture2D> spriteCache
+            = new Dictionary<long, Texture2D>();
 
         // Always composite at fixed native resolution — the UI Image
         // component scales the result down via bilinear filtering.
@@ -82,10 +82,14 @@ namespace DuplicantStatusBar.UI
         {
             if (symbol == null) return;
 
+            int frameIdx = frameOverride >= 0 ? frameOverride : 0;
+            long cacheKey = ((long)symbol.hash.HashValue << 16) ^ frameIdx;
+
             var sprite = GetSpriteFromSymbol(symbol, frameOverride);
             if (sprite == null) return;
 
-            var pixels = GetSpritePixels(sprite);
+            var pixels = GetSpritePixels(cacheKey, sprite);
+            Object.Destroy(sprite); // temp sprite — texture data cached separately
             if (pixels == null) return;
 
             // Get pivot point from bounding box
@@ -168,11 +172,11 @@ namespace DuplicantStatusBar.UI
             return Sprite.Create(atlas, rect, Vector2.zero, ppu, 0, SpriteMeshType.FullRect);
         }
 
-        private static Texture2D GetSpritePixels(Sprite sprite)
+        private static Texture2D GetSpritePixels(long cacheKey, Sprite sprite)
         {
             if (sprite == null) return null;
 
-            if (spriteCache.TryGetValue(sprite, out var cached))
+            if (spriteCache.TryGetValue(cacheKey, out var cached))
                 return cached;
 
             var r = sprite.textureRect;
@@ -186,7 +190,7 @@ namespace DuplicantStatusBar.UI
             tex.SetPixels(pixels);
             tex.Apply();
 
-            spriteCache[sprite] = tex;
+            spriteCache[cacheKey] = tex;
             return tex;
         }
 

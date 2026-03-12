@@ -13,18 +13,19 @@ namespace DuplicantStatusBar.UI
     {
         private Image borderImage;
         private Image bgFill;
+        private Image healthFill;
         private TextMeshProUGUI initialText;
         private Image alertBadge;
         private TextMeshProUGUI badgeSymbol;
         private TextMeshProUGUI nameLabel;
         private LayoutElement rootLayout;
         private LayoutElement cardLayout;
+        private LayoutElement nameLayout;
 
         // Portrait: compositor-generated sprite displayed via Image
         private Image portraitImage;
         private int currentIdentityId;
         private string currentHat;
-        private int currentCardSz;
         private const int PORTRAIT_THRESHOLD = 36;
 
         private DupeSnapshot currentSnapshot;
@@ -78,15 +79,31 @@ namespace DuplicantStatusBar.UI
 
             // Border (stress-colored frame)
             borderImage = AddImage(cardGO.transform, "Border");
+            borderImage.sprite = RoundedRect;
+            borderImage.type = Image.Type.Sliced;
             borderImage.color = TierColor(StressTier.Calm);
             borderImage.raycastTarget = false;
             Stretch(borderImage.rectTransform);
 
             // Inner fill (dark, tinted with stress color)
             bgFill = AddImage(cardGO.transform, "Fill");
-            bgFill.color = new Color(0.15f, 0.15f, 0.18f);
+            bgFill.sprite = RoundedRect;
+            bgFill.type = Image.Type.Sliced;
+            bgFill.color = new Color(0.118f, 0.165f, 0.220f); // #1E2A38
             bgFill.raycastTarget = false;
             Stretch(bgFill.rectTransform, -4f);
+
+            // Health fill (anchor-based vertical bar, hidden at 100%)
+            healthFill = AddImage(cardGO.transform, "HealthFill");
+            healthFill.type = Image.Type.Simple;
+            healthFill.color = new Color(0.298f, 0.686f, 0.314f, 0.55f);
+            healthFill.raycastTarget = false;
+            var hrt = healthFill.rectTransform;
+            hrt.anchorMin = new Vector2(0f, 0f);
+            hrt.anchorMax = new Vector2(1f, 1f);
+            hrt.offsetMin = new Vector2(2f, 2f);
+            hrt.offsetMax = new Vector2(-2f, -2f);
+            healthFill.gameObject.SetActive(false);
 
             // Portrait: compositor-generated sprite via Image
             portraitImage = AddImage(cardGO.transform, "Portrait");
@@ -102,6 +119,7 @@ namespace DuplicantStatusBar.UI
             initialText.alignment = TextAlignmentOptions.Center;
             initialText.fontStyle = FontStyles.Bold;
             initialText.raycastTarget = false;
+            if (StatusBarScreen.GameFont != null) initialText.font = StatusBarScreen.GameFont;
             Stretch(initialText.rectTransform);
 
             // ── Alert badge (circular, top-right) ─────────
@@ -113,15 +131,17 @@ namespace DuplicantStatusBar.UI
             brt.anchorMin = new Vector2(1f, 1f);
             brt.anchorMax = new Vector2(1f, 1f);
             brt.pivot = new Vector2(0.5f, 0.5f);
-            brt.sizeDelta = new Vector2(14f, 14f);
-            brt.anchoredPosition = new Vector2(2f, 2f);
+            float badgeSz = Mathf.Max(10f, cardSz * 0.30f);
+            brt.sizeDelta = new Vector2(badgeSz, badgeSz);
+            brt.anchoredPosition = new Vector2(-badgeSz * 0.15f, -badgeSz * 0.15f);
 
             badgeSymbol = AddText(alertBadge.transform, "Sym");
-            badgeSymbol.fontSize = 9;
+            badgeSymbol.fontSize = Mathf.Max(7f, badgeSz * 0.6f);
             badgeSymbol.color = Color.white;
             badgeSymbol.alignment = TextAlignmentOptions.Center;
             badgeSymbol.fontStyle = FontStyles.Bold;
             badgeSymbol.raycastTarget = false;
+            if (StatusBarScreen.GameFont != null) badgeSymbol.font = StatusBarScreen.GameFont;
             Stretch(badgeSymbol.rectTransform);
 
             alertBadge.gameObject.SetActive(false);
@@ -129,14 +149,15 @@ namespace DuplicantStatusBar.UI
             // ── Name label (below card) ───────────────────
             nameLabel = AddText(transform, "Name");
             nameLabel.fontSize = 10;
-            nameLabel.color = new Color(0.82f, 0.82f, 0.82f);
+            nameLabel.color = new Color(0.910f, 0.929f, 0.949f); // #E8EDF2
+            if (StatusBarScreen.GameFont != null) nameLabel.font = StatusBarScreen.GameFont;
             nameLabel.alignment = TextAlignmentOptions.Center;
             nameLabel.enableWordWrapping = false;
             nameLabel.overflowMode = TextOverflowModes.Ellipsis;
             nameLabel.raycastTarget = false;
-            var nle = nameLabel.gameObject.AddComponent<LayoutElement>();
-            nle.preferredWidth = totalW;
-            nle.preferredHeight = 14;
+            nameLayout = nameLabel.gameObject.AddComponent<LayoutElement>();
+            nameLayout.preferredWidth = totalW;
+            nameLayout.preferredHeight = 14;
         }
 
         public void SetSnapshot(DupeSnapshot snapshot, int size)
@@ -157,7 +178,7 @@ namespace DuplicantStatusBar.UI
                 var resume = snapshot.Identity.GetComponent<MinionResume>();
                 string hat = resume?.CurrentHat ?? "";
 
-                if (id != currentIdentityId || hat != currentHat || cardSz != currentCardSz)
+                if (id != currentIdentityId || hat != currentHat)
                 {
                     // Destroy old texture to prevent leak
                     DestroyPortraitSprite();
@@ -166,7 +187,6 @@ namespace DuplicantStatusBar.UI
                         snapshot.Identity, cardSz);
                     currentIdentityId = id;
                     currentHat = hat;
-                    currentCardSz = cardSz;
                 }
 
                 portraitImage.gameObject.SetActive(true);
@@ -195,7 +215,15 @@ namespace DuplicantStatusBar.UI
 
             // Background = dark base blended with stress color (smoothed)
             targetFillColor = Color.Lerp(
-                new Color(0.12f, 0.12f, 0.15f), tc, 0.25f);
+                new Color(0.08f, 0.10f, 0.14f), tc, 0.30f);
+
+            // Health fill
+            float hp = Mathf.Clamp01(snapshot.HealthPercent / 100f);
+            var hfrt = healthFill.rectTransform;
+            hfrt.anchorMax = new Vector2(1f, hp);
+            hfrt.offsetMax = new Vector2(-2f, 0f);
+            healthFill.color = HealthColor(hp);
+            healthFill.gameObject.SetActive(hp < 0.995f);
 
             // Pulse on critical
             isPulsing = snapshot.Tier == StressTier.Critical
@@ -210,6 +238,13 @@ namespace DuplicantStatusBar.UI
             rootLayout.preferredHeight = totalH;
             cardLayout.preferredWidth = cardSz;
             cardLayout.preferredHeight = cardSz;
+            nameLayout.preferredWidth = totalW;
+
+            // Scale badge with card size
+            float badgeSize = Mathf.Max(10f, cardSz * 0.30f);
+            alertBadge.rectTransform.sizeDelta = new Vector2(badgeSize, badgeSize);
+            alertBadge.rectTransform.anchoredPosition = new Vector2(-badgeSize * 0.15f, -badgeSize * 0.15f);
+            badgeSymbol.fontSize = Mathf.Max(7f, badgeSize * 0.6f);
         }
 
         private void DestroyPortraitSprite()
@@ -279,7 +314,7 @@ namespace DuplicantStatusBar.UI
             // Pulse on critical
             if (isPulsing)
             {
-                pulseTimer += dt * 3f;
+                pulseTimer = (pulseTimer + dt * 3f) % (2f * Mathf.PI);
                 float a = 0.6f + 0.4f * Mathf.Sin(pulseTimer);
                 var c = borderImage.color;
                 borderImage.color = new Color(c.r, c.g, c.b, a);
@@ -343,6 +378,22 @@ namespace DuplicantStatusBar.UI
             }
         }
 
+        private static Color HealthColor(float hp)
+        {
+            // 3-segment gradient: green → yellow → orange → red
+            // Alpha increases as health drops (0.55 → 0.70)
+            var green  = new Color(0.298f, 0.686f, 0.314f, 0.55f);
+            var yellow = new Color(0.937f, 0.792f, 0.373f, 0.60f);
+            var orange = new Color(0.902f, 0.486f, 0.255f, 0.65f);
+            var red    = new Color(0.890f, 0.247f, 0.278f, 0.70f);
+
+            if (hp > 0.6f)
+                return Color.Lerp(yellow, green, (hp - 0.6f) / 0.4f);
+            if (hp > 0.3f)
+                return Color.Lerp(orange, yellow, (hp - 0.3f) / 0.3f);
+            return Color.Lerp(red, orange, hp / 0.3f);
+        }
+
         private static Color Hex(int rgb)
         {
             return new Color(
@@ -360,6 +411,48 @@ namespace DuplicantStatusBar.UI
                 if (_circle == null) _circle = MakeCircle(64);
                 return _circle;
             }
+        }
+
+        private static Sprite _roundedRect;
+        internal static Sprite RoundedRect
+        {
+            get
+            {
+                if (_roundedRect == null) _roundedRect = MakeRoundedRect(32, 8);
+                return _roundedRect;
+            }
+        }
+
+        internal static Sprite MakeRoundedRect(int size, int radius)
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            var pixels = new Color32[size * size];
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = 0f, dy = 0f;
+                    if (x < radius) dx = radius - x - 0.5f;
+                    else if (x >= size - radius) dx = x - (size - radius) + 0.5f;
+                    if (y < radius) dy = radius - y - 0.5f;
+                    else if (y >= size - radius) dy = y - (size - radius) + 0.5f;
+
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    byte a = (dx > 0f && dy > 0f)
+                        ? (byte)(Mathf.Clamp01(radius - dist + 0.5f) * 255)
+                        : (byte)255;
+                    pixels[y * size + x] = new Color32(255, 255, 255, a);
+                }
+            }
+
+            tex.SetPixels32(pixels);
+            tex.Apply();
+            return Sprite.Create(tex,
+                new Rect(0, 0, size, size),
+                new Vector2(0.5f, 0.5f),
+                100f, 0, SpriteMeshType.FullRect,
+                new Vector4(radius, radius, radius, radius));
         }
 
         private static Sprite MakeCircle(int sz)
