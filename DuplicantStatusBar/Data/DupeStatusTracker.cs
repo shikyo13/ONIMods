@@ -69,6 +69,7 @@ namespace DuplicantStatusBar.Data
         private static readonly Dictionary<int, float> stuckTimers = new Dictionary<int, float>();
         private static readonly Dictionary<int, float> idleTimers = new Dictionary<int, float>();
         private static float stuckCheckTimer;
+        private static float lastUpdateTime = -1f;
         private static int cachedPodCell = -1;
         private static float podCacheTimer;
         private const float STUCK_CHECK_INTERVAL = 2f;
@@ -92,7 +93,9 @@ namespace DuplicantStatusBar.Data
             if (dupes == null) return;
 
             var options = StatusBarOptions.Instance;
-            float dt = Time.unscaledDeltaTime;
+            float now = Time.unscaledTime;
+            float dt = lastUpdateTime < 0f ? 0f : now - lastUpdateTime;
+            lastUpdateTime = now;
 
             // Advance stuck check timer
             bool doStuckCheck = false;
