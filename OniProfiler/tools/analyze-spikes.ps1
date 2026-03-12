@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Analyzes OniProfiler spike CSV files, categorizes spikes, and highlights mystery spikes.
+    Analyzes OniProfiler spike CSV files with multi-tag categorization.
 
 .DESCRIPTION
     Reads *_spikes.csv files from the OniProfiler recording directory.
-    Categorizes each spike into: GC Pause, PathAsync Storm, Mystery, or Minor.
-    Shows BulkUpdateTop5 data for mystery spikes to identify coroutine vs Update() culprits.
+    Each spike receives all applicable tags (e.g., PathProbe_Async,GC_Gen2).
+    Shows tag frequency summary and per-spike tag listing.
 
 .PARAMETER Path
     Path to a specific spike CSV file. If omitted, processes all spike CSVs in the default directory.
@@ -24,32 +24,72 @@ param(
 
 $defaultDir = Join-Path $env:USERPROFILE "Documents\Klei\OxygenNotIncluded\mods\local\OniProfiler"
 
+$allTagNames = @("PathProbe_Async", "WorldLateUpdate", "GlobalUpdate", "FindNextChore", "GameUpdate_Long", "GC_Gen2", "GC_Gen0", "SimUpdate_Long", "Unaccounted_High", "Untagged", "Minor")
+
 function Categorize-Spike {
     param($row, $headers)
 
-    $gc2     = [double]$row.GC_Gen2
-    $unacct  = [double]$row.Unaccounted_ms
+    $gc2 = [double]$row.GC_Gen2
+    $gc0 = [double]$row.GC_Gen0
     $frameMs = [double]$row.FrameMs
 
-    # Find PathProbe_Async column
     $pathAsync = 0.0
     if ($headers -contains "PathProbe_Async_ms") {
         $pathAsync = [double]$row.PathProbe_Async_ms
     }
 
+    $simUpdate = 0.0
+    if ($headers -contains "SimUpdate_ms") {
+        $simUpdate = [double]$row.SimUpdate_ms
+    }
+
+    $worldLate = 0.0
+    if ($headers -contains "WorldLateUpdate_ms") {
+        $worldLate = [double]$row.WorldLateUpdate_ms
+    }
+
+    $globalUpdate = 0.0
+    if ($headers -contains "GlobalUpdate_ms") {
+        $globalUpdate = [double]$row.GlobalUpdate_ms
+    }
+
+    $findChore = 0.0
+    if ($headers -contains "FindNextChore_ms") {
+        $findChore = [double]$row.FindNextChore_ms
+    }
+
+    $gameUpdate = 0.0
+    if ($headers -contains "GameUpdate_ms") {
+        $gameUpdate = [double]$row.GameUpdate_ms
+    }
+
+    $unaccounted = 0.0
+    if ($headers -contains "Unaccounted_ms") {
+        $unaccounted = [double]$row.Unaccounted_ms
+    }
+
     if ($frameMs -lt $MinUnaccounted) {
-        return "Minor"
+        return , @("Minor")
     }
-    if ($gc2 -gt 0) {
-        return "GC_Pause"
+
+    $tags = @()
+    $systemTagCount = 0
+
+    if ($pathAsync -gt 100) { $tags += "PathProbe_Async"; $systemTagCount++ }
+    if ($worldLate -gt 100) { $tags += "WorldLateUpdate"; $systemTagCount++ }
+    if ($globalUpdate -gt 100) { $tags += "GlobalUpdate"; $systemTagCount++ }
+    if ($findChore -gt 100) { $tags += "FindNextChore"; $systemTagCount++ }
+    if ($gameUpdate -gt 100 -and $pathAsync -lt 100) { $tags += "GameUpdate_Long"; $systemTagCount++ }
+    if ($gc2 -gt 0) { $tags += "GC_Gen2" }
+    if ($gc0 -gt 0 -and $gc2 -eq 0) { $tags += "GC_Gen0" }
+    if ($simUpdate -gt 50) { $tags += "SimUpdate_Long"; $systemTagCount++ }
+
+    if ($systemTagCount -eq 0 -and $unaccounted -gt 200) {
+        $tags += "Unaccounted_High"
     }
-    if ($pathAsync -gt 1) {
-        return "PathAsync_Storm"
-    }
-    if ($unacct -gt $MinUnaccounted) {
-        return "Mystery"
-    }
-    return "Minor"
+
+    if ($tags.Count -eq 0) { $tags += "Untagged" }
+    return , $tags
 }
 
 function Process-SpikeFile {
@@ -69,46 +109,69 @@ function Process-SpikeFile {
         return
     }
 
-    # Categorize all spikes
-    $categories = @{ GC_Pause = @(); PathAsync_Storm = @(); Mystery = @(); Minor = @() }
+    # Categorize all spikes (multi-tag)
+    $tagCounts = @{}; foreach ($t in $allTagNames) { $tagCounts[$t] = 0 }
+    $spikeTags = @()
     foreach ($spike in $spikes) {
-        $cat = Categorize-Spike $spike $headers
-        $categories[$cat] += $spike
+        $tags = Categorize-Spike $spike $headers
+        $spikeTags += , @($spike, $tags)
+        foreach ($t in $tags) {
+            if (-not $tagCounts.ContainsKey($t)) { $tagCounts[$t] = 0 }
+            $tagCounts[$t]++
+        }
     }
 
-    # Summary
+    # Tag frequency summary
     Write-Host ""
     Write-Host "=== $fileName ($($spikes.Count) spikes) ===" -ForegroundColor Cyan
     Write-Host ""
 
     $total = $spikes.Count
-    foreach ($cat in @("GC_Pause", "PathAsync_Storm", "Mystery", "Minor")) {
-        $count = $categories[$cat].Count
-        $pct = if ($total -gt 0) { [math]::Round($count / $total * 100) } else { 0 }
-        $color = switch ($cat) {
-            "GC_Pause"       { "Yellow" }
-            "PathAsync_Storm" { "Magenta" }
-            "Mystery"        { "Red" }
-            "Minor"          { "Gray" }
+    foreach ($tag in $allTagNames) {
+        $count = $tagCounts[$tag]
+        if ($count -eq 0) { continue }
+        $color = switch ($tag) {
+            "PathProbe_Async" { "Magenta" }
+            "WorldLateUpdate" { "Magenta" }
+            "GlobalUpdate" { "DarkYellow" }
+            "FindNextChore" { "DarkYellow" }
+            "GameUpdate_Long" { "Red" }
+            "GC_Gen2" { "Yellow" }
+            "GC_Gen0" { "Yellow" }
+            "SimUpdate_Long" { "Red" }
+            "Unaccounted_High" { "Red" }
+            "Untagged" { "DarkGray" }
+            "Minor" { "Gray" }
         }
-        Write-Host ("  {0,-20} {1,3} ({2,3}%)" -f $cat, $count, $pct) -ForegroundColor $color
+        Write-Host ("  {0,-20} {1,3}/{2,-3}" -f $tag, $count, $total) -ForegroundColor $color
     }
 
-    # Detail mystery spikes
-    if ($categories["Mystery"].Count -gt 0) {
+    # Per-spike tag listing
+    Write-Host ""
+    Write-Host ("  {0,-12} {1,8} {2,-40}" -f "WallTime", "FrameMs", "Tags")
+    foreach ($entry in $spikeTags) {
+        $spike = $entry[0]; $tags = $entry[1]
+        $tagStr = $tags -join ","
+        $color = if ($tags -contains "Untagged") { "DarkGray" } elseif ($tags -contains "Unaccounted_High") { "Red" } elseif ($tags -contains "Minor") { "Gray" } else { "White" }
+        Write-Host ("  {0,-12} {1,8} {2,-40}" -f $spike.WallTime, $spike.FrameMs, $tagStr) -ForegroundColor $color
+    }
+
+    # Detail untagged spikes
+    $untaggedSpikes = @($spikeTags | Where-Object { $_[1] -contains "Untagged" } | ForEach-Object { $_[0] })
+    if ($untaggedSpikes.Count -gt 0) {
         Write-Host ""
-        Write-Host "  --- Mystery Spike Details ---" -ForegroundColor Red
+        Write-Host "  --- Untagged Spike Details ---" -ForegroundColor DarkGray
         Write-Host ("  {0,-12} {1,8} {2,10} {3,-50}" -f "WallTime", "FrameMs", "Unacct_ms", "BulkUpdateTop5")
         Write-Host ("  {0,-12} {1,8} {2,10} {3,-50}" -f "--------", "-------", "---------", "--------------")
 
-        foreach ($spike in $categories["Mystery"]) {
+        foreach ($spike in $untaggedSpikes) {
             $bulk = if ($spike.PSObject.Properties["BulkUpdateTop5"]) { $spike.BulkUpdateTop5 } else { "(no data)" }
             if ([string]::IsNullOrWhiteSpace($bulk)) { $bulk = "(empty)" }
             Write-Host ("  {0,-12} {1,8} {2,10} {3,-50}" -f $spike.WallTime, $spike.FrameMs, $spike.Unaccounted_ms, $bulk) -ForegroundColor Red
         }
 
         # Check if BulkUpdateTop5 has useful data
-        $hasData = $categories["Mystery"] | Where-Object {
+        $hasData = $untaggedSpikes | Where-Object {
             $_.PSObject.Properties["BulkUpdateTop5"] -and
             -not [string]::IsNullOrWhiteSpace($_.BulkUpdateTop5) -and
             $_.BulkUpdateTop5 -ne "(empty)"
@@ -116,7 +179,7 @@ function Process-SpikeFile {
 
         Write-Host ""
         if ($hasData.Count -gt 0) {
-            # Parse BulkUpdateTop5 and aggregate across mystery spikes
+            # Parse BulkUpdateTop5 and aggregate across untagged spikes
             $typeTotals = @{}
             foreach ($spike in $hasData) {
                 $entries = $spike.BulkUpdateTop5 -split '\|'
@@ -127,7 +190,8 @@ function Process-SpikeFile {
                         $ms = [double]$parts[1]
                         if ($typeTotals.ContainsKey($typeName)) {
                             $typeTotals[$typeName] += $ms
-                        } else {
+                        }
+                        else {
                             $typeTotals[$typeName] = $ms
                         }
                     }
@@ -136,9 +200,9 @@ function Process-SpikeFile {
 
             $sorted = $typeTotals.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 10
             $totalBulkMs = ($sorted | Measure-Object -Property Value -Sum).Sum
-            $avgUnacct = ($categories["Mystery"] | ForEach-Object { [double]$_.Unaccounted_ms } | Measure-Object -Average).Average
+            $avgUnacct = ($untaggedSpikes | ForEach-Object { [double]$_.Unaccounted_ms } | Measure-Object -Average).Average
 
-            Write-Host "  Top Update() types across mystery spikes:" -ForegroundColor Yellow
+            Write-Host "  Top Update() types across untagged spikes:" -ForegroundColor Yellow
             foreach ($kv in $sorted) {
                 Write-Host ("    {0,-30} {1,8:F1} ms total" -f $kv.Key, $kv.Value)
             }
@@ -148,21 +212,23 @@ function Process-SpikeFile {
             if ($totalBulkMs -lt 5 * $hasData.Count) {
                 Write-Host "  >> VERDICT: Update() methods are NOT the culprit (<5ms avg)." -ForegroundColor Red
                 Write-Host "  >> Time is likely in COROUTINES (ScriptRunDelayedDynamicFrameRate)." -ForegroundColor Red
-            } else {
+            }
+            else {
                 $topType = $sorted | Select-Object -First 1
                 Write-Host ("  >> VERDICT: Update() method '{0}' is the likely culprit." -f $topType.Key) -ForegroundColor Green
             }
-        } else {
-            Write-Host "  >> No BulkUpdateTop5 data on mystery spikes yet." -ForegroundColor Yellow
-            Write-Host "  >> Need a longer recording to capture mystery spikes with bulk data." -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "  >> No BulkUpdateTop5 data on untagged spikes yet." -ForegroundColor Yellow
+            Write-Host "  >> Need a longer recording to capture untagged spikes with bulk data." -ForegroundColor Yellow
         }
 
         # Show phase data if available
         $phaseColumns = $headers | Where-Object { $_ -like "Phase_*_ms" }
         if ($phaseColumns.Count -gt 0) {
             Write-Host ""
-            Write-Host "  --- Phase Breakdown (mystery spikes) ---" -ForegroundColor Yellow
-            foreach ($spike in $categories["Mystery"]) {
+            Write-Host "  --- Phase Breakdown (untagged spikes) ---" -ForegroundColor Yellow
+            foreach ($spike in $untaggedSpikes) {
                 Write-Host "  Spike @ $($spike.WallTime):" -ForegroundColor Gray
                 foreach ($col in $phaseColumns) {
                     $val = [double]$spike.$col
@@ -194,7 +260,7 @@ function Cross-Validate {
     $hasGameUpdateMax = $mainHeaders -contains "GameUpdate_max"
     if (-not $hasGameUpdateMax) { return }
 
-    # Build lookup: timestamp (HH:mm:ss) → main row
+    # Build lookup: timestamp (HH:mm:ss) -> main row
     $mainByTime = @{}
     foreach ($row in $mainRows) {
         $ts = $row.Timestamp
@@ -216,7 +282,8 @@ function Cross-Validate {
             $ts = [datetime]::ParseExact($sec, "HH:mm:ss", $null)
             $candidates += $ts.AddSeconds(-1).ToString("HH:mm:ss")
             $candidates += $ts.AddSeconds(1).ToString("HH:mm:ss")
-        } catch {}
+        }
+        catch {}
 
         $spikeGU = [double]$spike.GameUpdate_ms
         $bestMatch = $null
@@ -248,7 +315,8 @@ function Cross-Validate {
 
     if ($offsetCount -gt 0) {
         Write-Host "  >> $offsetCount spike(s) show >50% mismatch — likely offset-affected" -ForegroundColor Red
-    } else {
+    }
+    else {
         Write-Host "  >> All spikes match main CSV — offset fix is working" -ForegroundColor Green
     }
 }
@@ -340,14 +408,15 @@ function GC-Mode-Comparison {
 }
 
 # Main
-Write-Host "OniProfiler Spike Analyzer" -ForegroundColor Cyan
-Write-Host "Threshold: Unaccounted > ${MinUnaccounted}ms for mystery classification"
+Write-Host "OniProfiler Spike Analyzer (multi-tag)" -ForegroundColor Cyan
+Write-Host "Threshold: FrameMs > ${MinUnaccounted}ms for non-Minor classification"
 
 if ($Path) {
     Process-SpikeFile $Path
     Cross-Validate $Path
     Phase-Coverage $Path
-} else {
+}
+else {
     if (-not (Test-Path $defaultDir)) {
         Write-Error "Default directory not found: $defaultDir"
         exit 1
@@ -361,8 +430,8 @@ if ($Path) {
 
     Write-Host "Found $($files.Count) spike files in $defaultDir"
 
-    # Cross-file aggregation
-    $allSpikes = @{ GC_Pause = 0; PathAsync_Storm = 0; Mystery = 0; Minor = 0 }
+    # Cross-file aggregation (multi-tag)
+    $grandTags = @{}; foreach ($t in $allTagNames) { $grandTags[$t] = 0 }
     $grandTotal = 0
 
     foreach ($file in $files) {
@@ -374,19 +443,23 @@ if ($Path) {
         $spikes = Import-Csv $file.FullName
         $headers = if ($spikes.Count -gt 0) { $spikes[0].PSObject.Properties.Name } else { @() }
         foreach ($spike in $spikes) {
-            $cat = Categorize-Spike $spike $headers
-            $allSpikes[$cat]++
+            $tags = Categorize-Spike $spike $headers
+            foreach ($t in $tags) {
+                if (-not $grandTags.ContainsKey($t)) { $grandTags[$t] = 0 }
+                $grandTags[$t]++
+            }
             $grandTotal++
         }
     }
 
-    # Grand summary
+    # Grand summary (multi-tag)
     Write-Host ""
     Write-Host "=== GRAND TOTAL ($grandTotal spikes across $($files.Count) recordings) ===" -ForegroundColor Green
-    foreach ($cat in @("GC_Pause", "PathAsync_Storm", "Mystery", "Minor")) {
-        $count = $allSpikes[$cat]
+    foreach ($tag in $allTagNames) {
+        $count = $grandTags[$tag]
+        if ($count -eq 0) { continue }
         $pct = if ($grandTotal -gt 0) { [math]::Round($count / $grandTotal * 100) } else { 0 }
-        Write-Host ("  {0,-20} {1,3} ({2,3}%)" -f $cat, $count, $pct)
+        Write-Host ("  {0,-20} {1,3}/{2,-3} ({3,3}%)" -f $tag, $count, $grandTotal, $pct)
     }
 
     GC-Mode-Comparison $defaultDir
