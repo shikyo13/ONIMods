@@ -9,9 +9,14 @@ using OniProfiler.UI;
 
 namespace OniProfiler.Core
 {
+    /// <summary>
+    /// Mod entry point. Stores singleton instance, registers PLib toggle keybind (backtick), and logs GC capabilities.
+    /// </summary>
     public sealed class OniProfilerMod : UserMod2
     {
+        /// <summary>Singleton instance, set during OnLoad.</summary>
         public static OniProfilerMod Instance { get; private set; }
+        /// <summary>PLib keybinding action for toggling the profiler panel.</summary>
         public static PAction ToggleAction { get; private set; }
 
         public override void OnLoad(Harmony harmony)

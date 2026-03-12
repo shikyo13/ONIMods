@@ -9,8 +9,14 @@ using UnityEngine;
 
 namespace ReplaceStuff.Core
 {
+    /// <summary>
+    /// Mod entry point. Registers PLib options and soft-patches modded doors for replacement group compatibility.
+    /// </summary>
     public sealed class ReplaceStuffMod : UserMod2
     {
+        /// <summary>
+        /// Initializes PLib, registers options, and applies runtime patches for any detected modded door configs.
+        /// </summary>
         public override void OnLoad(Harmony harmony)
         {
             base.OnLoad(harmony);

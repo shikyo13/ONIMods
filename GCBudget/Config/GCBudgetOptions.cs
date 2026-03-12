@@ -3,6 +3,9 @@ using PeterHan.PLib.Options;
 
 namespace GCBudget.Config
 {
+    /// <summary>
+    /// PLib options schema for GCBudget. Controls heap growth allowance, ceiling, and collection triggers.
+    /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     [ModInfo("GC Budget")]
     public sealed class GCBudgetOptions : SingletonOptions<GCBudgetOptions>

@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace GCBudget.Core
 {
+    /// <summary>
+    /// Controls garbage collection by setting Unity's GCMode to Manual and triggering collections
+    /// only when heap growth exceeds configured thresholds.
+    /// </summary>
     public static class GCBudgetManager
     {
         private static Type gcType;
@@ -22,6 +26,9 @@ namespace GCBudget.Core
 
         private const float PAUSE_COOLDOWN = 2f;
 
+        /// <summary>
+        /// Reflects into UnityEngine.Scripting.GarbageCollector, saves original mode, sets Manual, and configures thresholds from options.
+        /// </summary>
         public static void Init()
         {
             try
@@ -78,6 +85,7 @@ namespace GCBudget.Core
             }
         }
 
+        /// <summary>Restores GCMode to its original value. Called on game exit/destroy.</summary>
         public static void Restore()
         {
             if (!manualModeActive) return;
@@ -93,6 +101,7 @@ namespace GCBudget.Core
             manualModeActive = false;
         }
 
+        /// <summary>Called every frame from Game.Update postfix. Triggers collection if heap exceeds growth allowance or ceiling.</summary>
         public static void OnFrame()
         {
             if (!manualModeActive) return;
@@ -105,6 +114,7 @@ namespace GCBudget.Core
             }
         }
 
+        /// <summary>Pre-save collection trigger (if enabled in options).</summary>
         public static void OnSave()
         {
             if (!manualModeActive) return;
@@ -112,6 +122,7 @@ namespace GCBudget.Core
             DoCollect("Pre-save");
         }
 
+        /// <summary>Pause collection trigger with 2-second cooldown (if enabled in options).</summary>
         public static void OnPause()
         {
             if (!manualModeActive) return;
