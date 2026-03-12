@@ -16,16 +16,33 @@ namespace DuplicantStatusBar.UI
         private TMPro.TextMeshProUGUI collapseLabel;
         private readonly List<DupePortraitWidget> widgets = new List<DupePortraitWidget>();
 
+        private Image panelImage;
         private GridLayoutGroup grid;
         private RectTransform headerRT;
         private RectTransform resizeGripRT;
         private float updateTimer;
         private bool isCollapsed;
-        private float sortTimer = 3f;
-        private float[] lastStressValues = new float[0];
         internal int lastDupeCount = -1;
         internal int lastComputedSize;
         internal bool forceRefresh;
+        private int lastConfiguredSize;
+
+        // Game font (ONI-native, with fallback)
+        private static TMPro.TMP_FontAsset _gameFont;
+        private static bool _fontSearched;
+        internal static TMPro.TMP_FontAsset GameFont
+        {
+            get
+            {
+                if (_gameFont != null) return _gameFont;
+                if (_fontSearched) return null;
+                _fontSearched = true;
+                var all = Resources.FindObjectsOfTypeAll<TMPro.TMP_FontAsset>();
+                _gameFont = System.Array.Find(all, f => f.name == "GRAYSTROKE REGULAR SDF")
+                         ?? System.Array.Find(all, f => f.name.Contains("NotoSans"));
+                return _gameFont;
+            }
+        }
 
         // Drag state
         private bool isDragging;
@@ -54,14 +71,6 @@ namespace DuplicantStatusBar.UI
                 updateTimer = UPDATE_INTERVAL;
                 DupeStatusTracker.Update();
                 RefreshWidgets();
-            }
-
-            sortTimer -= Time.unscaledDeltaTime;
-            if (sortTimer <= 0f)
-            {
-                sortTimer = 3f;
-                if (ShouldReSort())
-                    DupeStatusTracker.SortSnapshots();
             }
 
             HandleDrag();
@@ -101,8 +110,13 @@ namespace DuplicantStatusBar.UI
             panelGO.transform.SetParent(canvasGO.transform, false);
             barPanel = panelGO.AddComponent<RectTransform>();
 
-            var panelImg = panelGO.AddComponent<Image>();
-            panelImg.color = new Color(0.12f, 0.12f, 0.15f, alpha);
+            panelImage = panelGO.AddComponent<Image>();
+            panelImage.sprite = DupePortraitWidget.RoundedRect;
+            panelImage.type = Image.Type.Sliced;
+            panelImage.color = new Color(0.165f, 0.208f, 0.271f, alpha); // #2A3545
+
+            // Mask clips children (header bg) to rounded rect shape
+            panelGO.AddComponent<Mask>().showMaskGraphic = true;
 
             // Anchor top-center
             barPanel.anchorMin = new Vector2(0.5f, 1f);
@@ -112,9 +126,9 @@ namespace DuplicantStatusBar.UI
 
             // Vertical layout: header row + portrait row
             var vlg = panelGO.AddComponent<VerticalLayoutGroup>();
-            vlg.padding = new RectOffset(4, 4, 3, 4);
-            vlg.spacing = 3;
-            vlg.childForceExpandWidth = false;
+            vlg.padding = new RectOffset(0, 0, 0, 0);
+            vlg.spacing = 0;
+            vlg.childForceExpandWidth = true;
             vlg.childForceExpandHeight = false;
             vlg.childAlignment = TextAnchor.UpperCenter;
 
@@ -134,16 +148,45 @@ namespace DuplicantStatusBar.UI
             header.transform.SetParent(parent.transform, false);
             headerRT = header.AddComponent<RectTransform>();
 
+            var headerBg = header.AddComponent<Image>();
+            headerBg.color = new Color(0.420f, 0.200f, 0.314f); // #6B3350 ONI burgundy
+            headerBg.raycastTarget = false;
+
             var hlg = header.AddComponent<HorizontalLayoutGroup>();
             hlg.spacing = 4;
             hlg.childForceExpandWidth = false;
             hlg.childForceExpandHeight = false;
             hlg.childAlignment = TextAnchor.MiddleCenter;
-            hlg.padding = new RectOffset(2, 2, 0, 0);
+            hlg.padding = new RectOffset(6, 6, 3, 3);
 
             var hFit = header.AddComponent<ContentSizeFitter>();
-            hFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             hFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            // Bevel — top highlight
+            var topHL = new GameObject("TopHighlight");
+            topHL.transform.SetParent(header.transform, false);
+            var topRT = topHL.AddComponent<RectTransform>();
+            topRT.anchorMin = new Vector2(0f, 1f);
+            topRT.anchorMax = new Vector2(1f, 1f);
+            topRT.pivot = new Vector2(0.5f, 1f);
+            topRT.sizeDelta = new Vector2(0f, 1.5f);
+            var topImg = topHL.AddComponent<Image>();
+            topImg.color = new Color(1f, 1f, 1f, 0.15f);
+            topImg.raycastTarget = false;
+            topHL.AddComponent<LayoutElement>().ignoreLayout = true;
+
+            // Bevel — bottom shadow
+            var botSH = new GameObject("BottomShadow");
+            botSH.transform.SetParent(header.transform, false);
+            var botRT = botSH.AddComponent<RectTransform>();
+            botRT.anchorMin = new Vector2(0f, 0f);
+            botRT.anchorMax = new Vector2(1f, 0f);
+            botRT.pivot = new Vector2(0.5f, 0f);
+            botRT.sizeDelta = new Vector2(0f, 1.5f);
+            var botImg = botSH.AddComponent<Image>();
+            botImg.color = new Color(0f, 0f, 0f, 0.25f);
+            botImg.raycastTarget = false;
+            botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
             // Drag-handle label
             var grip = new GameObject("Grip");
@@ -151,7 +194,8 @@ namespace DuplicantStatusBar.UI
             var gripTMP = grip.AddComponent<TMPro.TextMeshProUGUI>();
             gripTMP.text = "Dupes";
             gripTMP.fontSize = 11;
-            gripTMP.color = new Color(0.7f, 0.7f, 0.7f);
+            gripTMP.color = new Color(0.627f, 0.678f, 0.722f); // #A0ADB8
+            if (GameFont != null) gripTMP.font = GameFont;
             gripTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             gripTMP.raycastTarget = false;
             var gripLE = grip.AddComponent<LayoutElement>();
@@ -162,7 +206,7 @@ namespace DuplicantStatusBar.UI
             var btnGO = new GameObject("CollapseBtn");
             btnGO.transform.SetParent(header.transform, false);
             var btnImg = btnGO.AddComponent<Image>();
-            btnImg.color = new Color(0.3f, 0.3f, 0.35f);
+            btnImg.color = Color.clear;
             var btn = btnGO.AddComponent<Button>();
             btn.onClick.AddListener(ToggleCollapse);
 
@@ -172,6 +216,7 @@ namespace DuplicantStatusBar.UI
             collapseLabel.text = "\u2212"; // minus sign
             collapseLabel.fontSize = 12;
             collapseLabel.color = Color.white;
+            if (GameFont != null) collapseLabel.font = GameFont;
             collapseLabel.alignment = TMPro.TextAlignmentOptions.Center;
             collapseLabel.raycastTarget = false;
 
@@ -194,6 +239,7 @@ namespace DuplicantStatusBar.UI
             grid = contentArea.AddComponent<GridLayoutGroup>();
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.spacing = new Vector2(4, 4);
+            grid.padding = new RectOffset(4, 4, 4, 4);
             grid.childAlignment = TextAnchor.UpperCenter;
             grid.constraintCount = 1; // updated in UpdateGridLayout
 
@@ -376,33 +422,31 @@ namespace DuplicantStatusBar.UI
             }
         }
 
-        private bool ShouldReSort()
-        {
-            var snaps = DupeStatusTracker.Snapshots;
-            if (lastStressValues.Length != snaps.Count)
-            {
-                lastStressValues = new float[snaps.Count];
-                for (int i = 0; i < snaps.Count; i++)
-                    lastStressValues[i] = snaps[i].StressPercent;
-                return true;
-            }
-            for (int i = 0; i < snaps.Count; i++)
-            {
-                if (Mathf.Abs(snaps[i].StressPercent - lastStressValues[i]) > 5f)
-                {
-                    for (int j = 0; j < snaps.Count; j++)
-                        lastStressValues[j] = snaps[j].StressPercent;
-                    return true;
-                }
-            }
-            return false;
-        }
-
         // ── Widget Sync ─────────────────────────────────────────
 
         private void RefreshWidgets()
         {
+            var opts = StatusBarOptions.Instance;
+
+            // Live-update opacity when option changes
+            if (panelImage != null)
+            {
+                float alpha = opts.BarOpacity / 100f;
+                var c = panelImage.color;
+                if (!Mathf.Approximately(c.a, alpha))
+                    panelImage.color = new Color(c.r, c.g, c.b, alpha);
+            }
+
             var snaps = DupeStatusTracker.Snapshots;
+
+            // Detect option change for portrait size
+            int configured = opts.PortraitSize;
+            if (configured != lastConfiguredSize)
+            {
+                lastConfiguredSize = configured;
+                lastComputedSize = configured;
+                PlayerPrefs.DeleteKey(PS); // option change overrides drag-resize
+            }
             if (snaps.Count != lastDupeCount)
             {
                 bool resizeDrag = lastDupeCount == -1 && lastComputedSize > 0;
@@ -457,6 +501,7 @@ namespace DuplicantStatusBar.UI
         private void LoadState()
         {
             if (barPanel == null) return;
+            lastConfiguredSize = StatusBarOptions.Instance.PortraitSize;
             if (PlayerPrefs.HasKey(PX))
             {
                 barPanel.anchoredPosition = new Vector2(

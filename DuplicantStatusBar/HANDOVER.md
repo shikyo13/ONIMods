@@ -78,9 +78,22 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 
 **Memory**: ~64 KB per portrait (128×128 RGBA32). 19 dupes ≈ 1.2 MB. Old textures destroyed on identity/hat change via `DestroyPortraitSprite()`.
 
+## v2.0 — ONI Visual Overhaul
+
+Adopted ONI's native color palette, rounded panels, and game fonts:
+
+- **Panel bg**: `#2A3545` (blue-gray, was dark gray)
+- **Card fill**: `#1E2A38` with stress-color lerp at 0.15
+- **Card border**: `#3D5060` base for calm, tier colors for elevated stress
+- **Header text**: `#A0ADB8`, **name labels**: `#E8EDF2`
+- **Collapse button**: `#3D5060`
+- **Tooltip**: `#1E2A38 @ 0.95` bg, `#E8EDF2` text
+- **Rounded corners**: procedural `MakeRoundedRect(32, 8)` → 9-slice sprite on panel, card, tooltip
+- **Game font**: runtime discovery of `GRAYSTROKE REGULAR SDF` → NotoSans fallback → TMP default
+- **Badge scaling**: `Mathf.Max(10f, cardSz * 0.30f)` (was fixed 14×14), position `(3, 3)`
+
 ## Not Yet Implemented
 
-- 2-row wrapping (currently single row with auto-shrink)
 - Scroll arrows for overflow beyond minimum size
 - Portrait positioning offsets may need tuning after in-game testing
 - Overjoyed gold glow animation (badge shown, but no glow effect)
