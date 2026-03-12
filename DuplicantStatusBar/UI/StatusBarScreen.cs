@@ -253,7 +253,7 @@ namespace DuplicantStatusBar.UI
             viewportRT.sizeDelta = Vector2.zero;
             viewportRT.pivot = new Vector2(0f, 1f);
             var viewportImg = viewportGO.AddComponent<Image>();
-            viewportImg.color = Color.clear;
+            viewportImg.color = Color.white;  // alpha must be >0 for Mask stencil writes
             viewportGO.AddComponent<Mask>().showMaskGraphic = false;
 
             // Content (grid) inside viewport
