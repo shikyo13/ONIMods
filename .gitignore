@@ -7,8 +7,19 @@ obj/
 *.user
 *.suo
 
-# Claude Code local settings
+# Claude Code / Superpowers
 .claude/
+.superpowers/
+docs/superpowers/
+
+# Screenshots (local dev only)
+Screenshot *.png
+
+# Reference repos
+ONIMods - peterhaneve/
+
+# Profiler scratch files
+OniProfiler/All
 
 # Git worktrees
 .worktrees/
