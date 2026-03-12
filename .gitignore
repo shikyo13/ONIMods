@@ -7,8 +7,19 @@ obj/
 *.user
 *.suo
 
-# Local tooling Code local settings
+# Local tooling
 .local tooling/
+.local tooling/
+docs/local tooling/
+
+# Screenshots (local dev only)
+Screenshot *.png
+
+# Reference repos
+ONIMods - peterhaneve/
+
+# Profiler scratch files
+OniProfiler/All
 
 # Git worktrees
 .worktrees/

@@ -8,7 +8,7 @@ namespace DuplicantStatusBar.UI
     /// Composites dupe accessory symbols from KAnim texture atlases into a
     /// static Texture2D/Sprite. Bypasses the KAnim batch rendering pipeline
     /// entirely — works in any Canvas render mode.
-    /// Atlas-based texture compositing approach.
+    ///
     /// </summary>
     public static class PortraitCompositor
     {
@@ -20,7 +20,7 @@ namespace DuplicantStatusBar.UI
         private static readonly Dictionary<long, Texture2D> spriteCache
             = new Dictionary<long, Texture2D>();
 
-        // Always composite at fixed native resolution — the UI Image
+        // Always composite at 125px native resolution — the UI Image
         // component scales the result down via bilinear filtering.
         private const int COMPOSE_SIZE = 125;
 
