@@ -39,6 +39,8 @@ namespace DuplicantStatusBar.Data
         public float BladderPercent;
         public bool IsStarving;
         public bool IsIrradiated;
+        public bool IsScalding;
+        public bool IsHypothermic;
     }
 
     public static class DupeStatusTracker
@@ -138,6 +140,11 @@ namespace DuplicantStatusBar.Data
                 var radSMI = go.GetSMI<RadiationMonitor.Instance>();
                 snap.IsIrradiated = radSMI != null && radSMI.sm.isSick.Get(radSMI);
 
+                // Scalding / Hypothermia (via ScaldingMonitor, not body temp)
+                var scaldSMI = go.GetSMI<ScaldingMonitor.Instance>();
+                snap.IsScalding = scaldSMI != null && scaldSMI.IsScalding();
+                snap.IsHypothermic = scaldSMI != null && scaldSMI.IsScolding();
+
                 // Compute derived values
                 snap.Tier = ComputeTier(snap.StressPercent, options);
                 snap.HighestAlert = ComputeAlert(snap, options);
@@ -174,9 +181,9 @@ namespace DuplicantStatusBar.Data
                 return AlertType.Suffocating;
             if (opts.AlertLowHP && snap.HealthPercent < 30f)
                 return AlertType.LowHP;
-            if (opts.AlertScalding && snap.BodyTemperature > 348.15f)
+            if (opts.AlertScalding && snap.IsScalding)
                 return AlertType.Scalding;
-            if (opts.AlertHypothermia && snap.BodyTemperature < 263.15f)
+            if (opts.AlertHypothermia && snap.IsHypothermic)
                 return AlertType.Hypothermia;
             if (opts.AlertIrradiated && snap.IsIrradiated)
                 return AlertType.Irradiated;
