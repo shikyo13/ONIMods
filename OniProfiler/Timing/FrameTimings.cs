@@ -27,6 +27,9 @@ namespace OniProfiler.Timing
         // AI & Pathfinding
         PathProbe,
         PathProbe_Async,
+        NavGridUpdate,
+        GroupProberRebuild,
+        PathfindingUpdate,
         BrainAdvance,
         FindNextChore,
         FetchUpdatePickups,
