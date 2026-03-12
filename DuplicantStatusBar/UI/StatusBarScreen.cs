@@ -451,7 +451,7 @@ namespace DuplicantStatusBar.UI
             {
                 bool resizeDrag = lastDupeCount == -1 && lastComputedSize > 0;
                 lastDupeCount = snaps.Count;
-                if (!resizeDrag)
+                if (!resizeDrag && !PlayerPrefs.HasKey(PS))
                     lastComputedSize = ComputePortraitSize(snaps.Count);
             }
             if (forceRefresh)
