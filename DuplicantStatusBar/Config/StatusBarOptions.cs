@@ -114,6 +114,14 @@ namespace DuplicantStatusBar.Config
         [JsonProperty]
         public bool AlertBladder { get; set; } = true;
 
+        [Option("Stuck Alert", "Show badge when dupe cannot reach the printing pod.", "Alerts")]
+        [JsonProperty]
+        public bool AlertStuck { get; set; } = true;
+
+        [Option("Idle Alert", "Show badge when dupe has no task for an extended period.", "Alerts")]
+        [JsonProperty]
+        public bool AlertIdle { get; set; } = true;
+
         // IOptions — live update when user changes settings
         public void OnOptionsChanged()
         {
