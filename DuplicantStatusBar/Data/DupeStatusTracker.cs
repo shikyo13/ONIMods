@@ -145,6 +145,7 @@ namespace DuplicantStatusBar.Data
                 snapshots.Add(snap);
             }
 
+            SortSnapshots();
         }
 
         private static void EnsureAmounts()
