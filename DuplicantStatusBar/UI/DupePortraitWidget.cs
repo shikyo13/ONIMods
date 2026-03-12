@@ -426,17 +426,17 @@ namespace DuplicantStatusBar.UI
         {
             switch (alert)
             {
-                case AlertType.Suffocating:  return Hex(0x60a5fa);
-                case AlertType.LowHP:        return Hex(0xef4444);
-                case AlertType.Scalding:     return Hex(0xfb923c);
-                case AlertType.Hypothermia:  return Hex(0x22d3ee);
-                case AlertType.Overstressed: return Hex(0xe879f9);
-                case AlertType.Diseased:     return Hex(0xa855f7);
-                case AlertType.Overjoyed:    return Hex(0xfbbf24);
-                case AlertType.Irradiated:    return Hex(0x86efac);
-                case AlertType.Starving:      return Hex(0xea580c);
-                case AlertType.BladderUrgent: return Hex(0xeab308);
-                case AlertType.Stuck:         return Hex(0xF59E0B);
+                case AlertType.Suffocating:   return Hex(0x42A5F5);
+                case AlertType.LowHP:         return Hex(0xD50000);
+                case AlertType.Scalding:      return Hex(0xFF5722);
+                case AlertType.Hypothermia:   return Hex(0x22D3EE);
+                case AlertType.Overstressed:  return Hex(0xEC407A);
+                case AlertType.Diseased:      return Hex(0xAB47BC);
+                case AlertType.Overjoyed:     return Hex(0xFBBF24);
+                case AlertType.Irradiated:    return Hex(0x00E676);
+                case AlertType.Starving:      return Hex(0xFF9800);
+                case AlertType.BladderUrgent: return Hex(0xFFEB3B);
+                case AlertType.Stuck:         return Hex(0x7E57C2);
                 case AlertType.Idle:          return Hex(0x9CA3AF);
                 default: return Color.clear;
             }

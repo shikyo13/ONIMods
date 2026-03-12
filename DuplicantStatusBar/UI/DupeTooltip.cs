@@ -77,7 +77,7 @@ namespace DuplicantStatusBar.UI
             float tempC = snap.BodyTemperature - 273.15f;
             sb.AppendLine($"Body Temp: {tempC:F1} C");
 
-            var blc = snap.BladderPercent >= 70f ? "EAB308" : "4ADE80";
+            var blc = snap.BladderPercent >= 70f ? "FFEB3B" : "4ADE80";
             sb.AppendLine($"Bladder: <color=#{blc}>{snap.BladderPercent:F0}%</color>");
 
             bool anyAlert = false;
