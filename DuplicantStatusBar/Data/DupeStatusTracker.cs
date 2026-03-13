@@ -27,7 +27,8 @@ namespace DuplicantStatusBar.Data
         LowHP,
         Suffocating,
         Stuck,
-        Idle
+        Idle,
+        Incapacitated
     }
 
     /// <summary>
@@ -56,16 +57,18 @@ namespace DuplicantStatusBar.Data
         public bool IsSuffocating;
         public bool IsStuck;
         public bool IsIdle;
+        public bool IsIncapacitated;
 
         /// <summary>Tests whether a specific alert is active in this snapshot's bitmask.</summary>
         public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (1 << (int)a)) != 0;
 
         /// <summary>Priority-ordered alert types. First match in this array becomes HighestAlert.</summary>
         public static readonly AlertType[] AlertPriority = {
-            AlertType.Suffocating, AlertType.LowHP, AlertType.Scalding,
-            AlertType.Hypothermia, AlertType.Stuck, AlertType.Irradiated,
-            AlertType.Starving, AlertType.Overstressed, AlertType.BladderUrgent,
-            AlertType.Diseased, AlertType.Overjoyed, AlertType.Idle
+            AlertType.Incapacitated, AlertType.Suffocating, AlertType.LowHP,
+            AlertType.Scalding, AlertType.Hypothermia, AlertType.Stuck,
+            AlertType.Irradiated, AlertType.Starving, AlertType.Overstressed,
+            AlertType.BladderUrgent, AlertType.Diseased, AlertType.Overjoyed,
+            AlertType.Idle
         };
     }
 
@@ -221,6 +224,10 @@ namespace DuplicantStatusBar.Data
                 snap.IsSuffocating = (suffSMI != null && suffSMI.IsInsideState(suffSMI.sm.noOxygen.suffocating))
                     || snap.BreathPercent < 30f;
 
+                // Incapacitated (bleeding out — 120s to death)
+                var health = go.GetComponent<Health>();
+                snap.IsIncapacitated = health != null && health.IsIncapacitated();
+
                 // Idle detection: accumulate time when chore is "Idle"
                 if (snap.ChoreDescription == "Idle")
                 {
@@ -349,6 +356,8 @@ namespace DuplicantStatusBar.Data
                 mask |= (ushort)(1 << (int)AlertType.Stuck);
             if (opts.AlertIdle && snap.IsIdle)
                 mask |= (ushort)(1 << (int)AlertType.Idle);
+            if (opts.AlertIncapacitated && snap.IsIncapacitated)
+                mask |= (ushort)(1 << (int)AlertType.Incapacitated);
 
             // Highest = first set bit in priority order
             foreach (var a in DupeSnapshot.AlertPriority)

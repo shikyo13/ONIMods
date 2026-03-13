@@ -103,7 +103,7 @@ namespace DuplicantStatusBar.Config
         [JsonProperty]
         public bool AlertOverstressed { get; set; } = true;
 
-        [Option("Overjoyed Alert", "Show badge during joy reactions.", "Alerts")]
+        [Option("Overjoyed Alert", "Show rainbow border and tooltip during joy reactions.", "Alerts")]
         [JsonProperty]
         public bool AlertOverjoyed { get; set; } = true;
 
@@ -126,6 +126,10 @@ namespace DuplicantStatusBar.Config
         [Option("Idle Alert", "Show badge when dupe has no task for an extended period.", "Alerts")]
         [JsonProperty]
         public bool AlertIdle { get; set; } = true;
+
+        [Option("Incapacitated Alert", "Show badge when dupe is incapacitated (bleeding out).", "Alerts")]
+        [JsonProperty]
+        public bool AlertIncapacitated { get; set; } = true;
 
         // IOptions — live update when user changes settings
         public void OnOptionsChanged()
