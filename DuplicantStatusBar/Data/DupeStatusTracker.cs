@@ -216,9 +216,9 @@ namespace DuplicantStatusBar.Data
                 snap.IsScalding = scaldSMI != null && scaldSMI.IsScalding();
                 snap.IsHypothermic = scaldSMI != null && scaldSMI.IsInsideState(scaldSMI.sm.scolding);
 
-                // Suffocating (SuffocationMonitor SM state — only fires when dupe has no oxygen)
+                // Suffocating (SuffocationMonitor SM — noOxygen.suffocating, not holdingbreath)
                 var suffSMI = go.GetSMI<SuffocationMonitor.Instance>();
-                snap.IsSuffocating = suffSMI != null && suffSMI.IsInsideState(suffSMI.sm.noOxygen);
+                snap.IsSuffocating = suffSMI != null && suffSMI.IsInsideState(suffSMI.sm.noOxygen.suffocating);
 
                 // Idle detection: accumulate time when chore is "Idle"
                 if (snap.ChoreDescription == "Idle")
