@@ -216,9 +216,10 @@ namespace DuplicantStatusBar.Data
                 snap.IsScalding = scaldSMI != null && scaldSMI.IsScalding();
                 snap.IsHypothermic = scaldSMI != null && scaldSMI.IsInsideState(scaldSMI.sm.scolding);
 
-                // Suffocating (SuffocationMonitor SM — noOxygen.suffocating, not holdingbreath)
+                // Suffocating (SM danger state OR breath critically low)
                 var suffSMI = go.GetSMI<SuffocationMonitor.Instance>();
-                snap.IsSuffocating = suffSMI != null && suffSMI.IsInsideState(suffSMI.sm.noOxygen.suffocating);
+                snap.IsSuffocating = (suffSMI != null && suffSMI.IsInsideState(suffSMI.sm.noOxygen.suffocating))
+                    || snap.BreathPercent < 30f;
 
                 // Idle detection: accumulate time when chore is "Idle"
                 if (snap.ChoreDescription == "Idle")
