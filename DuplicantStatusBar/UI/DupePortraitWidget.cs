@@ -33,10 +33,12 @@ namespace DuplicantStatusBar.UI
         private DupeSnapshot currentSnapshot;
         private float pulseTimer;
         private bool isPulsing;
+        private bool isOverjoyed;
+        private float rainbowHue;
 
         private ushort heldMask;
         private ushort currentAlertMask;
-        private float[] holdTimers = new float[14]; // indexed by (int)AlertType
+        private float[] holdTimers = new float[15]; // indexed by (int)AlertType
 
         private Color targetBorderColor;
         private Color targetFillColor;
@@ -225,7 +227,10 @@ namespace DuplicantStatusBar.UI
             if (nameLabel.text != displayName)
                 nameLabel.text = displayName;
 
-            // Border = full stress tier color (smoothed)
+            // Overjoyed → rainbow border (set here, applied in Update; gated by option)
+            isOverjoyed = snapshot.IsOverjoyed && StatusBarOptions.Instance.AlertOverjoyed;
+
+            // Border = full stress tier color (smoothed; overridden by rainbow in Update)
             var tc = TierColor(snapshot.Tier);
             targetBorderColor = tc;
 
@@ -258,7 +263,8 @@ namespace DuplicantStatusBar.UI
             // Pulse on critical
             isPulsing = snapshot.Tier == StressTier.Critical
                      || snapshot.HasAlert(AlertType.LowHP)
-                     || snapshot.HasAlert(AlertType.Overstressed);
+                     || snapshot.HasAlert(AlertType.Overstressed)
+                     || snapshot.HasAlert(AlertType.Incapacitated);
 
             // Multi-badge with per-alert hysteresis
             UpdateBadges(snapshot.AlertMask);
@@ -325,12 +331,11 @@ namespace DuplicantStatusBar.UI
             {
                 if (slot >= MAX_BADGES) break;
                 if ((heldMask & (1 << (int)a)) == 0) continue;
+                if (a == AlertType.Overjoyed) continue; // rainbow border replaces badge
 
                 badgeImages[slot].gameObject.SetActive(true);
                 badgeImages[slot].color = AlertColor(a);
-                var sym = a == AlertType.Overjoyed ? "*"
-                        : a == AlertType.Idle      ? "?"
-                        : "!";
+                var sym = a == AlertType.Idle ? "?" : "!";
                 if (badgeSymbols[slot].text != sym)
                     badgeSymbols[slot].text = sym;
                 slot++;
@@ -347,6 +352,7 @@ namespace DuplicantStatusBar.UI
             {
                 case AlertType.Suffocating:
                 case AlertType.LowHP:
+                case AlertType.Incapacitated:
                     return 0f;
                 case AlertType.Overjoyed:
                     return 1f;
@@ -361,10 +367,21 @@ namespace DuplicantStatusBar.UI
 
             // Smooth color transitions (RGB only — alpha handled by pulse)
             float t = 1f - Mathf.Exp(-dt / 0.3f);
-            var lerpedBorder = Color.Lerp(borderImage.color, targetBorderColor, t);
+            Color borderTarget;
+            if (isOverjoyed)
+            {
+                // Rainbow hue cycle: 0.5 rev/sec → full rainbow in 2s
+                rainbowHue = (rainbowHue + dt * 0.5f) % 1f;
+                borderTarget = Color.HSVToRGB(rainbowHue, 0.85f, 1f);
+            }
+            else
+            {
+                borderTarget = targetBorderColor;
+            }
+            var lerpedBorder = Color.Lerp(borderImage.color, borderTarget, t);
             float borderAlpha = isPulsing
                 ? 0.6f + 0.4f * Mathf.Sin(pulseTimer)
-                : Mathf.Lerp(borderImage.color.a, targetBorderColor.a, t);
+                : Mathf.Lerp(borderImage.color.a, borderTarget.a, t);
             borderImage.color = new Color(lerpedBorder.r, lerpedBorder.g, lerpedBorder.b, borderAlpha);
             bgFill.color = Color.Lerp(bgFill.color, targetFillColor, t);
 
@@ -438,6 +455,7 @@ namespace DuplicantStatusBar.UI
                 case AlertType.BladderUrgent: return Hex(0xFFEB3B);
                 case AlertType.Stuck:         return Hex(0x7E57C2);
                 case AlertType.Idle:          return Hex(0x9CA3AF);
+                case AlertType.Incapacitated: return Hex(0xFF00DD);
                 default: return Color.clear;
             }
         }
