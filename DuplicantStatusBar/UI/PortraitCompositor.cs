@@ -9,6 +9,8 @@ namespace DuplicantStatusBar.UI
     /// static Texture2D/Sprite. Bypasses the KAnim batch rendering pipeline
     /// entirely — works in any Canvas render mode.
     ///
+    /// Layer positions are derived dynamically from each symbol's KAnim bbox
+    /// data, using the head shape as the positioning anchor.
     /// </summary>
     public static class PortraitCompositor
     {
@@ -20,15 +22,28 @@ namespace DuplicantStatusBar.UI
         private static readonly Dictionary<long, Texture2D> spriteCache
             = new Dictionary<long, Texture2D>();
 
-        // Always composite at 125px native resolution — the UI Image
-        // component scales the result down via bilinear filtering.
-        private const int COMPOSE_SIZE = 125;
+        // Cache composited base layers (head+eyes+mouth) per dupe — these never change
+        private struct BaseCacheEntry
+        {
+            public Texture2D Texture;
+            public Vector2 HeadCenter;
+            public float KAnimToPixel;
+        }
+        private static readonly Dictionary<int, BaseCacheEntry> baseCache
+            = new Dictionary<int, BaseCacheEntry>();
+
+        /// <summary>ONI's engine-wide base pixels-per-unit (fallback when bbox data unavailable).</summary>
+        private const float ONI_BASE_PPU = 100f;
+
+        /// <summary>Alpha at or below this is treated as fully transparent (anti-aliasing fringe filter).</summary>
+        private const float ALPHA_THRESHOLD = 0.1f;
 
         /// <summary>
         /// Composites a dupe's accessories from KAnim atlas textures into a single Sprite.
-        /// Layers: headshape -> eyes (flipped) -> mouth (frame 22) -> hair/hat. Always renders at 125px, UI Image scales down.
+        /// Layers: headshape -> eyes (flipped) -> mouth (frame 22) -> hair/hat.
+        /// All layer positions derived from KAnim bbox centers relative to head anchor.
         /// </summary>
-        public static Sprite ComposePortrait(MinionIdentity identity, int size)
+        public static Sprite ComposePortrait(MinionIdentity identity)
         {
             if (identity == null) return null;
 
@@ -40,49 +55,95 @@ namespace DuplicantStatusBar.UI
             string hatId = resume?.CurrentHat;
             bool hasHat = !string.IsNullOrEmpty(hatId);
 
-            // Create output texture (transparent)
-            var output = new Texture2D(COMPOSE_SIZE, COMPOSE_SIZE, TextureFormat.RGBA32, false);
-            output.filterMode = FilterMode.Bilinear;
-            ClearTexture(output);
+            var headAcc = accessorizer.GetAccessory(slots.HeadShape);
+            if (headAcc == null) return null;
 
-            // Composite layers back-to-front:
-            // headshape → eyes → mouth → hair (or hathair+hat)
-            WriteSymbol(output, accessorizer, slots.HeadShape);
-            WriteSymbol(output, accessorizer, slots.Eyes, xOffset: 8, flipX: true);
-            WriteSymbol(output, accessorizer, slots.Mouth, xOffset: 10, yOffset: -12, frameOverride: 22);
+            int instanceId = identity.GetInstanceID();
+            Vector2 headCenter;
+            float kanimToPixel;
+
+            // Base cache: head+eyes+mouth never change for a given dupe
+            if (!baseCache.TryGetValue(instanceId, out var entry))
+            {
+                var headSymbol = headAcc.symbol;
+                var headFrame = headSymbol.GetFrame(0);
+                headCenter = new Vector2(
+                    (headFrame.bboxMin.x + headFrame.bboxMax.x) * 0.5f,
+                    (headFrame.bboxMin.y + headFrame.bboxMax.y) * 0.5f);
+                kanimToPixel = ComputeKAnimToPixel(headSymbol, headFrame);
+
+                var baseTex = new Texture2D(125, 125, TextureFormat.RGBA32, false);
+                baseTex.filterMode = FilterMode.Bilinear;
+                ClearTexture(baseTex);
+
+                WriteSymbolDirect(baseTex, headSymbol, headCenter, kanimToPixel);
+                WriteSymbol(baseTex, accessorizer, slots.Eyes, headCenter, kanimToPixel, flipX: true);
+                WriteSymbol(baseTex, accessorizer, slots.Mouth, headCenter, kanimToPixel, frameOverride: 22);
+                baseTex.Apply();
+
+                entry = new BaseCacheEntry
+                {
+                    Texture = baseTex,
+                    HeadCenter = headCenter,
+                    KAnimToPixel = kanimToPixel
+                };
+                baseCache[instanceId] = entry;
+            }
+
+            headCenter = entry.HeadCenter;
+            kanimToPixel = entry.KAnimToPixel;
+
+            // Clone cached base, then composite hair/hat on top
+            var output = new Texture2D(125, 125, TextureFormat.RGBA32, false);
+            output.filterMode = FilterMode.Bilinear;
+            output.SetPixels(entry.Texture.GetPixels());
 
             if (hasHat)
             {
-                // Hat replaces hair: render hathair underneath, then hat on top
-                WriteSymbol(output, accessorizer, slots.HatHair, yOffset: 30, usePivot: true);
+                WriteSymbol(output, accessorizer, slots.HatHair, headCenter, kanimToPixel);
                 var hatAcc = slots.Hat.Lookup(hatId);
                 if (hatAcc != null)
-                    WriteSymbolDirect(output, hatAcc.symbol, yOffset: 30, usePivot: true);
+                    WriteSymbolDirect(output, hatAcc.symbol, headCenter, kanimToPixel);
             }
             else
             {
-                WriteSymbol(output, accessorizer, slots.Hair, xOffset: 8, yOffset: 30, usePivot: true);
+                WriteSymbol(output, accessorizer, slots.Hair, headCenter, kanimToPixel);
             }
 
             output.Apply();
-            var sprite = Sprite.Create(output,
-                new Rect(0, 0, COMPOSE_SIZE, COMPOSE_SIZE),
-                new Vector2(0.5f, 0.5f));
-            return sprite;
+            return Sprite.Create(output, new Rect(0, 0, 125, 125), new Vector2(0.5f, 0.5f));
+        }
+
+        /// <summary>
+        /// Derives pixels-per-KAnim-unit from a symbol's atlas pixel width and bbox width.
+        /// </summary>
+        private static float ComputeKAnimToPixel(KAnim.Build.Symbol symbol,
+            KAnim.Build.SymbolFrameInstance frame)
+        {
+            float bboxW = Mathf.Abs(frame.bboxMax.x - frame.bboxMin.x);
+            if (bboxW <= 0) return ONI_BASE_PPU;
+
+            Texture2D atlas;
+            try { atlas = symbol.build.GetTexture(0); }
+            catch { return ONI_BASE_PPU; }
+            if (atlas == null) return ONI_BASE_PPU;
+
+            float pixelW = atlas.width * Mathf.Abs(frame.uvMax.x - frame.uvMin.x);
+            return pixelW > 0 ? pixelW / bboxW : ONI_BASE_PPU;
         }
 
         private static void WriteSymbol(Texture2D output, Accessorizer accessorizer,
-            AccessorySlot slot, int xOffset = 0, int yOffset = 0,
-            bool usePivot = false, bool flipX = false, int frameOverride = -1)
+            AccessorySlot slot, Vector2 anchorCenter, float kanimToPixel,
+            bool flipX = false, int frameOverride = -1)
         {
             var acc = accessorizer.GetAccessory(slot);
             if (acc == null) return;
-            WriteSymbolDirect(output, acc.symbol, xOffset, yOffset, usePivot, flipX, frameOverride);
+            WriteSymbolDirect(output, acc.symbol, anchorCenter, kanimToPixel, flipX, frameOverride);
         }
 
         private static void WriteSymbolDirect(Texture2D output, KAnim.Build.Symbol symbol,
-            int xOffset = 0, int yOffset = 0,
-            bool usePivot = false, bool flipX = false, int frameOverride = -1)
+            Vector2 anchorCenter, float kanimToPixel,
+            bool flipX = false, int frameOverride = -1)
         {
             if (symbol == null) return;
 
@@ -96,29 +157,25 @@ namespace DuplicantStatusBar.UI
             Object.Destroy(sprite); // temp sprite — texture data cached separately
             if (pixels == null) return;
 
-            // Get pivot point from bounding box
-            int pivotX = 0, pivotY = 0;
-            if (usePivot)
-            {
-                var frame = symbol.GetFrame(frameOverride >= 0 ? frameOverride : 0);
-                pivotX = Mathf.RoundToInt(frame.bboxMin.x + pixels.width);
-                pivotY = Mathf.RoundToInt(frame.bboxMin.y + pixels.height);
-            }
+            // Position layer by computing its bbox center offset from head anchor
+            var frame = symbol.GetFrame(frameIdx);
+            var layerCenter = new Vector2(
+                (frame.bboxMin.x + frame.bboxMax.x) * 0.5f,
+                (frame.bboxMin.y + frame.bboxMax.y) * 0.5f);
+            Vector2 delta = layerCenter - anchorCenter;
 
-            int xStart = (output.width / 2) - (pixels.width / 2) + xOffset;
-            int yStart = (output.height / 2) - (pixels.height / 2) + yOffset;
-            if (usePivot)
-            {
-                xStart += pivotX / 2;
-                yStart -= pivotY / 2;
-            }
+            // KAnim Y-down → texture Y-up: negate vertical delta
+            int xStart = (output.width / 2) - (pixels.width / 2)
+                + Mathf.RoundToInt(delta.x * kanimToPixel);
+            int yStart = (output.height / 2) - (pixels.height / 2)
+                - Mathf.RoundToInt(delta.y * kanimToPixel);
 
             for (int x = 0; x < pixels.width; x++)
             {
                 for (int y = 0; y < pixels.height; y++)
                 {
                     var px = pixels.GetPixel(x, y);
-                    if (px.a <= 0.1f) continue;
+                    if (px.a <= ALPHA_THRESHOLD) continue;
 
                     int outX = flipX ? (pixels.width - 1 - x) + xStart : x + xStart;
                     int outY = y + yStart;
@@ -164,9 +221,9 @@ namespace DuplicantStatusBar.UI
             if (w <= 0 || h <= 0) return null;
 
             float bboxW = Mathf.Abs(frame.bboxMax.x - frame.bboxMin.x);
-            float ppu = 100f;
+            float ppu = ONI_BASE_PPU;
             if (w != 0 && bboxW > 0)
-                ppu = 100f / (bboxW / w);
+                ppu = ONI_BASE_PPU / (bboxW / w);
 
             var rect = new Rect(
                 (int)(atlas.width * x),
@@ -254,6 +311,10 @@ namespace DuplicantStatusBar.UI
             foreach (var kv in spriteCache)
                 if (kv.Value != null) Object.Destroy(kv.Value);
             spriteCache.Clear();
+
+            foreach (var kv in baseCache)
+                if (kv.Value.Texture != null) Object.Destroy(kv.Value.Texture);
+            baseCache.Clear();
         }
     }
 }

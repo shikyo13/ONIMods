@@ -200,7 +200,7 @@ namespace DuplicantStatusBar.UI
                     DestroyPortraitSprite();
 
                     portraitImage.sprite = PortraitCompositor.ComposePortrait(
-                        snapshot.Identity, cardSz);
+                        snapshot.Identity);
                     currentIdentityId = id;
                     currentHat = hat;
                 }
@@ -426,13 +426,13 @@ namespace DuplicantStatusBar.UI
         {
             switch (alert)
             {
-                case AlertType.Suffocating:   return Hex(0x42A5F5);
+                case AlertType.Suffocating:   return Hex(0x2979FF);
                 case AlertType.LowHP:         return Hex(0xD50000);
                 case AlertType.Scalding:      return Hex(0xFF5722);
-                case AlertType.Hypothermia:   return Hex(0x22D3EE);
+                case AlertType.Hypothermia:   return Hex(0x00ACC1);
                 case AlertType.Overstressed:  return Hex(0xEC407A);
                 case AlertType.Diseased:      return Hex(0xAB47BC);
-                case AlertType.Overjoyed:     return Hex(0xFBBF24);
+                case AlertType.Overjoyed:     return Hex(0xAEEA00);
                 case AlertType.Irradiated:    return Hex(0x00E676);
                 case AlertType.Starving:      return Hex(0xFF9800);
                 case AlertType.BladderUrgent: return Hex(0xFFEB3B);
