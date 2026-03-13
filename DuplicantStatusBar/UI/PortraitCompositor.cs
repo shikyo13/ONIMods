@@ -164,11 +164,11 @@ namespace DuplicantStatusBar.UI
                 (frame.bboxMin.y + frame.bboxMax.y) * 0.5f);
             Vector2 delta = layerCenter - anchorCenter;
 
-            // KAnim Y-down → texture Y-up: negate vertical delta
+            // Both KAnim and Texture2D use Y-up: no negation needed
             int xStart = (output.width / 2) - (pixels.width / 2)
                 + Mathf.RoundToInt(delta.x * kanimToPixel);
             int yStart = (output.height / 2) - (pixels.height / 2)
-                - Mathf.RoundToInt(delta.y * kanimToPixel);
+                + Mathf.RoundToInt(delta.y * kanimToPixel);
 
             for (int x = 0; x < pixels.width; x++)
             {
