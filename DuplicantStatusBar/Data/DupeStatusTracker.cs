@@ -53,6 +53,7 @@ namespace DuplicantStatusBar.Data
         public bool IsIrradiated;
         public bool IsScalding;
         public bool IsHypothermic;
+        public bool IsSuffocating;
         public bool IsStuck;
         public bool IsIdle;
 
@@ -210,10 +211,14 @@ namespace DuplicantStatusBar.Data
                 var radSMI = go.GetSMI<RadiationMonitor.Instance>();
                 snap.IsIrradiated = radSMI != null && radSMI.sm.isSick.Get(radSMI);
 
-                // Scalding / Hypothermia (via ScaldingMonitor, not body temp)
+                // Scalding / Hypothermia (ScaldingMonitor SM state — matches vanilla status items)
                 var scaldSMI = go.GetSMI<ScaldingMonitor.Instance>();
                 snap.IsScalding = scaldSMI != null && scaldSMI.IsScalding();
-                snap.IsHypothermic = scaldSMI != null && scaldSMI.IsScolding();
+                snap.IsHypothermic = scaldSMI != null && scaldSMI.IsInsideState(scaldSMI.sm.scolding);
+
+                // Suffocating (SuffocationMonitor SM state — only fires when dupe has no oxygen)
+                var suffSMI = go.GetSMI<SuffocationMonitor.Instance>();
+                snap.IsSuffocating = suffSMI != null && suffSMI.IsInsideState(suffSMI.sm.noOxygen);
 
                 // Idle detection: accumulate time when chore is "Idle"
                 if (snap.ChoreDescription == "Idle")
@@ -319,7 +324,7 @@ namespace DuplicantStatusBar.Data
             mask = 0;
             highest = AlertType.None;
 
-            if (opts.AlertSuffocating && snap.BreathPercent < 30f)
+            if (opts.AlertSuffocating && snap.IsSuffocating)
                 mask |= (ushort)(1 << (int)AlertType.Suffocating);
             if (opts.AlertLowHP && snap.HealthPercent < 30f)
                 mask |= (ushort)(1 << (int)AlertType.LowHP);
