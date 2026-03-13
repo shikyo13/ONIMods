@@ -141,7 +141,8 @@ namespace DuplicantStatusBar.UI
                 case AlertType.Diseased:     return "Diseased";
                 case AlertType.Overjoyed:    return "Overjoyed";
                 case AlertType.Stuck:        return "Stuck";
-                case AlertType.Idle:         return "Idle";
+                case AlertType.Idle:          return "Idle";
+                case AlertType.Incapacitated: return "Incapacitated";
                 default: return "";
             }
         }
