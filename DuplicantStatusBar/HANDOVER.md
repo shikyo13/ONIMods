@@ -139,28 +139,11 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 
 ## v2.2.0 — Per-Alert Visual Effects
 
-- **Alert overlay on portrait cards**: animated color overlay driven by highest-priority alert. Each alert has unique color, gradient shape (Radial/FromBottom/FullWash), and animation pattern (Pulse/Heartbeat/Flicker). Overjoyed dupes keep rainbow border instead.
-- **New file `UI/AlertEffects.cs`**: static data layer — `AlertEffect` struct, procedural 32x32 sprite cache, `EvaluateAlpha()` with three animation patterns
-- **Animated tooltip text**: replaced rich-text alert lines with 5 pooled TMP elements. Each alert gets per-character vertex color animation with glow. Overjoyed keeps rainbow; other alerts pulse monochromatically.
+- **Animated tooltip text**: replaced rich-text alert lines with 5 pooled TMP elements. Each alert gets per-character vertex color animation with glow. Overjoyed uses smooth rainbow cycling; other alerts pulse monochromatically.
+- **New file `UI/AlertEffects.cs`**: static data layer — `AlertEffect` struct, `EvaluateAlpha()` with three animation patterns (Pulse/Heartbeat/Flicker), used by tooltip animation
 - **Renamed**: `TooltipRainbowDriver` → `TooltipAnimationDriver`, `AnimateRainbow()` → `AnimateTexts()`
 - **Bug fixes**: removed `✦` characters from Overjoyed tooltip (game font lacks glyph), fixed blank line always appearing before alert section
-
-### Alert Effect Definitions
-
-| Alert | Color | Shape | Pattern | Cycle |
-|-|-|-|-|-|
-| Incapacitated | #E91E63 | Radial | Pulse | 0.6s |
-| Suffocating | #2979FF | FromBottom | Pulse | 2.0s |
-| LowHP | #D50000 | Radial | Heartbeat | 1.2s |
-| Scalding | #FF6400 | FromBottom | Flicker | 0.8s |
-| Hypothermia | #90CAF9 | Radial | Pulse | 3.0s |
-| Stuck | #795548 | FullWash | Pulse+Vibrate | 2.0s |
-| Irradiated | #76FF03 | Radial | Pulse | 2.0s |
-| Starving | #FFA000 | FromBottom | Pulse | 2.5s |
-| Overstressed | #AA00FF | Radial | Pulse | 1.5s |
-| BladderUrgent | #FFEB3B | FromBottom | Pulse | 1.5s |
-| Diseased | #CDDC39 | Radial | Pulse | 2.0s |
-| Idle | #9E9E9E | FullWash | Pulse | 3.0s |
+- **Removed portrait overlay**: per-alert color overlay on cards obscured the health bar — tooltip-only animated text is the current approach
 
 ## Not Yet Implemented
 

@@ -29,8 +29,6 @@ namespace DuplicantStatusBar.UI
 
     static class AlertEffects
     {
-        private const int TEX_SIZE = 32;
-
         // Indexed by (int)AlertType — None(0) and Overjoyed(1) are unused placeholders
         private static readonly AlertEffect[] effects = new AlertEffect[]
         {
@@ -50,64 +48,10 @@ namespace DuplicantStatusBar.UI
             new AlertEffect(Hex(0xE91E63), 0.6f, AlertPattern.Pulse,     GradientShape.Radial,     0.45f, 0.85f), // 13 Incapacitated
         };
 
-        private static readonly Sprite[] spriteCache = new Sprite[14];
-        private static readonly Texture2D[] textureCache = new Texture2D[14];
-
         public static AlertEffect Get(AlertType type)
         {
             int i = (int)type;
             return (i >= 0 && i < effects.Length) ? effects[i] : default;
-        }
-
-        public static Sprite GetOverlaySprite(AlertType type)
-        {
-            int i = (int)type;
-            if (i < 0 || i >= spriteCache.Length) return null;
-            if (spriteCache[i] != null) return spriteCache[i];
-
-            var fx = effects[i];
-            var tex = new Texture2D(TEX_SIZE, TEX_SIZE, TextureFormat.RGBA32, false);
-            tex.filterMode = FilterMode.Bilinear;
-            var pixels = new Color32[TEX_SIZE * TEX_SIZE];
-
-            byte r = (byte)(fx.BaseColor.r * 255f);
-            byte g = (byte)(fx.BaseColor.g * 255f);
-            byte b = (byte)(fx.BaseColor.b * 255f);
-            float center = (TEX_SIZE - 1) * 0.5f;
-
-            for (int y = 0; y < TEX_SIZE; y++)
-            {
-                for (int x = 0; x < TEX_SIZE; x++)
-                {
-                    float a;
-                    switch (fx.Shape)
-                    {
-                        case GradientShape.Radial:
-                            float dx = x - center, dy = y - center;
-                            float dist = Mathf.Sqrt(dx * dx + dy * dy) / center;
-                            a = Mathf.Clamp01(1f - dist);
-                            break;
-                        case GradientShape.FromBottom:
-                            a = 1f - (float)y / (TEX_SIZE - 1);
-                            break;
-                        default: // FullWash
-                            a = 1f;
-                            break;
-                    }
-
-                    pixels[y * TEX_SIZE + x] = new Color32(r, g, b, (byte)(a * 255f));
-                }
-            }
-
-            tex.SetPixels32(pixels);
-            tex.Apply(false, false);
-
-            var sprite = Sprite.Create(tex, new Rect(0, 0, TEX_SIZE, TEX_SIZE),
-                new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
-
-            textureCache[i] = tex;
-            spriteCache[i] = sprite;
-            return sprite;
         }
 
         public static float EvaluateAlpha(in AlertEffect fx, float t)
@@ -140,22 +84,7 @@ namespace DuplicantStatusBar.UI
             }
         }
 
-        public static void Cleanup()
-        {
-            for (int i = 0; i < spriteCache.Length; i++)
-            {
-                if (spriteCache[i] != null)
-                {
-                    Object.Destroy(spriteCache[i]);
-                    spriteCache[i] = null;
-                }
-                if (textureCache[i] != null)
-                {
-                    Object.Destroy(textureCache[i]);
-                    textureCache[i] = null;
-                }
-            }
-        }
+        public static void Cleanup() { }
 
         private static Color Hex(int rgb)
         {

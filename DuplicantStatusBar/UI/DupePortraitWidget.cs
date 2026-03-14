@@ -43,10 +43,6 @@ namespace DuplicantStatusBar.UI
         private float rainbowPulse;
         private const int RAINBOW_CORNER = 8;
 
-        private Image alertOverlay;
-        private float alertTimer;
-        private AlertType activeAlertType;
-
         private ushort heldMask;
         private ushort currentAlertMask;
         private float[] holdTimers = new float[15]; // indexed by (int)AlertType
@@ -144,12 +140,6 @@ namespace DuplicantStatusBar.UI
             initialText.raycastTarget = false;
             if (StatusBarScreen.GameFont != null) initialText.font = StatusBarScreen.GameFont;
             Stretch(initialText.rectTransform);
-
-            // Alert overlay (per-alert animated color effect, above portrait/initials)
-            alertOverlay = AddImage(cardGO.transform, "AlertOverlay");
-            alertOverlay.raycastTarget = false;
-            Stretch(alertOverlay.rectTransform, -4f);
-            alertOverlay.gameObject.SetActive(false);
 
             // Damage overlay (above portrait + initials — dark red tint over missing HP)
             damageOverlay = AddImage(cardGO.transform, "DamageOverlay");
@@ -253,13 +243,6 @@ namespace DuplicantStatusBar.UI
 
             // Overjoyed → rainbow border (set here, applied in Update; gated by option)
             isOverjoyed = snapshot.IsOverjoyed && StatusBarOptions.Instance.AlertOverjoyed;
-
-            // Alert overlay for non-overjoyed alerts (overjoyed uses rainbow border instead)
-            activeAlertType = isOverjoyed ? AlertType.None : snapshot.HighestAlert;
-            bool showOverlay = activeAlertType != AlertType.None;
-            alertOverlay.gameObject.SetActive(showOverlay);
-            if (showOverlay)
-                alertOverlay.sprite = AlertEffects.GetOverlaySprite(activeAlertType);
 
             // Border = full stress tier color (smoothed; overridden by rainbow in Update)
             var tc = TierColor(snapshot.Tier);
@@ -505,20 +488,6 @@ namespace DuplicantStatusBar.UI
             }
 
             bgFill.color = Color.Lerp(bgFill.color, targetFillColor, t);
-
-            // Alert overlay animation
-            if (alertOverlay.gameObject.activeSelf)
-            {
-                alertTimer += dt;
-                var fx = AlertEffects.Get(activeAlertType);
-                float alpha = AlertEffects.EvaluateAlpha(fx, alertTimer);
-                alertOverlay.color = new Color(1f, 1f, 1f, alpha);
-
-                if (activeAlertType == AlertType.Stuck)
-                    alertOverlay.rectTransform.anchoredPosition = new Vector2(Mathf.Sin(alertTimer * 30f), 0f);
-                else
-                    alertOverlay.rectTransform.anchoredPosition = Vector2.zero;
-            }
 
             if (isPulsing)
                 pulseTimer = (pulseTimer + dt * 3f) % (2f * Mathf.PI);

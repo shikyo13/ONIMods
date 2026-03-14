@@ -240,7 +240,6 @@ namespace DuplicantStatusBar.UI
         {
             tmp.ForceMeshUpdate();
             var textInfo = tmp.textInfo;
-            int sparkSeed = Time.frameCount / 4;
             float pulseAlpha = 0.85f + 0.15f * Mathf.Sin(rainbowPulse);
             byte alphaByte = (byte)(pulseAlpha * 255f);
 
@@ -251,11 +250,6 @@ namespace DuplicantStatusBar.UI
 
                 float charHue = (rainbowHue + i * 0.1f) % 1f;
                 Color c = Color.HSVToRGB(charHue, 1f, 1f);
-
-                // Sparkle: ~4% chance per char per 4-frame window
-                int hash = (i * 7919 + sparkSeed * 3571) & 0x3FF;
-                if (hash < 40)
-                    c = Color.Lerp(c, Color.white, 0.7f);
 
                 var color32 = new Color32(
                     (byte)(c.r * 255f), (byte)(c.g * 255f),
