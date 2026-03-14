@@ -155,6 +155,23 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 - **Blink system**: per-widget timer (3-8s random interval, 0.15s duration), closed-eye frame discovered from Sleep face in kanim. Skips if `GetBlinkFrame()` returns -1 or matches current eye frame. Recomposites via `RecomposeWithEyes()`.
 - **Option**: `EnableExpressions` (bool, default true) — disabling reverts to static portraits (eyes=0, mouth=22)
 
+## v2.3.1 — Expression Sprite Sizing & Blink Fallback
+
+**Root cause**: Different expression frames extract to different pixel dimensions from the atlas. All sprites share PPU=50, so larger sprites (e.g., Sparkle mouth ~50×30 vs Happy mouth ~27×15) have intentionally larger bboxes. The center-offset compositor (`xStart = center - spriteWidth/2 + offset`) extends oversized sprites equally in all directions, pushing top edges into eye areas.
+
+**Fix — proportional size clamping**: `WriteSymbolDirect` accepts optional `maxWidth`/`maxHeight` parameters. Oversized sprites are uniformly scaled down via `ScaleTexture` (GPU `RenderTexture` + `Graphics.Blit` downsampling). Max dimensions: eyes 68×40 px, mouth 45×22 px (~84%/50% and ~55%/27% of head's ~81×80 px).
+
+**Blink fallback**: Sleep face not found in some kanim variants → `blinkEyeFrame = -1`. Added Tired face as third fallback after Sleep and Dead (droopy/half-closed eyes as blink substitute).
+
+**Diagnostic enhancement**: Section 4 now exports sprites for ALL 13 expression types (`eyes_sparkle.png`, `mouth_angry.png`, etc.) with pixel dimensions logged, enabling visual verification of clamping effectiveness.
+
+**Previous approaches tried and rejected**:
+- Bbox-relative positioning (commit b347224, reverted): computed bbox-center offsets but still centered at target — didn't solve sizing. Mixed KAnim units with pixels in `usePivot` math.
+- Per-expression offset tables: fragile — would need tuning per expression AND per sprite size. All expressions share nearly identical snapto transforms.
+- Anchor-based positioning: anchor fractions vary per-dupe (0.04–0.31), introducing per-dupe vertical variation.
+
+**Variant system note**: `head_master_swap_kanim` contains 3 body type variants with 7/5/8 elements each. The `ContainsKey` first-variant fix (commit 1f7020c) resolved wrong-frame-index bugs by taking the first matching animation hash.
+
 ## Not Yet Implemented
 
 - Phase 2: Animated KBAC portraits (ScreenSpaceCamera canvas with KAnimBatchManager, staggered RT capture)

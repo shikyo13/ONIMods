@@ -274,12 +274,19 @@ namespace DuplicantStatusBar.UI
                 var headAcc = acc.GetAccessory(slots.HeadShape);
                 if (headAcc != null) DumpSpriteFor("head", headAcc.symbol, 0);
 
+                // Export eye/mouth sprites for ALL expression types
                 var eyeAcc = acc.GetAccessory(slots.Eyes);
-                if (eyeAcc != null) DumpSpriteFor("eyes", eyeAcc.symbol, 0);
-
                 var mouthAcc = acc.GetAccessory(slots.Mouth);
-                var happyFrames = ExpressionResolver.GetFrames(ExpressionType.Happy);
-                if (mouthAcc != null) DumpSpriteFor("mouth", mouthAcc.symbol, happyFrames.MouthFrame);
+                var expressions = (ExpressionType[])Enum.GetValues(typeof(ExpressionType));
+                foreach (var expr in expressions)
+                {
+                    var frames = ExpressionResolver.GetFrames(expr);
+                    string name = expr.ToString().ToLower();
+                    if (eyeAcc != null)
+                        DumpSpriteFor($"eyes_{name}", eyeAcc.symbol, frames.EyeFrame);
+                    if (mouthAcc != null)
+                        DumpSpriteFor($"mouth_{name}", mouthAcc.symbol, frames.MouthFrame);
+                }
             }
             catch (Exception ex) { Log($"Section 4 error: {ex}"); }
         }
@@ -359,9 +366,20 @@ namespace DuplicantStatusBar.UI
 
                 // Individual layer sprites
                 SaveSymbolPng(acc.GetAccessory(slots.HeadShape)?.symbol, 0, dir, "head.png");
-                SaveSymbolPng(acc.GetAccessory(slots.Eyes)?.symbol, 0, dir, "eyes.png");
-                var happyExpr = ExpressionResolver.GetFrames(ExpressionType.Happy);
-                SaveSymbolPng(acc.GetAccessory(slots.Mouth)?.symbol, happyExpr.MouthFrame, dir, "mouth.png");
+
+                // Per-expression eye/mouth sprites
+                var eyeAcc = acc.GetAccessory(slots.Eyes);
+                var mouthAcc = acc.GetAccessory(slots.Mouth);
+                var expressions = (ExpressionType[])Enum.GetValues(typeof(ExpressionType));
+                foreach (var expr in expressions)
+                {
+                    var frames = ExpressionResolver.GetFrames(expr);
+                    string name = expr.ToString().ToLower();
+                    if (eyeAcc != null)
+                        SaveSymbolPng(eyeAcc.symbol, frames.EyeFrame, dir, $"eyes_{name}.png");
+                    if (mouthAcc != null)
+                        SaveSymbolPng(mouthAcc.symbol, frames.MouthFrame, dir, $"mouth_{name}.png");
+                }
 
                 // Composited portrait
                 var portrait = PortraitCompositor.ComposePortrait(dupe);
