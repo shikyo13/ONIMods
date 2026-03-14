@@ -30,6 +30,15 @@ namespace DuplicantStatusBar.UI
         private string currentHat;
         private const int PORTRAIT_THRESHOLD = 36;
 
+        // Expression state
+        private ExpressionType currentExpression = ExpressionType.Neutral;
+        private int currentEyeFrame;
+        private int currentMouthFrame = 22;
+
+        // Blink system
+        private float blinkTimer;
+        private bool isBlinking;
+
         private DupeSnapshot currentSnapshot;
         private float pulseTimer;
         private bool isPulsing;
@@ -210,16 +219,37 @@ namespace DuplicantStatusBar.UI
                 var resume = snapshot.Identity.GetComponent<MinionResume>();
                 string hat = resume?.CurrentHat ?? "";
 
-                if (id != currentIdentityId || hat != currentHat)
+                // Resolve expression → eye/mouth frame indices
+                ExpressionType expr = ExpressionType.Neutral;
+                int eyeFrame = 0, mouthFrame = 22;
+                if (StatusBarOptions.Instance.EnableExpressions)
                 {
-                    // Destroy old texture to prevent leak
+                    expr = ExpressionResolver.Resolve(snapshot.HighestAlert, snapshot.Tier);
+                    var frames = ExpressionResolver.GetFrames(expr);
+                    eyeFrame = frames.EyeFrame;
+                    mouthFrame = frames.MouthFrame;
+                }
+
+                bool identityChanged = id != currentIdentityId || hat != currentHat;
+                bool expressionChanged = expr != currentExpression;
+
+                if (identityChanged || expressionChanged)
+                {
                     DestroyPortraitSprite();
 
                     portraitImage.sprite = PortraitCompositor.ComposePortrait(
-                        snapshot.Identity);
+                        snapshot.Identity, eyeFrame, mouthFrame);
                     currentIdentityId = id;
                     currentHat = hat;
+                    currentExpression = expr;
+                    currentEyeFrame = eyeFrame;
+                    currentMouthFrame = mouthFrame;
+                    isBlinking = false;
                 }
+
+                // Initialize blink timer per-widget (staggered)
+                if (identityChanged)
+                    blinkTimer = UnityEngine.Random.Range(2f, 6f);
 
                 portraitImage.gameObject.SetActive(true);
                 initialText.gameObject.SetActive(false);
@@ -317,6 +347,14 @@ namespace DuplicantStatusBar.UI
                 Destroy(oldTex);
                 portraitImage.sprite = null;
             }
+        }
+
+        private void RecomposeWithEyes(int eyeFrame)
+        {
+            if (currentSnapshot.Identity == null) return;
+            DestroyPortraitSprite();
+            portraitImage.sprite = PortraitCompositor.ComposePortrait(
+                currentSnapshot.Identity, eyeFrame, currentMouthFrame);
         }
 
         private void OnDestroy()
@@ -503,6 +541,33 @@ namespace DuplicantStatusBar.UI
                     holdTimers[(int)a] -= dt;
                     if (holdTimers[(int)a] <= 0f)
                         heldMask &= (ushort)~bit;
+                }
+            }
+
+            // Blink system: randomized per-dupe, only when portrait is visible
+            if (StatusBarOptions.Instance.EnableExpressions
+                && portraitImage.gameObject.activeSelf
+                && currentSnapshot.Identity != null)
+            {
+                int bf = ExpressionResolver.GetBlinkFrame();
+                if (bf >= 0 && bf != currentEyeFrame)
+                {
+                    blinkTimer -= dt;
+                    if (blinkTimer <= 0f)
+                    {
+                        if (!isBlinking)
+                        {
+                            isBlinking = true;
+                            blinkTimer = 0.15f;
+                            RecomposeWithEyes(bf);
+                        }
+                        else
+                        {
+                            isBlinking = false;
+                            blinkTimer = UnityEngine.Random.Range(3f, 8f);
+                            RecomposeWithEyes(currentEyeFrame);
+                        }
+                    }
                 }
             }
         }

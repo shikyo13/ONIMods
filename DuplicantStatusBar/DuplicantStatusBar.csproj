@@ -70,10 +70,10 @@
     <Delete Files="@(SystemShims)" />
   </Target>
 
-  <!-- Deploy to local mods folder (workshop-ready) -->
+  <!-- Deploy to dev mods folder (crash-immune during development) -->
   <Target Name="DeployMod" AfterTargets="CleanSystemShims">
     <PropertyGroup>
-      <ModDeploy>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded\mods\local\DuplicantStatusBar\</ModDeploy>
+      <ModDeploy>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded\mods\dev\DuplicantStatusBar\</ModDeploy>
     </PropertyGroup>
     <MakeDir Directories="$(ModDeploy)" />
     <ItemGroup>
