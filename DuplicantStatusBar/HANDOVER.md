@@ -180,6 +180,21 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 
 **Hat clipping variance**: per-hat bbox pivots produce different vertical offsets — some hats clip eyes more than others. This is inherent to the per-hat pivot system and partly matches in-game appearance (hats cover foreheads). No code change needed.
 
+## v2.3.3 — Edge-Anchored Feature Positioning
+
+**Root cause**: Center-offset positioning (`yStart = center - spriteH/2 + offset`) makes the bottom edge of eyes height-dependent. A 35px eye sprite extends 5px further toward the mouth than a 25px eye sprite, creating per-dupe eye-mouth spacing variation (e.g., Hassan's mouth crowds his eye while Ditto/Burt look correct).
+
+**Fix — `VerticalAnchor` enum**: `WriteSymbolDirect` accepts a `VerticalAnchor` parameter (`Center`/`Bottom`/`Top`). `Bottom` anchors the bottom edge at `center + yOffset`; `Top` anchors the top edge at `center + yOffset - spriteHeight`. Eyes use `Bottom`, mouth uses `Top`, all other layers remain `Center`.
+
+**Net positions** (canvas center=62, `PORTRAIT_Y_SHIFT=-8`):
+- Eye bottom edge: 62 + (-14 + -8) = **y=40** — constant for all dupes
+- Mouth top edge: 62 + (-20 + -8) = **y=34** — constant for all dupes
+- Gap: **6px** — consistent regardless of sprite dimensions
+
+**Growth direction**: taller eyes extend upward (into hat/hair area — covered by hair/hat layer drawn last), taller mouths extend downward (toward chin — harmless).
+
+**Tuning**: adjust `-14` (eye yOffset) and `-20` (mouth yOffset) to move anchor positions. The gap equals `eyeAnchor - mouthAnchor` in offset terms (currently 6px).
+
 ## Not Yet Implemented
 
 - Phase 2: Animated KBAC portraits (ScreenSpaceCamera canvas with KAnimBatchManager, staggered RT capture)
