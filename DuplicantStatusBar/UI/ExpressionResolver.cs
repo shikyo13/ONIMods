@@ -159,15 +159,18 @@ namespace DuplicantStatusBar.UI
                 if (eyeFrame < 0) eyeFrame = 0;
                 if (mouthFrame < 0) mouthFrame = 0;
 
-                faceFrames[anim.hash] = new ExpressionFrames
+                if (!faceFrames.ContainsKey(anim.hash))
                 {
-                    EyeFrame = eyeFrame,
-                    MouthFrame = mouthFrame,
-                    EyeTransX = eyeTransX,
-                    EyeTransY = eyeTransY,
-                    MouthTransX = mouthTransX,
-                    MouthTransY = mouthTransY
-                };
+                    faceFrames[anim.hash] = new ExpressionFrames
+                    {
+                        EyeFrame = eyeFrame,
+                        MouthFrame = mouthFrame,
+                        EyeTransX = eyeTransX,
+                        EyeTransY = eyeTransY,
+                        MouthTransX = mouthTransX,
+                        MouthTransY = mouthTransY
+                    };
+                }
             }
 
             // Discover blink frame from Sleep face (closed eyes)

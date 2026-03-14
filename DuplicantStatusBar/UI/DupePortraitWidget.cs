@@ -219,15 +219,13 @@ namespace DuplicantStatusBar.UI
                 var resume = snapshot.Identity.GetComponent<MinionResume>();
                 string hat = resume?.CurrentHat ?? "";
 
-                // Resolve expression → eye/mouth frame indices
+                // Resolve expression → eye/mouth frame indices + transforms
                 ExpressionType expr = ExpressionType.Neutral;
-                int eyeFrame = 0, mouthFrame = 22;
+                var frames = new ExpressionResolver.ExpressionFrames();
                 if (StatusBarOptions.Instance.EnableExpressions)
                 {
                     expr = ExpressionResolver.Resolve(snapshot.HighestAlert, snapshot.Tier);
-                    var frames = ExpressionResolver.GetFrames(expr);
-                    eyeFrame = frames.EyeFrame;
-                    mouthFrame = frames.MouthFrame;
+                    frames = ExpressionResolver.GetFrames(expr);
                 }
 
                 bool identityChanged = id != currentIdentityId || hat != currentHat;
@@ -238,12 +236,12 @@ namespace DuplicantStatusBar.UI
                     DestroyPortraitSprite();
 
                     portraitImage.sprite = PortraitCompositor.ComposePortrait(
-                        snapshot.Identity, eyeFrame, mouthFrame);
+                        snapshot.Identity, frames);
                     currentIdentityId = id;
                     currentHat = hat;
                     currentExpression = expr;
-                    currentEyeFrame = eyeFrame;
-                    currentMouthFrame = mouthFrame;
+                    currentEyeFrame = frames.EyeFrame;
+                    currentMouthFrame = frames.MouthFrame;
                     isBlinking = false;
                 }
 
@@ -353,8 +351,11 @@ namespace DuplicantStatusBar.UI
         {
             if (currentSnapshot.Identity == null) return;
             DestroyPortraitSprite();
+            // Build frames struct with overridden eye frame, keeping current transforms
+            var frames = ExpressionResolver.GetFrames(currentExpression);
+            frames.EyeFrame = eyeFrame;
             portraitImage.sprite = PortraitCompositor.ComposePortrait(
-                currentSnapshot.Identity, eyeFrame, currentMouthFrame);
+                currentSnapshot.Identity, frames);
         }
 
         private void OnDestroy()
