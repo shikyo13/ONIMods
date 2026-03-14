@@ -35,6 +35,7 @@ namespace DuplicantStatusBar.UI
         {
             DumpBodyAnimElements();
             DumpHeadSwapTransforms();
+            DumpExpressionFrameMappings();
             DumpPerDupeSymbols();
             DumpSpriteExtraction(dupe);
             DumpCanvasPositioning(dupe);
@@ -68,6 +69,9 @@ namespace DuplicantStatusBar.UI
                 var batchData = KAnimBatchManager.Instance()?.GetBatchGroupData(data.animBatchTag);
                 if (batchData == null) { Log("ERROR: batchData null"); return; }
 
+                // Need a valid batchTag for TryGetFrame — prefer build.batchTag, fall back to animBatchTag
+                HashedString frameTag = data.build != null ? data.build.batchTag : data.animBatchTag;
+
                 // List all anim names
                 var names = new List<string>();
                 int uiIdleIdx = -1;
@@ -86,7 +90,7 @@ namespace DuplicantStatusBar.UI
                 if (dumpIdx < data.animCount)
                 {
                     var anim = data.GetAnim(dumpIdx);
-                    if (anim.TryGetFrame(data.build.batchTag, 0, out var frame))
+                    if (anim.TryGetFrame(frameTag, 0, out var frame))
                     {
                         string animName = uiIdleIdx >= 0 ? "ui_idle" : names[0];
                         Log($"--- {animName} frame 0 ({frame.numElements} elements) ---");
@@ -157,6 +161,31 @@ namespace DuplicantStatusBar.UI
                 }
             }
             catch (Exception ex) { Log($"Section 2 error: {ex}"); }
+        }
+
+        #endregion
+
+        #region Section 2B: Expression Frame Mappings
+
+        private static void DumpExpressionFrameMappings()
+        {
+            try
+            {
+                Log("========== SECTION 2B: EXPRESSION FRAME MAPPINGS ==========");
+
+                var expressions = (ExpressionType[])System.Enum.GetValues(typeof(ExpressionType));
+                foreach (var expr in expressions)
+                {
+                    var frames = ExpressionResolver.GetFrames(expr);
+                    Log($"  {expr,-15} eye={frames.EyeFrame,3}  mouth={frames.MouthFrame,3}" +
+                        $"  eyeTx=({frames.EyeTransX:F2},{frames.EyeTransY:F2})" +
+                        $"  mouthTx=({frames.MouthTransX:F2},{frames.MouthTransY:F2})");
+                }
+
+                int blinkFrame = ExpressionResolver.GetBlinkFrame();
+                Log($"  Blink eye frame: {blinkFrame}");
+            }
+            catch (Exception ex) { Log($"Section 2B error: {ex}"); }
         }
 
         #endregion
@@ -249,7 +278,8 @@ namespace DuplicantStatusBar.UI
                 if (eyeAcc != null) DumpSpriteFor("eyes", eyeAcc.symbol, 0);
 
                 var mouthAcc = acc.GetAccessory(slots.Mouth);
-                if (mouthAcc != null) DumpSpriteFor("mouth", mouthAcc.symbol, 22);
+                var happyFrames = ExpressionResolver.GetFrames(ExpressionType.Happy);
+                if (mouthAcc != null) DumpSpriteFor("mouth", mouthAcc.symbol, happyFrames.MouthFrame);
             }
             catch (Exception ex) { Log($"Section 4 error: {ex}"); }
         }
@@ -290,8 +320,9 @@ namespace DuplicantStatusBar.UI
                     0, 0, PORTRAIT_Y_SHIFT, SIZE);
                 LogLayerPosition("eyes", acc.GetAccessory(slots.Eyes)?.symbol,
                     0, 8, PORTRAIT_Y_SHIFT, SIZE);
+                var happyMouth = ExpressionResolver.GetFrames(ExpressionType.Happy);
                 LogLayerPosition("mouth", acc.GetAccessory(slots.Mouth)?.symbol,
-                    22, 10, -12 + PORTRAIT_Y_SHIFT, SIZE);
+                    happyMouth.MouthFrame, 10, -12 + PORTRAIT_Y_SHIFT, SIZE);
 
                 // PNG export
                 ExportPngs(dupe, acc, slots);
@@ -329,7 +360,8 @@ namespace DuplicantStatusBar.UI
                 // Individual layer sprites
                 SaveSymbolPng(acc.GetAccessory(slots.HeadShape)?.symbol, 0, dir, "head.png");
                 SaveSymbolPng(acc.GetAccessory(slots.Eyes)?.symbol, 0, dir, "eyes.png");
-                SaveSymbolPng(acc.GetAccessory(slots.Mouth)?.symbol, 22, dir, "mouth.png");
+                var happyExpr = ExpressionResolver.GetFrames(ExpressionType.Happy);
+                SaveSymbolPng(acc.GetAccessory(slots.Mouth)?.symbol, happyExpr.MouthFrame, dir, "mouth.png");
 
                 // Composited portrait
                 var portrait = PortraitCompositor.ComposePortrait(dupe);

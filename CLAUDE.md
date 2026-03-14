@@ -23,7 +23,7 @@ dotnet build <ModName>/<ModName>.csproj
 D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed\
 
 # Deploy to:
-%USERPROFILE%\Documents\Klei\OxygenNotIncluded\mods\local\<ModName>\
+%USERPROFILE%\Documents\Klei\OxygenNotIncluded\mods\dev\<ModName>\
 
 # Logs:
 %APPDATA%\..\LocalLow\Klei\Oxygen Not Included\Player.log
