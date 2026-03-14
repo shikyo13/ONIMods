@@ -15,6 +15,9 @@ namespace DuplicantStatusBar.UI
     /// </summary>
     public static class PortraitCompositor
     {
+        /// <summary>Shift all layers down to give tall hats more headroom above center.</summary>
+        private const int PORTRAIT_Y_SHIFT = -8;
+
         // Cache readable copies of GPU textures to avoid repeated readbacks
         private static readonly Dictionary<Texture2D, Texture2D> readableCache
             = new Dictionary<Texture2D, Texture2D>();
@@ -72,11 +75,11 @@ namespace DuplicantStatusBar.UI
                 baseTex.filterMode = FilterMode.Bilinear;
                 ClearTexture(baseTex);
 
-                WriteSymbolDirect(baseTex, headSymbol);
-                WriteSymbol(baseTex, accessorizer, slots.Eyes, xOffset: 8, flipX: true,
-                    frameOverride: eyeFrame);
-                WriteSymbol(baseTex, accessorizer, slots.Mouth, xOffset: 10, yOffset: -12,
-                    frameOverride: mouthFrame);
+                WriteSymbolDirect(baseTex, headSymbol, yOffset: PORTRAIT_Y_SHIFT);
+                WriteSymbol(baseTex, accessorizer, slots.Eyes, xOffset: 8,
+                    yOffset: PORTRAIT_Y_SHIFT, flipX: true, frameOverride: eyeFrame);
+                WriteSymbol(baseTex, accessorizer, slots.Mouth, xOffset: 10,
+                    yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mouthFrame);
                 baseTex.Apply();
 
                 entry = new BaseCacheEntry
@@ -95,14 +98,14 @@ namespace DuplicantStatusBar.UI
 
             if (hasHat)
             {
-                WriteSymbol(output, accessorizer, slots.HatHair, xOffset: 8, yOffset: 30, usePivot: true);
+                WriteSymbol(output, accessorizer, slots.HatHair, xOffset: 8, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
                 var hatAcc = slots.Hat.Lookup(hatId);
                 if (hatAcc != null)
-                    WriteSymbolDirect(output, hatAcc.symbol, xOffset: 8, yOffset: 30, usePivot: true);
+                    WriteSymbolDirect(output, hatAcc.symbol, xOffset: 8, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
             }
             else
             {
-                WriteSymbol(output, accessorizer, slots.Hair, xOffset: 8, yOffset: 30, usePivot: true);
+                WriteSymbol(output, accessorizer, slots.Hair, xOffset: 8, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
             }
 
             output.Apply();
@@ -125,9 +128,11 @@ namespace DuplicantStatusBar.UI
             if (symbol == null) return;
 
             int frameIdx = frameOverride >= 0 ? frameOverride : 0;
+            if (frameIdx >= symbol.frameLookup.Length)
+                frameIdx = 0;
             long cacheKey = ((long)symbol.hash.HashValue << 16) ^ frameIdx;
 
-            var sprite = GetSpriteFromSymbol(symbol, frameOverride);
+            var sprite = GetSpriteFromSymbol(symbol, frameIdx);
             if (sprite == null) return;
 
             var pixels = GetSpritePixels(cacheKey, sprite);
@@ -175,6 +180,8 @@ namespace DuplicantStatusBar.UI
                 return null;
 
             int frameIdx = frameOverride >= 0 ? frameOverride : 0;
+            if (frameIdx >= symbol.frameLookup.Length)
+                frameIdx = 0;
             var frame = symbol.GetFrame(frameIdx);
             if (frame.Equals(default(KAnim.Build.SymbolFrameInstance)))
                 return null;
