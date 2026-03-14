@@ -9,9 +9,10 @@ namespace DuplicantStatusBar.UI
     /// static Texture2D/Sprite. Bypasses the KAnim batch rendering pipeline
     /// entirely — works in any Canvas render mode.
     ///
-    /// Layer positions use center+offset: each sprite is centered on the output
-    /// texture, then shifted by explicit pixel offsets per layer. Hair and hats
-    /// use the pivot from their KAnim bbox data for vertical alignment.
+    /// Eyes and mouth use edge-anchored positioning: eye bottom edge and mouth
+    /// top edge are fixed at absolute y-coordinates, so the gap is constant
+    /// regardless of sprite dimensions. Hair and hats use center+offset with
+    /// pivot from their KAnim bbox data for vertical alignment.
     /// </summary>
     public static class PortraitCompositor
     {
@@ -95,8 +96,9 @@ namespace DuplicantStatusBar.UI
                     int ef = eyeFrame;
                     if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
                     WriteSymbolDirect(baseTex, eyeAcc.symbol,
-                        xOffset: 8, yOffset: -4 + PORTRAIT_Y_SHIFT, frameOverride: ef,
-                        maxWidth: MAX_EYE_W, maxHeight: MAX_EYE_H);
+                        xOffset: 8, yOffset: -14 + PORTRAIT_Y_SHIFT, frameOverride: ef,
+                        maxWidth: MAX_EYE_W, maxHeight: MAX_EYE_H,
+                        anchor: VerticalAnchor.Bottom);
                 }
 
                 // Mouth — center-offset, shifted down
@@ -106,8 +108,9 @@ namespace DuplicantStatusBar.UI
                     int mf = mouthFrame;
                     if (mf >= mouthAcc.symbol.frameLookup.Length) mf = 0;
                     WriteSymbolDirect(baseTex, mouthAcc.symbol,
-                        xOffset: 10, yOffset: -18 + PORTRAIT_Y_SHIFT, frameOverride: mf,
-                        maxWidth: MAX_MOUTH_W, maxHeight: MAX_MOUTH_H);
+                        xOffset: 10, yOffset: -20 + PORTRAIT_Y_SHIFT, frameOverride: mf,
+                        maxWidth: MAX_MOUTH_W, maxHeight: MAX_MOUTH_H,
+                        anchor: VerticalAnchor.Top);
                 }
                 baseTex.Apply();
 
@@ -150,10 +153,13 @@ namespace DuplicantStatusBar.UI
             WriteSymbolDirect(output, acc.symbol, xOffset, yOffset, usePivot, flipX, frameOverride);
         }
 
+        private enum VerticalAnchor { Center, Bottom, Top }
+
         private static void WriteSymbolDirect(Texture2D output, KAnim.Build.Symbol symbol,
             int xOffset = 0, int yOffset = 0,
             bool usePivot = false, bool flipX = false, int frameOverride = -1,
-            int maxWidth = 0, int maxHeight = 0)
+            int maxWidth = 0, int maxHeight = 0,
+            VerticalAnchor anchor = VerticalAnchor.Center)
         {
             if (symbol == null) return;
 
@@ -191,7 +197,19 @@ namespace DuplicantStatusBar.UI
                 pivotY = Mathf.RoundToInt(frame.bboxMin.y + source.height);
             }
             int xStart = (output.width / 2) - (source.width / 2) + xOffset;
-            int yStart = (output.height / 2) - (source.height / 2) + yOffset;
+            int yStart;
+            switch (anchor)
+            {
+                case VerticalAnchor.Bottom:
+                    yStart = (output.height / 2) + yOffset;
+                    break;
+                case VerticalAnchor.Top:
+                    yStart = (output.height / 2) + yOffset - source.height;
+                    break;
+                default:
+                    yStart = (output.height / 2) - (source.height / 2) + yOffset;
+                    break;
+            }
             if (usePivot)
             {
                 xStart += pivotX / 2;
