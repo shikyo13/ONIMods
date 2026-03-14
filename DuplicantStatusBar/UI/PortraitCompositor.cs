@@ -47,6 +47,7 @@ namespace DuplicantStatusBar.UI
             int eyeFrame = 0, int mouthFrame = 22)
         {
             if (identity == null) return null;
+            DiagnosticDump.RunOnce(identity);
 
             var accessorizer = identity.GetComponent<Accessorizer>();
             if (accessorizer == null) return null;
@@ -77,26 +78,24 @@ namespace DuplicantStatusBar.UI
 
                 WriteSymbolDirect(baseTex, headSymbol, yOffset: PORTRAIT_Y_SHIFT);
 
-                // Eyes — bbox-relative positioning
+                // Eyes — hardcoded offset (precise positioning deferred to transform-based fix)
                 var eyeAcc = accessorizer.GetAccessory(slots.Eyes);
                 if (eyeAcc != null)
                 {
                     int ef = eyeFrame;
                     if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
-                    ComputeBboxOffset(headSymbol, 0, eyeAcc.symbol, ef, out int exOff, out int eyOff);
                     WriteSymbolDirect(baseTex, eyeAcc.symbol,
-                        xOffset: exOff, yOffset: eyOff + PORTRAIT_Y_SHIFT, frameOverride: ef);
+                        xOffset: 8, yOffset: PORTRAIT_Y_SHIFT, flipX: true, frameOverride: ef);
                 }
 
-                // Mouth — bbox-relative positioning
+                // Mouth — hardcoded offset, shifted down from center
                 var mouthAcc = accessorizer.GetAccessory(slots.Mouth);
                 if (mouthAcc != null)
                 {
                     int mf = mouthFrame;
                     if (mf >= mouthAcc.symbol.frameLookup.Length) mf = 0;
-                    ComputeBboxOffset(headSymbol, 0, mouthAcc.symbol, mf, out int mxOff, out int myOff);
                     WriteSymbolDirect(baseTex, mouthAcc.symbol,
-                        xOffset: mxOff, yOffset: myOff + PORTRAIT_Y_SHIFT, frameOverride: mf);
+                        xOffset: 10, yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mf);
                 }
                 baseTex.Apply();
 
@@ -192,34 +191,7 @@ namespace DuplicantStatusBar.UI
             }
         }
 
-        private static void ComputeBboxOffset(
-            KAnim.Build.Symbol refSymbol, int refFrame,
-            KAnim.Build.Symbol symbol, int symFrame,
-            out int xOff, out int yOff)
-        {
-            var rf = refSymbol.GetFrame(refFrame);
-            var sf = symbol.GetFrame(symFrame);
-
-            float refCx = (rf.bboxMin.x + rf.bboxMax.x) * 0.5f;
-            float refCy = (rf.bboxMin.y + rf.bboxMax.y) * 0.5f;
-            float refW  = rf.bboxMax.x - rf.bboxMin.x;
-            float refH  = rf.bboxMax.y - rf.bboxMin.y;
-
-            var atlas = refSymbol.build.GetTexture(0);
-            int refPxW = (int)(atlas.width  * Mathf.Abs(rf.uvMax.x - rf.uvMin.x));
-            int refPxH = (int)(atlas.height * Mathf.Abs(rf.uvMax.y - rf.uvMin.y));
-
-            float ppuX = refW > 0 ? refPxW / refW : 1f;
-            float ppuY = refH > 0 ? refPxH / refH : 1f;
-
-            float symCx = (sf.bboxMin.x + sf.bboxMax.x) * 0.5f;
-            float symCy = (sf.bboxMin.y + sf.bboxMax.y) * 0.5f;
-
-            xOff = Mathf.RoundToInt((symCx - refCx) * ppuX);
-            yOff = Mathf.RoundToInt((symCy - refCy) * ppuY);
-        }
-
-        private static Sprite GetSpriteFromSymbol(KAnim.Build.Symbol symbol, int frameOverride = -1)
+        internal static Sprite GetSpriteFromSymbol(KAnim.Build.Symbol symbol, int frameOverride = -1)
         {
             if (symbol.frameLookup == null || symbol.frameLookup.Length == 0)
                 return null;
