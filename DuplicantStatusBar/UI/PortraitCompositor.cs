@@ -39,6 +39,14 @@ namespace DuplicantStatusBar.UI
         /// <summary>Alpha at or below this is treated as fully transparent (anti-aliasing fringe filter).</summary>
         private const float ALPHA_THRESHOLD = 0.1f;
 
+        // Max pixel dimensions for expression sprites (proportional clamping).
+        // Oversized frames (e.g., Sparkle mouth ~50×30) get scaled down uniformly
+        // to prevent clipping into adjacent features. Head is ~81×80 px.
+        private const int MAX_EYE_W   = 68; // ~84% of head width
+        private const int MAX_EYE_H   = 40; // ~50% of head height
+        private const int MAX_MOUTH_W = 45; // ~55% of head width
+        private const int MAX_MOUTH_H = 22; // ~27% of head height
+
         /// <summary>
         /// Composites a dupe's accessories from KAnim atlas textures into a single Sprite.
         /// Layers: headshape -> eyes (transform-positioned) -> mouth (transform-positioned) -> hair/hat.
@@ -87,7 +95,8 @@ namespace DuplicantStatusBar.UI
                     int ef = eyeFrame;
                     if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
                     WriteSymbolDirect(baseTex, eyeAcc.symbol,
-                        xOffset: 8, yOffset: PORTRAIT_Y_SHIFT, frameOverride: ef);
+                        xOffset: 8, yOffset: PORTRAIT_Y_SHIFT, frameOverride: ef,
+                        maxWidth: MAX_EYE_W, maxHeight: MAX_EYE_H);
                 }
 
                 // Mouth — center-offset, shifted down
@@ -97,7 +106,8 @@ namespace DuplicantStatusBar.UI
                     int mf = mouthFrame;
                     if (mf >= mouthAcc.symbol.frameLookup.Length) mf = 0;
                     WriteSymbolDirect(baseTex, mouthAcc.symbol,
-                        xOffset: 10, yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mf);
+                        xOffset: 10, yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mf,
+                        maxWidth: MAX_MOUTH_W, maxHeight: MAX_MOUTH_H);
                 }
                 baseTex.Apply();
 
@@ -142,7 +152,8 @@ namespace DuplicantStatusBar.UI
 
         private static void WriteSymbolDirect(Texture2D output, KAnim.Build.Symbol symbol,
             int xOffset = 0, int yOffset = 0,
-            bool usePivot = false, bool flipX = false, int frameOverride = -1)
+            bool usePivot = false, bool flipX = false, int frameOverride = -1,
+            int maxWidth = 0, int maxHeight = 0)
         {
             if (symbol == null) return;
 
@@ -158,29 +169,43 @@ namespace DuplicantStatusBar.UI
             Object.Destroy(sprite); // temp sprite — texture data cached separately
             if (pixels == null) return;
 
+            // Proportional size clamping: scale down oversized expression sprites
+            Texture2D source = pixels;
+            bool scaled = false;
+            if (maxWidth > 0 && maxHeight > 0
+                && (pixels.width > maxWidth || pixels.height > maxHeight))
+            {
+                float scale = Mathf.Min((float)maxWidth / pixels.width,
+                                        (float)maxHeight / pixels.height);
+                int newW = Mathf.Max(1, Mathf.RoundToInt(pixels.width * scale));
+                int newH = Mathf.Max(1, Mathf.RoundToInt(pixels.height * scale));
+                source = ScaleTexture(pixels, newW, newH);
+                scaled = true;
+            }
+
             int pivotX = 0, pivotY = 0;
             if (usePivot)
             {
                 var frame = symbol.GetFrame(frameIdx);
-                pivotX = Mathf.RoundToInt(frame.bboxMin.x + pixels.width);
-                pivotY = Mathf.RoundToInt(frame.bboxMin.y + pixels.height);
+                pivotX = Mathf.RoundToInt(frame.bboxMin.x + source.width);
+                pivotY = Mathf.RoundToInt(frame.bboxMin.y + source.height);
             }
-            int xStart = (output.width / 2) - (pixels.width / 2) + xOffset;
-            int yStart = (output.height / 2) - (pixels.height / 2) + yOffset;
+            int xStart = (output.width / 2) - (source.width / 2) + xOffset;
+            int yStart = (output.height / 2) - (source.height / 2) + yOffset;
             if (usePivot)
             {
                 xStart += pivotX / 2;
                 yStart -= pivotY / 2;
             }
 
-            for (int x = 0; x < pixels.width; x++)
+            for (int x = 0; x < source.width; x++)
             {
-                for (int y = 0; y < pixels.height; y++)
+                for (int y = 0; y < source.height; y++)
                 {
-                    var px = pixels.GetPixel(x, y);
+                    var px = source.GetPixel(x, y);
                     if (px.a <= ALPHA_THRESHOLD) continue;
 
-                    int outX = flipX ? (pixels.width - 1 - x) + xStart : x + xStart;
+                    int outX = flipX ? (source.width - 1 - x) + xStart : x + xStart;
                     int outY = y + yStart;
 
                     if (outX >= 0 && outX < output.width &&
@@ -191,6 +216,8 @@ namespace DuplicantStatusBar.UI
                     }
                 }
             }
+
+            if (scaled) Object.Destroy(source);
         }
 
         internal static Sprite GetSpriteFromSymbol(KAnim.Build.Symbol symbol, int frameOverride = -1)
@@ -301,6 +328,20 @@ namespace DuplicantStatusBar.UI
         {
             var clear = new Color[tex.width * tex.height];
             tex.SetPixels(clear);
+        }
+
+        private static Texture2D ScaleTexture(Texture2D source, int targetW, int targetH)
+        {
+            var rt = RenderTexture.GetTemporary(targetW, targetH);
+            Graphics.Blit(source, rt);
+            var prev = RenderTexture.active;
+            RenderTexture.active = rt;
+            var result = new Texture2D(targetW, targetH, TextureFormat.RGBA32, false);
+            result.ReadPixels(new Rect(0, 0, targetW, targetH), 0, 0);
+            result.Apply();
+            RenderTexture.active = prev;
+            RenderTexture.ReleaseTemporary(rt);
+            return result;
         }
 
         /// <summary>

@@ -183,6 +183,9 @@ namespace DuplicantStatusBar.UI
                 else if (faces.Dead != null
                     && faceFrames.TryGetValue(faces.Dead.hash, out var deadFrames))
                     blinkEyeFrame = deadFrames.EyeFrame;
+                else if (faces.Tired != null
+                    && faceFrames.TryGetValue(faces.Tired.hash, out var tiredFrames))
+                    blinkEyeFrame = tiredFrames.EyeFrame;
             }
         }
 
