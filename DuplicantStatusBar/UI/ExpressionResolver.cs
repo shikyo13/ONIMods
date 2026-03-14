@@ -70,7 +70,17 @@ namespace DuplicantStatusBar.UI
             var face = GetFace(expr);
             if (face != null && faceFrames != null
                 && faceFrames.TryGetValue(face.hash, out var frames))
+            {
+                // Sparkle eye frame from kanim is an overlay base (white circles),
+                // not standalone eyes. Override with known-good frames per sgt_imalas.
+                if (expr == ExpressionType.Sparkle)
+                {
+                    Debug.Log($"[DSB] Sparkle override: discovered eye={frames.EyeFrame} mouth={frames.MouthFrame} → using eye=22 mouth=28");
+                    frames.EyeFrame = 22;
+                    frames.MouthFrame = 28;
+                }
                 return frames;
+            }
             return new ExpressionFrames { EyeFrame = 0, MouthFrame = 0 };
         }
 
