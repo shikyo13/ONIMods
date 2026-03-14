@@ -21,6 +21,8 @@ namespace DuplicantStatusBar.UI
         {
             public int EyeFrame;
             public int MouthFrame;
+            public float EyeTransX, EyeTransY;   // m02, m12 from snapto_eyes
+            public float MouthTransX, MouthTransY; // m02, m12 from snapto_mouth
         }
 
         private static readonly KAnimHashedString SNAPTO_EYES = "snapto_eyes";
@@ -52,7 +54,7 @@ namespace DuplicantStatusBar.UI
                 default:
                     switch (tier)
                     {
-                        case StressTier.Calm:     return ExpressionType.Neutral;
+                        case StressTier.Calm:     return ExpressionType.Happy;
                         case StressTier.Mild:     return ExpressionType.Neutral;
                         case StressTier.Stressed: return ExpressionType.Uncomfortable;
                         case StressTier.High:
@@ -135,11 +137,23 @@ namespace DuplicantStatusBar.UI
                     continue;
 
                 int eyeFrame = -1, mouthFrame = -1;
+                float eyeTransX = 0, eyeTransY = 0;
+                float mouthTransX = 0, mouthTransY = 0;
                 for (int j = 0; j < frame.numElements; j++)
                 {
                     var elem = batchData.GetFrameElement(frame.firstElementIdx + j);
-                    if (eyeFrame < 0 && elem.symbol == SNAPTO_EYES) eyeFrame = elem.frame;
-                    else if (mouthFrame < 0 && elem.symbol == SNAPTO_MOUTH) mouthFrame = elem.frame;
+                    if (eyeFrame < 0 && elem.symbol == SNAPTO_EYES)
+                    {
+                        eyeFrame = elem.frame;
+                        eyeTransX = elem.transform.m02;
+                        eyeTransY = elem.transform.m12;
+                    }
+                    else if (mouthFrame < 0 && elem.symbol == SNAPTO_MOUTH)
+                    {
+                        mouthFrame = elem.frame;
+                        mouthTransX = elem.transform.m02;
+                        mouthTransY = elem.transform.m12;
+                    }
                     if (eyeFrame >= 0 && mouthFrame >= 0) break;
                 }
                 if (eyeFrame < 0) eyeFrame = 0;
@@ -148,7 +162,11 @@ namespace DuplicantStatusBar.UI
                 faceFrames[anim.hash] = new ExpressionFrames
                 {
                     EyeFrame = eyeFrame,
-                    MouthFrame = mouthFrame
+                    MouthFrame = mouthFrame,
+                    EyeTransX = eyeTransX,
+                    EyeTransY = eyeTransY,
+                    MouthTransX = mouthTransX,
+                    MouthTransY = mouthTransY
                 };
             }
 
