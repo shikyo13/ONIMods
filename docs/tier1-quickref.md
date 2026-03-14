@@ -10,7 +10,7 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 | BuildThrough | `Core/BuildThroughMod.cs` | Initial commit |
 | OniProfiler | `Core/OniProfilerMod.cs` | Active — see `OniProfiler/HANDOVER.md` for architecture |
 | GCBudget | `Core/GCBudgetMod.cs` | POC, alloc-gated gen0 GC collections |
-| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.2.0 — persistent dupe status HUD, per-alert visual effects on cards + tooltip |
+| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.3.0 — persistent dupe status HUD, expression-driven portraits + blink |
 
 ## ReplaceStuff Module Map
 

@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.2.0
+**Version**: v2.3.0
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -18,6 +18,7 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 | `UI/DupePortraitWidget.cs` | Individual card: compositor portrait (>=36px) or initials fallback + colored border + alert badge |
 | `UI/PortraitCompositor.cs` | Static utility: composites dupe accessories from KAnim atlas into Texture2D/Sprite |
 | `UI/AlertEffects.cs` | Alert effect definitions, procedural sprite cache, alpha evaluation |
+| `UI/ExpressionResolver.cs` | Maps alert/stress → expression → eye/mouth frame indices (runtime discovery from kanim) |
 | `UI/DupeTooltip.cs` | Hover tooltip: name, task, stress/health/breath, temperature, animated alert text |
 | `Patches/GamePatches.cs` | `Game.OnPrefabInit` postfix — injects `StatusBarScreen` |
 
@@ -145,6 +146,15 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 - **Bug fixes**: removed `✦` characters from Overjoyed tooltip (game font lacks glyph), fixed blank line always appearing before alert section
 - **Removed portrait overlay**: per-alert color overlay on cards obscured the health bar — tooltip-only animated text is the current approach
 
+## v2.3.0 — Expression-Driven Portraits
+
+- **Runtime face discovery**: `ExpressionResolver.EnsureDiscovered()` parses `head_master_swap_kanim` at first use — iterates animation frame elements for `snapto_eyes`/`snapto_mouth` symbols, builds `HashedString→ExpressionFrames` dict matching ONI's `Database.Faces` hashes
+- **Alert→expression mapping**: `ExpressionResolver.Resolve(alert, tier)` — highest alert determines expression (Suffocating→Suffocate, LowHP→Angry, etc.); no alert falls back to stress tier (Calm→Happy, Mild→Neutral, Stressed→Uncomfortable, High/Critical→Angry)
+- **13 expression types**: Neutral, Happy, Angry, Suffocate, Cold, Hot, Hungry, Tired, Sick, Sparkle, Uncomfortable, Dead, Productive
+- **Compositor changes**: `ComposePortrait(identity, eyeFrame, mouthFrame)` — base cache validates against frames, rebuilds when expression changes (evicts old texture)
+- **Blink system**: per-widget timer (3-8s random interval, 0.15s duration), closed-eye frame discovered from Sleep face in kanim. Skips if `GetBlinkFrame()` returns -1 or matches current eye frame. Recomposites via `RecomposeWithEyes()`.
+- **Option**: `EnableExpressions` (bool, default true) — disabling reverts to static portraits (eyes=0, mouth=22)
+
 ## Not Yet Implemented
 
-- (none currently planned)
+- Phase 2: Animated KBAC portraits (ScreenSpaceCamera canvas with KAnimBatchManager, staggered RT capture)
