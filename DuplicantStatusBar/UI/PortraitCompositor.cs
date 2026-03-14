@@ -76,10 +76,28 @@ namespace DuplicantStatusBar.UI
                 ClearTexture(baseTex);
 
                 WriteSymbolDirect(baseTex, headSymbol, yOffset: PORTRAIT_Y_SHIFT);
-                WriteSymbol(baseTex, accessorizer, slots.Eyes, xOffset: 8,
-                    yOffset: PORTRAIT_Y_SHIFT, flipX: true, frameOverride: eyeFrame);
-                WriteSymbol(baseTex, accessorizer, slots.Mouth, xOffset: 10,
-                    yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mouthFrame);
+
+                // Eyes — bbox-relative positioning
+                var eyeAcc = accessorizer.GetAccessory(slots.Eyes);
+                if (eyeAcc != null)
+                {
+                    int ef = eyeFrame;
+                    if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
+                    ComputeBboxOffset(headSymbol, 0, eyeAcc.symbol, ef, out int exOff, out int eyOff);
+                    WriteSymbolDirect(baseTex, eyeAcc.symbol,
+                        xOffset: exOff, yOffset: eyOff + PORTRAIT_Y_SHIFT, frameOverride: ef);
+                }
+
+                // Mouth — bbox-relative positioning
+                var mouthAcc = accessorizer.GetAccessory(slots.Mouth);
+                if (mouthAcc != null)
+                {
+                    int mf = mouthFrame;
+                    if (mf >= mouthAcc.symbol.frameLookup.Length) mf = 0;
+                    ComputeBboxOffset(headSymbol, 0, mouthAcc.symbol, mf, out int mxOff, out int myOff);
+                    WriteSymbolDirect(baseTex, mouthAcc.symbol,
+                        xOffset: mxOff, yOffset: myOff + PORTRAIT_Y_SHIFT, frameOverride: mf);
+                }
                 baseTex.Apply();
 
                 entry = new BaseCacheEntry
@@ -174,6 +192,33 @@ namespace DuplicantStatusBar.UI
             }
         }
 
+        private static void ComputeBboxOffset(
+            KAnim.Build.Symbol refSymbol, int refFrame,
+            KAnim.Build.Symbol symbol, int symFrame,
+            out int xOff, out int yOff)
+        {
+            var rf = refSymbol.GetFrame(refFrame);
+            var sf = symbol.GetFrame(symFrame);
+
+            float refCx = (rf.bboxMin.x + rf.bboxMax.x) * 0.5f;
+            float refCy = (rf.bboxMin.y + rf.bboxMax.y) * 0.5f;
+            float refW  = rf.bboxMax.x - rf.bboxMin.x;
+            float refH  = rf.bboxMax.y - rf.bboxMin.y;
+
+            var atlas = refSymbol.build.GetTexture(0);
+            int refPxW = (int)(atlas.width  * Mathf.Abs(rf.uvMax.x - rf.uvMin.x));
+            int refPxH = (int)(atlas.height * Mathf.Abs(rf.uvMax.y - rf.uvMin.y));
+
+            float ppuX = refW > 0 ? refPxW / refW : 1f;
+            float ppuY = refH > 0 ? refPxH / refH : 1f;
+
+            float symCx = (sf.bboxMin.x + sf.bboxMax.x) * 0.5f;
+            float symCy = (sf.bboxMin.y + sf.bboxMax.y) * 0.5f;
+
+            xOff = Mathf.RoundToInt((symCx - refCx) * ppuX);
+            yOff = Mathf.RoundToInt((symCy - refCy) * ppuY);
+        }
+
         private static Sprite GetSpriteFromSymbol(KAnim.Build.Symbol symbol, int frameOverride = -1)
         {
             if (symbol.frameLookup == null || symbol.frameLookup.Length == 0)
@@ -211,8 +256,8 @@ namespace DuplicantStatusBar.UI
                 ppu = 100f / (bboxW / w);
 
             var rect = new Rect(
-                (int)(atlas.width * x),
-                (int)(atlas.height * y),
+                (int)(atlas.width * Mathf.Min(x, x2)),
+                (int)(atlas.height * Mathf.Min(y, y2)),
                 w, h);
 
             return Sprite.Create(atlas, rect, Vector2.zero, ppu, 0, SpriteMeshType.FullRect);
