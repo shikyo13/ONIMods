@@ -52,7 +52,7 @@ namespace DuplicantStatusBar.UI
                 default:
                     switch (tier)
                     {
-                        case StressTier.Calm:     return ExpressionType.Happy;
+                        case StressTier.Calm:     return ExpressionType.Neutral;
                         case StressTier.Mild:     return ExpressionType.Neutral;
                         case StressTier.Stressed: return ExpressionType.Uncomfortable;
                         case StressTier.High:
@@ -134,13 +134,16 @@ namespace DuplicantStatusBar.UI
                 if (!anim.TryGetFrame(data.build.batchTag, 0, out var frame))
                     continue;
 
-                int eyeFrame = 0, mouthFrame = 0;
+                int eyeFrame = -1, mouthFrame = -1;
                 for (int j = 0; j < frame.numElements; j++)
                 {
                     var elem = batchData.GetFrameElement(frame.firstElementIdx + j);
-                    if (elem.symbol == SNAPTO_EYES) eyeFrame = elem.frame;
-                    else if (elem.symbol == SNAPTO_MOUTH) mouthFrame = elem.frame;
+                    if (eyeFrame < 0 && elem.symbol == SNAPTO_EYES) eyeFrame = elem.frame;
+                    else if (mouthFrame < 0 && elem.symbol == SNAPTO_MOUTH) mouthFrame = elem.frame;
+                    if (eyeFrame >= 0 && mouthFrame >= 0) break;
                 }
+                if (eyeFrame < 0) eyeFrame = 0;
+                if (mouthFrame < 0) mouthFrame = 0;
 
                 faceFrames[anim.hash] = new ExpressionFrames
                 {
