@@ -35,6 +35,13 @@ namespace DuplicantStatusBar.UI
         private bool isPulsing;
         private bool isOverjoyed;
         private float rainbowHue;
+        private Image glowImage;
+        private Texture2D rainbowTex;
+        private Sprite rainbowSprite;
+        private Color32[] rainbowPixels;
+        private int rainbowTexSize;
+        private float rainbowPulse;
+        private const int RAINBOW_CORNER = 8;
 
         private ushort heldMask;
         private ushort currentAlertMask;
@@ -81,6 +88,13 @@ namespace DuplicantStatusBar.UI
             cardLayout = cardGO.AddComponent<LayoutElement>();
             cardLayout.preferredWidth = cardSz;
             cardLayout.preferredHeight = cardSz;
+
+            // Glow layer (behind border — same rainbow sprite, larger rect, lower alpha)
+            glowImage = AddImage(cardGO.transform, "Glow");
+            glowImage.type = Image.Type.Simple;
+            glowImage.raycastTarget = false;
+            Stretch(glowImage.rectTransform, 6f);
+            glowImage.gameObject.SetActive(false);
 
             // Border (stress-colored frame)
             borderImage = AddImage(cardGO.transform, "Border");
@@ -308,6 +322,84 @@ namespace DuplicantStatusBar.UI
         private void OnDestroy()
         {
             DestroyPortraitSprite();
+            CleanupRainbow();
+        }
+
+        private void UpdateRainbowBorder(int size)
+        {
+            if (rainbowTex == null || size != rainbowTexSize)
+            {
+                CleanupRainbow();
+                rainbowTex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+                rainbowTex.filterMode = FilterMode.Bilinear;
+                rainbowPixels = new Color32[size * size];
+                rainbowSprite = Sprite.Create(rainbowTex,
+                    new Rect(0, 0, size, size),
+                    new Vector2(0.5f, 0.5f), 100f,
+                    0, SpriteMeshType.FullRect);
+                rainbowTexSize = size;
+            }
+
+            float cx = size * 0.5f;
+            float cy = size * 0.5f;
+            int sparkSeed = Time.frameCount / 4;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    // Corner alpha (reuse MakeRoundedRect logic)
+                    float dx = 0f, dy = 0f;
+                    if (x < RAINBOW_CORNER) dx = RAINBOW_CORNER - x - 0.5f;
+                    else if (x >= size - RAINBOW_CORNER) dx = x - (size - RAINBOW_CORNER) + 0.5f;
+                    if (y < RAINBOW_CORNER) dy = RAINBOW_CORNER - y - 0.5f;
+                    else if (y >= size - RAINBOW_CORNER) dy = y - (size - RAINBOW_CORNER) + 0.5f;
+
+                    byte alpha;
+                    if (dx > 0f && dy > 0f)
+                    {
+                        float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                        alpha = (byte)(Mathf.Clamp01(RAINBOW_CORNER - dist + 0.5f) * 255);
+                    }
+                    else
+                    {
+                        alpha = 255;
+                    }
+
+                    // Angular hue (clockwise from 12 o'clock)
+                    float angle = Mathf.Atan2(x - cx, y - cy);
+                    float normalizedAngle = angle / (2f * Mathf.PI) + 0.5f;
+                    float hue = (normalizedAngle - rainbowHue) % 1f;
+                    if (hue < 0f) hue += 1f;
+
+                    Color c = Color.HSVToRGB(hue, 1f, 1f);
+
+                    // Sparkle (~4% of pixels, re-randomized every 4 frames)
+                    int hash = (x * 7919 + y * 4813 + sparkSeed * 3571) & 0x3FF;
+                    if (hash < 40)
+                        c = Color.Lerp(c, Color.white, 0.7f);
+
+                    rainbowPixels[y * size + x] = new Color32(
+                        (byte)(c.r * 255), (byte)(c.g * 255),
+                        (byte)(c.b * 255), alpha);
+                }
+            }
+
+            rainbowTex.SetPixels32(rainbowPixels);
+            rainbowTex.Apply(false, false);
+
+            borderImage.sprite = rainbowSprite;
+            borderImage.type = Image.Type.Simple;
+            glowImage.sprite = rainbowSprite;
+            glowImage.gameObject.SetActive(true);
+        }
+
+        private void CleanupRainbow()
+        {
+            if (rainbowSprite != null) { Destroy(rainbowSprite); rainbowSprite = null; }
+            if (rainbowTex != null) { Destroy(rainbowTex); rainbowTex = null; }
+            rainbowPixels = null;
+            rainbowTexSize = 0;
         }
 
         private void UpdateBadges(ushort activeMask)
@@ -364,28 +456,39 @@ namespace DuplicantStatusBar.UI
         private void Update()
         {
             float dt = Time.unscaledDeltaTime;
-
-            // Smooth color transitions (RGB only — alpha handled by pulse)
             float t = 1f - Mathf.Exp(-dt / 0.3f);
-            Color borderTarget;
+
             if (isOverjoyed)
             {
-                // Rainbow hue cycle: 0.5 rev/sec → full rainbow in 2s
                 rainbowHue = (rainbowHue + dt * 0.5f) % 1f;
-                borderTarget = Color.HSVToRGB(rainbowHue, 0.85f, 1f);
+                rainbowPulse += dt * 5f;
+                UpdateRainbowBorder((int)cardLayout.preferredWidth);
+
+                float pulse = 0.85f + 0.15f * Mathf.Sin(rainbowPulse);
+                borderImage.color = new Color(1f, 1f, 1f, pulse);
+
+                float glowAlpha = 0.2f + 0.25f * Mathf.Sin(rainbowPulse);
+                glowImage.color = new Color(1f, 1f, 1f, glowAlpha);
             }
             else
             {
-                borderTarget = targetBorderColor;
+                // Leaving overjoyed → restore sliced RoundedRect
+                if (borderImage.sprite != RoundedRect)
+                {
+                    borderImage.sprite = RoundedRect;
+                    borderImage.type = Image.Type.Sliced;
+                    glowImage.gameObject.SetActive(false);
+                }
+
+                var lerpedBorder = Color.Lerp(borderImage.color, targetBorderColor, t);
+                float borderAlpha = isPulsing
+                    ? 0.6f + 0.4f * Mathf.Sin(pulseTimer)
+                    : Mathf.Lerp(borderImage.color.a, targetBorderColor.a, t);
+                borderImage.color = new Color(lerpedBorder.r, lerpedBorder.g, lerpedBorder.b, borderAlpha);
             }
-            var lerpedBorder = Color.Lerp(borderImage.color, borderTarget, t);
-            float borderAlpha = isPulsing
-                ? 0.6f + 0.4f * Mathf.Sin(pulseTimer)
-                : Mathf.Lerp(borderImage.color.a, borderTarget.a, t);
-            borderImage.color = new Color(lerpedBorder.r, lerpedBorder.g, lerpedBorder.b, borderAlpha);
+
             bgFill.color = Color.Lerp(bgFill.color, targetFillColor, t);
 
-            // Pulse on critical
             if (isPulsing)
                 pulseTimer = (pulseTimer + dt * 3f) % (2f * Mathf.PI);
 
