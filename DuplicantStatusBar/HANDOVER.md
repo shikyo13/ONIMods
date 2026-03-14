@@ -172,6 +172,14 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 
 **Variant system note**: `head_master_swap_kanim` contains 3 body type variants with 7/5/8 elements each. The `ContainsKey` first-variant fix (commit 1f7020c) resolved wrong-frame-index bugs by taking the first matching animation hash.
 
+## v2.3.2 — Y-Offset Tuning + Sparkle Eye Fix
+
+**Y-offset tuning**: Eyes shifted 4px lower (`yOffset: -4 + PORTRAIT_Y_SHIFT`), mouth shifted 6px lower (`yOffset: -18 + PORTRAIT_Y_SHIFT`, was -12). Net positions from canvas center (62): eyes ≈ y=50, mouth ≈ y=36.
+
+**Sparkle white-circle fix**: ONI's Sparkle expression renders sparkle effects as overlays on normal eyes. The `snapto_eyes` frame discovered from `head_master_swap_kanim` for Sparkle is the overlay base shape (white circles), not standalone eyes. `GetFrames()` now overrides Sparkle with explicit frame indices (eye=22, mouth=28 per sgt_imalas), with diagnostic logging of discovered vs overridden values.
+
+**Hat clipping variance**: per-hat bbox pivots produce different vertical offsets — some hats clip eyes more than others. This is inherent to the per-hat pivot system and partly matches in-game appearance (hats cover foreheads). No code change needed.
+
 ## Not Yet Implemented
 
 - Phase 2: Animated KBAC portraits (ScreenSpaceCamera canvas with KAnimBatchManager, staggered RT capture)

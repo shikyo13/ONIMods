@@ -95,7 +95,7 @@ namespace DuplicantStatusBar.UI
                     int ef = eyeFrame;
                     if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
                     WriteSymbolDirect(baseTex, eyeAcc.symbol,
-                        xOffset: 8, yOffset: PORTRAIT_Y_SHIFT, frameOverride: ef,
+                        xOffset: 8, yOffset: -4 + PORTRAIT_Y_SHIFT, frameOverride: ef,
                         maxWidth: MAX_EYE_W, maxHeight: MAX_EYE_H);
                 }
 
@@ -106,7 +106,7 @@ namespace DuplicantStatusBar.UI
                     int mf = mouthFrame;
                     if (mf >= mouthAcc.symbol.frameLookup.Length) mf = 0;
                     WriteSymbolDirect(baseTex, mouthAcc.symbol,
-                        xOffset: 10, yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mf,
+                        xOffset: 10, yOffset: -18 + PORTRAIT_Y_SHIFT, frameOverride: mf,
                         maxWidth: MAX_MOUTH_W, maxHeight: MAX_MOUTH_H);
                 }
                 baseTex.Apply();
