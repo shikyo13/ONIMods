@@ -12,18 +12,18 @@ namespace DuplicantStatusBar.UI
         private static RectTransform tooltipRT;
         private static readonly StringBuilder sb = new StringBuilder(256);
 
-        // Rainbow border state
-        private static Image borderImage;
-        private static Image glowImage;
-        private static TooltipRainbowDriver driverComponent;
-        private static bool isOverjoyed;
+        // Pooled animated alert text elements
+        private const int MAX_ALERT_SLOTS = 5;
+        private static TMPro.TextMeshProUGUI[] alertTexts;
+        private static AlertType[] activeAlertTypes;
+        private static int activeAlertCount;
+        private static float[] alertTimers;
+
+        // Animation state
+        private static TooltipAnimationDriver driverComponent;
+        private static int overjoyedSlot = -1;
         private static float rainbowHue;
         private static float rainbowPulse;
-        private static Texture2D rainbowTex;
-        private static Sprite rainbowSprite;
-        private static Color32[] rainbowPixels;
-        private static int rainbowTexSize;
-        private const int RAINBOW_CORNER = 8;
 
         public static void Init(Transform canvasRoot)
         {
@@ -31,36 +31,6 @@ namespace DuplicantStatusBar.UI
             panel.transform.SetParent(canvasRoot, false);
             tooltipRT = panel.AddComponent<RectTransform>();
             tooltipRT.pivot = new Vector2(0.5f, 1f);
-
-            // Glow image (outermost, behind everything)
-            var glowGO = new GameObject("Glow");
-            glowGO.transform.SetParent(panel.transform, false);
-            glowImage = glowGO.AddComponent<Image>();
-            glowImage.sprite = DupePortraitWidget.RoundedRect;
-            glowImage.type = Image.Type.Sliced;
-            glowImage.color = new Color(1f, 1f, 1f, 0f);
-            glowImage.raycastTarget = false;
-            var glowRT = glowGO.GetComponent<RectTransform>();
-            glowRT.anchorMin = Vector2.zero;
-            glowRT.anchorMax = Vector2.one;
-            glowRT.offsetMin = new Vector2(-6f, -6f);
-            glowRT.offsetMax = new Vector2(6f, 6f);
-            glowGO.SetActive(false);
-
-            // Border image (behind bg, in front of glow)
-            var borderGO = new GameObject("Border");
-            borderGO.transform.SetParent(panel.transform, false);
-            borderImage = borderGO.AddComponent<Image>();
-            borderImage.sprite = DupePortraitWidget.RoundedRect;
-            borderImage.type = Image.Type.Sliced;
-            borderImage.color = new Color(1f, 1f, 1f, 0f);
-            borderImage.raycastTarget = false;
-            var borderRT = borderGO.GetComponent<RectTransform>();
-            borderRT.anchorMin = Vector2.zero;
-            borderRT.anchorMax = Vector2.one;
-            borderRT.offsetMin = new Vector2(-3f, -3f);
-            borderRT.offsetMax = new Vector2(3f, 3f);
-            borderGO.SetActive(false);
 
             var bg = panel.AddComponent<Image>();
             bg.sprite = DupePortraitWidget.RoundedRect;
@@ -77,6 +47,7 @@ namespace DuplicantStatusBar.UI
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
+            // Main tooltip text
             var textGO = new GameObject("Text");
             textGO.transform.SetParent(panel.transform, false);
             tooltipText = textGO.AddComponent<TMPro.TextMeshProUGUI>();
@@ -88,7 +59,36 @@ namespace DuplicantStatusBar.UI
             tooltipText.richText = true;
             tooltipText.raycastTarget = false;
 
-            driverComponent = panel.AddComponent<TooltipRainbowDriver>();
+            // Pooled alert text elements (animated per-alert)
+            alertTexts = new TMPro.TextMeshProUGUI[MAX_ALERT_SLOTS];
+            activeAlertTypes = new AlertType[MAX_ALERT_SLOTS];
+            alertTimers = new float[MAX_ALERT_SLOTS];
+
+            for (int i = 0; i < MAX_ALERT_SLOTS; i++)
+            {
+                var alertGO = new GameObject($"AlertText{i}");
+                alertGO.transform.SetParent(panel.transform, false);
+                var tmp = alertGO.AddComponent<TMPro.TextMeshProUGUI>();
+                tmp.fontSize = 12;
+                tmp.color = Color.white;
+                if (gameFont != null) tmp.font = gameFont;
+                tmp.alignment = TMPro.TextAlignmentOptions.TopLeft;
+                tmp.richText = false;
+                tmp.raycastTarget = false;
+
+                // Enable glow on each element's material instance
+                var mat = tmp.fontMaterial;
+                mat.SetFloat(TMPro.ShaderUtilities.ID_GlowPower, 0.4f);
+                mat.SetFloat(TMPro.ShaderUtilities.ID_GlowOffset, 0.5f);
+                mat.SetFloat(TMPro.ShaderUtilities.ID_GlowOuter, 0.5f);
+                mat.SetColor(TMPro.ShaderUtilities.ID_GlowColor, Color.white);
+                mat.EnableKeyword("GLOW_ON");
+
+                alertGO.SetActive(false);
+                alertTexts[i] = tmp;
+            }
+
+            driverComponent = panel.AddComponent<TooltipAnimationDriver>();
             driverComponent.enabled = false;
 
             tooltipGO = panel;
@@ -126,33 +126,39 @@ namespace DuplicantStatusBar.UI
             var blc = snap.BladderPercent >= 70f ? "FFEB3B" : "4ADE80";
             sb.AppendLine($"Bladder: <color=#{blc}>{snap.BladderPercent:F0}%</color>");
 
-            bool anyAlert = false;
+            // Populate animated alert text slots
+            int slot = 0;
+            overjoyedSlot = -1;
+
             foreach (var alert in DupeSnapshot.AlertPriority)
             {
+                if (slot >= MAX_ALERT_SLOTS) break;
                 if (!snap.HasAlert(alert)) continue;
-                if (!anyAlert) { sb.AppendLine(); anyAlert = true; }
-                var ac = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.AlertColor(alert));
-                sb.AppendLine($"<color=#{ac}>{AlertLabel(alert)}</color>");
+
+                alertTexts[slot].gameObject.SetActive(true);
+                alertTexts[slot].text = AlertLabel(alert);
+                activeAlertTypes[slot] = alert;
+                alertTimers[slot] = 0f;
+
+                if (alert == AlertType.Overjoyed)
+                    overjoyedSlot = slot;
+
+                slot++;
             }
+            activeAlertCount = slot;
+
+            // Deactivate unused slots
+            for (int i = slot; i < MAX_ALERT_SLOTS; i++)
+                alertTexts[i].gameObject.SetActive(false);
+
+            // Blank line separator before alert section
+            if (activeAlertCount > 0)
+                sb.AppendLine();
 
             tooltipText.text = sb.ToString();
 
-            // Rainbow border for overjoyed dupes
-            bool wantRainbow = snap.IsOverjoyed;
-            if (wantRainbow && !isOverjoyed)
-            {
-                borderImage.gameObject.SetActive(true);
-                glowImage.gameObject.SetActive(true);
-                driverComponent.enabled = true;
-                isOverjoyed = true;
-            }
-            else if (!wantRainbow && isOverjoyed)
-            {
-                borderImage.gameObject.SetActive(false);
-                glowImage.gameObject.SetActive(false);
-                driverComponent.enabled = false;
-                isOverjoyed = false;
-            }
+            // Enable animation driver if any alert is active
+            driverComponent.enabled = activeAlertCount > 0;
 
             // Position below anchor widget
             Vector3[] corners = new Vector3[4];
@@ -180,111 +186,134 @@ namespace DuplicantStatusBar.UI
                 tooltipGO.SetActive(false);
             if (driverComponent != null)
                 driverComponent.enabled = false;
-            isOverjoyed = false;
+            if (alertTexts != null)
+            {
+                for (int i = 0; i < MAX_ALERT_SLOTS; i++)
+                    alertTexts[i].gameObject.SetActive(false);
+            }
+            activeAlertCount = 0;
+            overjoyedSlot = -1;
         }
 
         public static void Cleanup()
         {
-            CleanupRainbow();
+            if (alertTexts != null)
+            {
+                for (int i = 0; i < MAX_ALERT_SLOTS; i++)
+                {
+                    if (alertTexts[i] != null)
+                        Object.Destroy(alertTexts[i].gameObject);
+                }
+                alertTexts = null;
+            }
             if (tooltipGO != null)
                 Object.Destroy(tooltipGO);
             tooltipGO = null;
             tooltipText = null;
             tooltipRT = null;
-            borderImage = null;
-            glowImage = null;
             driverComponent = null;
+            activeAlertTypes = null;
+            alertTimers = null;
         }
 
-        internal static void AnimateRainbow()
+        internal static void AnimateTexts()
         {
-            if (!isOverjoyed || tooltipRT == null) return;
+            if (activeAlertCount == 0 || alertTexts == null) return;
 
             float dt = Time.unscaledDeltaTime;
             rainbowHue = (rainbowHue + dt * 0.5f) % 1f;
             rainbowPulse += dt * 5f;
 
-            int size = Mathf.Max(16, (int)tooltipRT.rect.width);
-            UpdateRainbowBorder(size);
+            for (int slot = 0; slot < activeAlertCount; slot++)
+            {
+                alertTimers[slot] += dt;
+                var tmp = alertTexts[slot];
 
-            float pulse = 0.85f + 0.15f * Mathf.Sin(rainbowPulse);
-            borderImage.color = new Color(1f, 1f, 1f, pulse);
-
-            float glowAlpha = 0.2f + 0.25f * Mathf.Sin(rainbowPulse);
-            glowImage.color = new Color(1f, 1f, 1f, glowAlpha);
+                if (slot == overjoyedSlot)
+                    AnimateRainbowSlot(tmp);
+                else
+                    AnimateAlertSlot(tmp, activeAlertTypes[slot], alertTimers[slot]);
+            }
         }
 
-        private static void UpdateRainbowBorder(int size)
+        private static void AnimateRainbowSlot(TMPro.TextMeshProUGUI tmp)
         {
-            if (rainbowTex == null || size != rainbowTexSize)
-            {
-                CleanupRainbow();
-                rainbowTex = new Texture2D(size, size, TextureFormat.RGBA32, false);
-                rainbowTex.filterMode = FilterMode.Bilinear;
-                rainbowPixels = new Color32[size * size];
-                rainbowSprite = Sprite.Create(rainbowTex,
-                    new Rect(0, 0, size, size),
-                    new Vector2(0.5f, 0.5f), 100f,
-                    0, SpriteMeshType.FullRect);
-                rainbowTexSize = size;
-            }
-
-            float cx = size * 0.5f;
-            float cy = size * 0.5f;
+            tmp.ForceMeshUpdate();
+            var textInfo = tmp.textInfo;
             int sparkSeed = Time.frameCount / 4;
+            float pulseAlpha = 0.85f + 0.15f * Mathf.Sin(rainbowPulse);
+            byte alphaByte = (byte)(pulseAlpha * 255f);
 
-            for (int y = 0; y < size; y++)
+            for (int i = 0; i < textInfo.characterCount; i++)
             {
-                for (int x = 0; x < size; x++)
-                {
-                    float dx = 0f, dy = 0f;
-                    if (x < RAINBOW_CORNER) dx = RAINBOW_CORNER - x - 0.5f;
-                    else if (x >= size - RAINBOW_CORNER) dx = x - (size - RAINBOW_CORNER) + 0.5f;
-                    if (y < RAINBOW_CORNER) dy = RAINBOW_CORNER - y - 0.5f;
-                    else if (y >= size - RAINBOW_CORNER) dy = y - (size - RAINBOW_CORNER) + 0.5f;
+                var charInfo = textInfo.characterInfo[i];
+                if (!charInfo.isVisible) continue;
 
-                    byte alpha;
-                    if (dx > 0f && dy > 0f)
-                    {
-                        float dist = Mathf.Sqrt(dx * dx + dy * dy);
-                        alpha = (byte)(Mathf.Clamp01(RAINBOW_CORNER - dist + 0.5f) * 255);
-                    }
-                    else
-                    {
-                        alpha = 255;
-                    }
+                float charHue = (rainbowHue + i * 0.1f) % 1f;
+                Color c = Color.HSVToRGB(charHue, 1f, 1f);
 
-                    float angle = Mathf.Atan2(x - cx, y - cy);
-                    float normalizedAngle = angle / (2f * Mathf.PI) + 0.5f;
-                    float hue = (normalizedAngle - rainbowHue) % 1f;
-                    if (hue < 0f) hue += 1f;
+                // Sparkle: ~4% chance per char per 4-frame window
+                int hash = (i * 7919 + sparkSeed * 3571) & 0x3FF;
+                if (hash < 40)
+                    c = Color.Lerp(c, Color.white, 0.7f);
 
-                    Color c = Color.HSVToRGB(hue, 1f, 1f);
+                var color32 = new Color32(
+                    (byte)(c.r * 255f), (byte)(c.g * 255f),
+                    (byte)(c.b * 255f), alphaByte);
 
-                    int hash = (x * 7919 + y * 4813 + sparkSeed * 3571) & 0x3FF;
-                    if (hash < 40)
-                        c = Color.Lerp(c, Color.white, 0.7f);
-
-                    rainbowPixels[y * size + x] = new Color32(
-                        (byte)(c.r * 255), (byte)(c.g * 255),
-                        (byte)(c.b * 255), alpha);
-                }
+                int matIdx = charInfo.materialReferenceIndex;
+                int vertIdx = charInfo.vertexIndex;
+                var colors = textInfo.meshInfo[matIdx].colors32;
+                colors[vertIdx + 0] = color32;
+                colors[vertIdx + 1] = color32;
+                colors[vertIdx + 2] = color32;
+                colors[vertIdx + 3] = color32;
             }
 
-            rainbowTex.SetPixels32(rainbowPixels);
-            rainbowTex.Apply(false, false);
+            tmp.UpdateVertexData(TMPro.TMP_VertexDataUpdateFlags.Colors32);
 
-            borderImage.sprite = rainbowSprite;
-            borderImage.type = Image.Type.Simple;
-            glowImage.sprite = rainbowSprite;
+            var mat = tmp.fontMaterial;
+            Color glowColor = Color.HSVToRGB(rainbowHue, 1f, 1f);
+            mat.SetColor(TMPro.ShaderUtilities.ID_GlowColor, glowColor);
+            mat.SetFloat(TMPro.ShaderUtilities.ID_GlowPower,
+                0.4f + 0.2f * Mathf.Sin(rainbowPulse));
         }
 
-        private static void CleanupRainbow()
+        private static void AnimateAlertSlot(TMPro.TextMeshProUGUI tmp,
+            AlertType type, float timer)
         {
-            if (rainbowSprite != null) { Object.Destroy(rainbowSprite); rainbowSprite = null; }
-            if (rainbowTex != null) { Object.Destroy(rainbowTex); rainbowTex = null; }
-            rainbowPixels = null;
-            rainbowTexSize = 0;
+            var fx = AlertEffects.Get(type);
+            float alpha = AlertEffects.EvaluateAlpha(fx, timer);
+
+            tmp.ForceMeshUpdate();
+            var textInfo = tmp.textInfo;
+
+            byte r = (byte)(fx.BaseColor.r * 255f);
+            byte g = (byte)(fx.BaseColor.g * 255f);
+            byte b = (byte)(fx.BaseColor.b * 255f);
+            byte a = (byte)(alpha * 255f);
+            var color32 = new Color32(r, g, b, a);
+
+            for (int i = 0; i < textInfo.characterCount; i++)
+            {
+                var charInfo = textInfo.characterInfo[i];
+                if (!charInfo.isVisible) continue;
+
+                int matIdx = charInfo.materialReferenceIndex;
+                int vertIdx = charInfo.vertexIndex;
+                var colors = textInfo.meshInfo[matIdx].colors32;
+                colors[vertIdx + 0] = color32;
+                colors[vertIdx + 1] = color32;
+                colors[vertIdx + 2] = color32;
+                colors[vertIdx + 3] = color32;
+            }
+
+            tmp.UpdateVertexData(TMPro.TMP_VertexDataUpdateFlags.Colors32);
+
+            // Animate glow
+            var mat = tmp.fontMaterial;
+            mat.SetColor(TMPro.ShaderUtilities.ID_GlowColor, fx.BaseColor);
+            mat.SetFloat(TMPro.ShaderUtilities.ID_GlowPower, 0.3f + 0.2f * alpha);
         }
 
         private static string AlertLabel(AlertType alert)
@@ -309,8 +338,8 @@ namespace DuplicantStatusBar.UI
         }
     }
 
-    sealed class TooltipRainbowDriver : MonoBehaviour
+    sealed class TooltipAnimationDriver : MonoBehaviour
     {
-        void Update() { DupeTooltip.AnimateRainbow(); }
+        void Update() { DupeTooltip.AnimateTexts(); }
     }
 }
