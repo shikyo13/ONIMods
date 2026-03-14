@@ -59,6 +59,10 @@ namespace DuplicantStatusBar.Config
         [JsonProperty]
         public DisplayMode DisplayMode { get; set; } = DisplayMode.Portraits;
 
+        [Option("Face Expressions", "Show dynamic facial expressions based on dupe status.", "Appearance")]
+        [JsonProperty]
+        public bool EnableExpressions { get; set; } = true;
+
         [Option("Calm Threshold", "Stress below this % is Calm (green).", "Stress Tiers")]
         [Limit(5, 50)]
         [JsonProperty]

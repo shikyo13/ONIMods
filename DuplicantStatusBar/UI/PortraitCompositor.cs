@@ -23,10 +23,12 @@ namespace DuplicantStatusBar.UI
         private static readonly Dictionary<long, Texture2D> spriteCache
             = new Dictionary<long, Texture2D>();
 
-        // Cache composited base layers (head+eyes+mouth) per dupe — these never change
+        // Cache composited base layers (head+eyes+mouth) per dupe, validated by expression frames
         private struct BaseCacheEntry
         {
             public Texture2D Texture;
+            public int EyeFrame;
+            public int MouthFrame;
         }
         private static readonly Dictionary<int, BaseCacheEntry> baseCache
             = new Dictionary<int, BaseCacheEntry>();
@@ -38,7 +40,8 @@ namespace DuplicantStatusBar.UI
         /// Composites a dupe's accessories from KAnim atlas textures into a single Sprite.
         /// Layers: headshape -> eyes (flipped) -> mouth (frame 22) -> hair/hat.
         /// </summary>
-        public static Sprite ComposePortrait(MinionIdentity identity)
+        public static Sprite ComposePortrait(MinionIdentity identity,
+            int eyeFrame = 0, int mouthFrame = 22)
         {
             if (identity == null) return null;
 
@@ -55,9 +58,14 @@ namespace DuplicantStatusBar.UI
 
             int instanceId = identity.GetInstanceID();
 
-            // Base cache: head+eyes+mouth never change for a given dupe
-            if (!baseCache.TryGetValue(instanceId, out var entry))
+            // Base cache: head+eyes+mouth — rebuild when expression changes
+            bool needsRebuild = !baseCache.TryGetValue(instanceId, out var entry)
+                || entry.EyeFrame != eyeFrame || entry.MouthFrame != mouthFrame;
+
+            if (needsRebuild)
             {
+                if (entry.Texture != null) Object.Destroy(entry.Texture);
+
                 var headSymbol = headAcc.symbol;
 
                 var baseTex = new Texture2D(125, 125, TextureFormat.RGBA32, false);
@@ -65,11 +73,18 @@ namespace DuplicantStatusBar.UI
                 ClearTexture(baseTex);
 
                 WriteSymbolDirect(baseTex, headSymbol);
-                WriteSymbol(baseTex, accessorizer, slots.Eyes, xOffset: 8, flipX: true);
-                WriteSymbol(baseTex, accessorizer, slots.Mouth, xOffset: 10, yOffset: -12, frameOverride: 22);
+                WriteSymbol(baseTex, accessorizer, slots.Eyes, xOffset: 8, flipX: true,
+                    frameOverride: eyeFrame);
+                WriteSymbol(baseTex, accessorizer, slots.Mouth, xOffset: 10, yOffset: -12,
+                    frameOverride: mouthFrame);
                 baseTex.Apply();
 
-                entry = new BaseCacheEntry { Texture = baseTex };
+                entry = new BaseCacheEntry
+                {
+                    Texture = baseTex,
+                    EyeFrame = eyeFrame,
+                    MouthFrame = mouthFrame
+                };
                 baseCache[instanceId] = entry;
             }
 
@@ -278,6 +293,8 @@ namespace DuplicantStatusBar.UI
             foreach (var kv in baseCache)
                 if (kv.Value.Texture != null) Object.Destroy(kv.Value.Texture);
             baseCache.Clear();
+
+            ExpressionResolver.ClearCache();
         }
     }
 }
