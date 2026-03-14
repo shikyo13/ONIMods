@@ -41,10 +41,10 @@ namespace DuplicantStatusBar.UI
 
         /// <summary>
         /// Composites a dupe's accessories from KAnim atlas textures into a single Sprite.
-        /// Layers: headshape -> eyes (flipped) -> mouth (frame 22) -> hair/hat.
+        /// Layers: headshape -> eyes (transform-positioned) -> mouth (transform-positioned) -> hair/hat.
         /// </summary>
         public static Sprite ComposePortrait(MinionIdentity identity,
-            int eyeFrame = 0, int mouthFrame = 22)
+            ExpressionResolver.ExpressionFrames frames = default)
         {
             if (identity == null) return null;
             DiagnosticDump.RunOnce(identity);
@@ -61,6 +61,8 @@ namespace DuplicantStatusBar.UI
             if (headAcc == null) return null;
 
             int instanceId = identity.GetInstanceID();
+            int eyeFrame = frames.EyeFrame;
+            int mouthFrame = frames.MouthFrame;
 
             // Base cache: head+eyes+mouth — rebuild when expression changes
             bool needsRebuild = !baseCache.TryGetValue(instanceId, out var entry)
@@ -78,17 +80,17 @@ namespace DuplicantStatusBar.UI
 
                 WriteSymbolDirect(baseTex, headSymbol, yOffset: PORTRAIT_Y_SHIFT);
 
-                // Eyes — hardcoded offset (precise positioning deferred to transform-based fix)
+                // Eyes — center-offset, NO flipX (sprite has both eyes)
                 var eyeAcc = accessorizer.GetAccessory(slots.Eyes);
                 if (eyeAcc != null)
                 {
                     int ef = eyeFrame;
                     if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
                     WriteSymbolDirect(baseTex, eyeAcc.symbol,
-                        xOffset: 8, yOffset: PORTRAIT_Y_SHIFT, flipX: true, frameOverride: ef);
+                        xOffset: 8, yOffset: PORTRAIT_Y_SHIFT, frameOverride: ef);
                 }
 
-                // Mouth — hardcoded offset, shifted down from center
+                // Mouth — center-offset, shifted down
                 var mouthAcc = accessorizer.GetAccessory(slots.Mouth);
                 if (mouthAcc != null)
                 {
