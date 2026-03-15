@@ -78,6 +78,12 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 - Patching overloaded methods requires `new Type[] { ... }` in `[HarmonyPatch]` attribute
 - `AddOrGet<T>()` is idempotent; raw `AddComponent<T>()` can create duplicates silently
 - Protected methods (e.g., `OnCompleteWork`) — use string `"OnCompleteWork"` in HarmonyPatch, not `nameof()`
+- `new GameObject()` only has `Transform` — must `AddComponent<Image>()` (or any UI component) before `GetComponent<RectTransform>()` will return non-null
+- `System.Action` shadowed by `UnityEngine.PlayerLoop.Action` struct — fully qualify `System.Action` in files that use PlayerLoop types or lambda delegates in certain contexts
+- `KCanvasScaler.UIScalePrefKey` = `"UIScalePref"` — game stores UI scale as percentage float (100 = 1x). Read via `KPlayerPrefs.GetFloat()`, divide by 100
+- `KPlayerPrefs` lives in `Assembly-CSharp-firstpass.dll`, not `Assembly-CSharp.dll` — decompile from the right assembly
+- `LocString` fields must be `public static` (not `readonly`) for ONI's string registration to find them
+- TMP and Image can't share a GameObject — TMP requires its own child GO under the Image GO
 
 ## Breaking Changes
 
