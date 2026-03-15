@@ -49,6 +49,7 @@ namespace DuplicantStatusBar.Localization
                     public static LocString STRESSDESCENDING = "Stress (highest first)";
                     public static LocString ALPHABETICAL = "Alphabetical";
                     public static LocString ROLE = "Job Role";
+                    public static LocString CALORIESASCENDING = "Calories (lowest first)";
                 }
 
                 public static class VIEWMODE

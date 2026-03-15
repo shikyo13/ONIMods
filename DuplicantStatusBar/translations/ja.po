@@ -130,6 +130,10 @@ msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE"
 msgid "Job Role"
 msgstr "職業"
 
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.CALORIESASCENDING"
+msgid "Calories (lowest first)"
+msgstr "カロリー (低い順)"
+
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS"
 msgid "Portraits"
 msgstr "ポートレート"
