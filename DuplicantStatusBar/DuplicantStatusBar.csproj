@@ -84,13 +84,13 @@
       <ModDlls Include="$(OutputPath)DuplicantStatusBar.dll;$(OutputPath)PLib.dll" />
       <ModMeta Include="$(ProjectDir)mod.yaml;$(ProjectDir)mod_info.yaml" />
       <ModPreview Include="$(ProjectDir)Preview.png" Condition="Exists('$(ProjectDir)Preview.png')" />
-      <ModStrings Include="$(ProjectDir)strings\*.po" />
+      <ModStrings Include="$(ProjectDir)translations\*.po" />
     </ItemGroup>
     <Copy SourceFiles="@(ModDlls)" DestinationFolder="$(ModDeploy)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(ModMeta)" DestinationFolder="$(ModDeploy)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(ModPreview)" DestinationFolder="$(ModDeploy)" SkipUnchangedFiles="true" />
-    <MakeDir Directories="$(ModDeploy)strings" Condition="@(ModStrings) != ''" />
-    <Copy SourceFiles="@(ModStrings)" DestinationFolder="$(ModDeploy)strings" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(ModDeploy)translations" Condition="@(ModStrings) != ''" />
+    <Copy SourceFiles="@(ModStrings)" DestinationFolder="$(ModDeploy)translations" SkipUnchangedFiles="true" />
     <Message Importance="high" Text="Deployed to $(ModDeploy)" />
   </Target>
 </Project>
