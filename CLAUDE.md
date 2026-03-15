@@ -45,7 +45,7 @@ D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Manage
 
 | When | Read |
 |-|-|
-| Every session | `docs/tier1-quickref.md` (~100 lines) |
+| Every session | `docs/tier1-quickref.md` (~90 lines) |
 | Editing ReplaceStuff | `ReplaceStuff/HANDOVER.md` + `docs/tier2-replacestuff-design.md` |
 | Editing BuildThrough | `BuildThrough/HANDOVER.md` + `docs/tier2-buildthrough-design.md` |
 | Editing OniProfiler | `OniProfiler/HANDOVER.md` |

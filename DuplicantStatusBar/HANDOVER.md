@@ -19,17 +19,30 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 | `UI/PortraitCompositor.cs` | Static utility: composites dupe accessories from KAnim atlas into Texture2D/Sprite |
 | `UI/AlertEffects.cs` | Alert effect definitions, procedural sprite cache, alpha evaluation |
 | `UI/ExpressionResolver.cs` | Maps alert/stress → expression → eye/mouth frame indices (runtime discovery from kanim) |
-| `UI/DupeTooltip.cs` | Hover tooltip: name, task, stress/health/breath, temperature, animated alert text |
+| `UI/DupeTooltip.cs` | Hover tooltip: name, task, stress/health/breath/temp/calories/bladder, animated alert text |
+| `UI/SortFilterPopup.cs` | In-game sort/filter dropdown — sort modes, smart filters, role/dupe visibility |
+| `UI/ColorUtil.cs` | Centralized color palette — stat gradients, alert badges, stress tiers, UI chrome |
+| `UI/DiagnosticDump.cs` | Debug-only portrait diagnostic output (disabled in production) |
+| `Localization/DSBStrings.cs` | All LocString definitions (UI, alerts, options, popup) |
 | `Patches/GamePatches.cs` | `Game.OnPrefabInit` postfix — injects `StatusBarScreen` |
+| `Patches/TranslationPatch.cs` | Loads .po translation files at game start |
+| `API/Experimental/DSBApi.cs` | Public static entry point for extensibility API |
+| `API/Experimental/AlertRegistration.cs` | Custom alert registration type + AlertPattern enum |
+| `API/Experimental/TooltipContext.cs` | Tooltip hook context |
+| `API/Experimental/Events.cs` | Event struct definitions (AlertChanged, Widget, Snapshot) |
+| `API/Internal/AlertRegistry.cs` | Registration storage, detection, event dispatch |
 
 ## Data Flow
 
 1. `GamePatches` adds `StatusBarScreen` to `Game.gameObject` on prefab init
 2. Every 0.25s, `DupeStatusTracker.Update()` polls all dupes on the active world
-3. For each dupe: reads Stress, HitPoints, Breath amounts + PrimaryElement temp + ChoreDriver + Sicknesses + JoyBehaviourMonitor
-4. Computes `StressTier` (5 tiers) and `AlertType` (7 types, priority-ordered)
-5. `StatusBarScreen.RefreshWidgets()` syncs widget count and updates each
-6. Width-based row wrapping: columns fit within `MaxBarWidth%` of canvas, overflow rows scroll via `ScrollRect`
+3. For each dupe: reads Stress, HitPoints, Breath, Bladder, Calories amounts + PrimaryElement temp + ChoreDriver + Sicknesses + JoyBehaviourMonitor + ScaldingMonitor + SuffocationMonitor + RadiationMonitor + CalorieMonitor + Navigator
+4. Computes `StressTier` (5 tiers) and `AlertType` (13 types, priority-ordered)
+5. Evaluates registered custom alerts via `AlertRegistry.EvaluateCustomAlerts()`
+6. Fires `AlertChangedEvent` for built-in and custom alert state transitions
+7. Applies sort/filter (sort mode, alerts-only, stressed-only, role filter, per-dupe hide)
+8. `StatusBarScreen.RefreshWidgets()` syncs widget count and updates each
+9. Width-based row wrapping: columns fit within `MaxBarWidth%` of canvas, overflow rows scroll via `ScrollRect`
 
 ## Key Design Decisions
 
@@ -37,7 +50,7 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 - **MonoBehaviour + own Canvas**, not KScreen: independent of game's screen stack, won't conflict
 - **Texture compositing portraits with initials fallback**: reads KAnim atlas textures directly, composites accessory sprites layer-by-layer (bypasses broken KAnim batch pipeline for ScreenSpaceOverlay); falls back to 2-letter initials below 36px
 - **Stress border**: 5-tier color gradient (green→lime→yellow→orange→red) with pulse on critical
-- **Alert badges**: priority system (suffocating > lowHP > scalding > hypothermia > overstressed > diseased > overjoyed)
+- **Alert badges**: 13-type priority system (incapacitated > suffocating > lowHP > scalding > hypothermia > stuck > irradiated > starving > overstressed > bladder > diseased > overjoyed > idle)
 - **Drag via header**: position saved to PlayerPrefs, survives restarts
 - **Collapse button**: minimizes to just the header bar
 - **Width-based wrapping**: `MaxBarWidth%` of canvas width determines columns per row; excess rows scroll

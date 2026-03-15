@@ -12,12 +12,12 @@ Use `Read` tool with `offset` and `limit` to load specific sections only.
 | 4 | Gameplay tweaks with examples | 450-579 |
 | 5 | Creating new buildings from scratch | 580-772 |
 | 6 | New items, elements, creatures | 773-925 |
-| 7 | UI modding techniques | 926-1017 |
-| 8 | Mod configuration & settings (PLib) | 1018-1118 |
-| 9 | Debugging and testing | 1119-1193 |
-| 10 | Publishing to Steam Workshop | 1194-1228 |
-| 11 | Key API reference | 1229-1409 |
-| 12 | Community resources and ecosystem | 1410-1461 |
+| 7 | UI modding techniques | 926-1057 |
+| 8 | Mod configuration & settings (PLib) | 1058-1158 |
+| 9 | Debugging and testing | 1159-1233 |
+| 10 | Publishing to Steam Workshop | 1234-1268 |
+| 11 | Key API reference | 1269-1449 |
+| 12 | Community resources and ecosystem | 1450-1501 |
 
 ---
 
@@ -1012,6 +1012,46 @@ Register by patching `OverlayScreen.OnPrefabInit` and adding your mode to its ov
 ### PLib UI components
 
 PLib provides a builder-pattern UI system matching the game's visual style: **`PPanel`** (layout), **`PLabel`** (text), **`PButton`** (button), **`PTextField`** (input), **`PCheckBox`** (toggle), **`PSliderSingle`** (slider), **`PScrollPane`** (scrolling), **`PDialog`** (dialog window). All use `.AddTo(parent, index)` to attach to the hierarchy.
+
+### Standalone Canvas (ScreenSpaceOverlay)
+
+For HUD elements independent of the game's screen stack, create your own Canvas:
+
+```csharp
+var canvasGO = new GameObject("MyCanvas");
+var canvas = canvasGO.AddComponent<Canvas>();
+canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+canvas.sortingOrder = 100;  // above game UI
+
+var scaler = canvasGO.AddComponent<CanvasScaler>();
+scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+scaler.referenceResolution = new Vector2(1920, 1080);
+scaler.matchWidthOrHeight = 0.5f;
+
+canvasGO.AddComponent<GraphicRaycaster>();
+```
+
+**Key gotchas:**
+- `new GameObject()` only has `Transform`. You must `AddComponent<Image>()` (or any UI component) before `GetComponent<RectTransform>()` returns non-null — `Image` auto-adds a `RectTransform`.
+- `TextMeshProUGUI` and `Image` cannot share the same GameObject — TMP needs its own child GO.
+- To respect the game's UI Scale slider: read `KPlayerPrefs.GetFloat(KCanvasScaler.UIScalePrefKey)` (stored as percentage, 100 = 1x), divide by 100, then adjust your `CanvasScaler.referenceResolution` by dividing the base resolution by that scale factor.
+- `KCanvasScaler` uses `ConstantPixelSize` mode with a stepped resolution scale. If you use `ScaleWithScreenSize`, you handle resolution adaptation automatically but need to incorporate `userScale` manually via the reference resolution trick.
+
+### Localization with .po files
+
+ONI uses `LocString` fields for localizable text. Fields must be `public static` (not `readonly`):
+
+```csharp
+public static class STRINGS
+{
+    public static class MYMOD
+    {
+        public static LocString LABEL = "My Label";
+    }
+}
+```
+
+Load translations from `.po` files using `Localization.RegisterForTranslation(typeof(STRINGS))` in your mod's `OnLoad`, then place `<locale>.po` files in a `translations/` folder inside your mod directory.
 
 ---
 
