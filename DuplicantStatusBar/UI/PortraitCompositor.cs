@@ -96,9 +96,9 @@ namespace DuplicantStatusBar.UI
                     int ef = eyeFrame;
                     if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
                     WriteSymbolDirect(baseTex, eyeAcc.symbol,
-                        xOffset: 8, yOffset: -14 + PORTRAIT_Y_SHIFT, frameOverride: ef,
+                        xOffset: 4, yOffset: -16 + PORTRAIT_Y_SHIFT, frameOverride: ef,
                         maxWidth: MAX_EYE_W, maxHeight: MAX_EYE_H,
-                        anchor: VerticalAnchor.Bottom);
+                        anchor: VerticalAnchor.Bottom, rotation: 3f);
                 }
 
                 // Mouth — center-offset, shifted down
@@ -108,7 +108,7 @@ namespace DuplicantStatusBar.UI
                     int mf = mouthFrame;
                     if (mf >= mouthAcc.symbol.frameLookup.Length) mf = 0;
                     WriteSymbolDirect(baseTex, mouthAcc.symbol,
-                        xOffset: 10, yOffset: -20 + PORTRAIT_Y_SHIFT, frameOverride: mf,
+                        xOffset: 6, yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mf,
                         maxWidth: MAX_MOUTH_W, maxHeight: MAX_MOUTH_H,
                         anchor: VerticalAnchor.Top);
                 }
@@ -133,11 +133,11 @@ namespace DuplicantStatusBar.UI
                 WriteSymbol(output, accessorizer, slots.HatHair, xOffset: 8, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
                 var hatAcc = slots.Hat.Lookup(hatId);
                 if (hatAcc != null)
-                    WriteSymbolDirect(output, hatAcc.symbol, xOffset: 8, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
+                    WriteSymbolDirect(output, hatAcc.symbol, xOffset: 6, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
             }
             else
             {
-                WriteSymbol(output, accessorizer, slots.Hair, xOffset: 8, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
+                WriteSymbol(output, accessorizer, slots.Hair, xOffset: 8, yOffset: 28 + PORTRAIT_Y_SHIFT, usePivot: true);
             }
 
             output.Apply();
@@ -159,7 +159,8 @@ namespace DuplicantStatusBar.UI
             int xOffset = 0, int yOffset = 0,
             bool usePivot = false, bool flipX = false, int frameOverride = -1,
             int maxWidth = 0, int maxHeight = 0,
-            VerticalAnchor anchor = VerticalAnchor.Center)
+            VerticalAnchor anchor = VerticalAnchor.Center,
+            float rotation = 0f)
         {
             if (symbol == null) return;
 
@@ -216,21 +217,51 @@ namespace DuplicantStatusBar.UI
                 yStart -= pivotY / 2;
             }
 
-            for (int x = 0; x < source.width; x++)
+            if (rotation != 0f)
             {
-                for (int y = 0; y < source.height; y++)
+                // Inverse-mapped rotation: iterate output pixels, sample rotated source
+                float rad = rotation * Mathf.Deg2Rad;
+                float cos = Mathf.Cos(rad);
+                float sin = Mathf.Sin(rad);
+                float cx = source.width * 0.5f;
+                float cy = source.height * 0.5f;
+
+                for (int oy = yStart; oy < yStart + source.height; oy++)
                 {
-                    var px = source.GetPixel(x, y);
-                    if (px.a <= ALPHA_THRESHOLD) continue;
-
-                    int outX = flipX ? (source.width - 1 - x) + xStart : x + xStart;
-                    int outY = y + yStart;
-
-                    if (outX >= 0 && outX < output.width &&
-                        outY >= 0 && outY < output.height)
+                    if (oy < 0 || oy >= output.height) continue;
+                    for (int ox = xStart; ox < xStart + source.width; ox++)
                     {
-                        var existing = output.GetPixel(outX, outY);
-                        output.SetPixel(outX, outY, AlphaBlend(existing, px));
+                        if (ox < 0 || ox >= output.width) continue;
+                        float lx = (ox - xStart) - cx;
+                        float ly = (oy - yStart) - cy;
+                        int sx = Mathf.RoundToInt(cos * lx + sin * ly + cx);
+                        int sy = Mathf.RoundToInt(-sin * lx + cos * ly + cy);
+                        if (sx < 0 || sx >= source.width || sy < 0 || sy >= source.height) continue;
+                        var px = source.GetPixel(sx, sy);
+                        if (px.a <= ALPHA_THRESHOLD) continue;
+                        var existing = output.GetPixel(ox, oy);
+                        output.SetPixel(ox, oy, AlphaBlend(existing, px));
+                    }
+                }
+            }
+            else
+            {
+                for (int x = 0; x < source.width; x++)
+                {
+                    for (int y = 0; y < source.height; y++)
+                    {
+                        var px = source.GetPixel(x, y);
+                        if (px.a <= ALPHA_THRESHOLD) continue;
+
+                        int outX = flipX ? (source.width - 1 - x) + xStart : x + xStart;
+                        int outY = y + yStart;
+
+                        if (outX >= 0 && outX < output.width &&
+                            outY >= 0 && outY < output.height)
+                        {
+                            var existing = output.GetPixel(outX, outY);
+                            output.SetPixel(outX, outY, AlphaBlend(existing, px));
+                        }
                     }
                 }
             }
