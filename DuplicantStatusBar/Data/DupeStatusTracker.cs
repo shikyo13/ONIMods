@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DuplicantStatusBar.Config;
+using DuplicantStatusBar.UI;
 
 namespace DuplicantStatusBar.Data
 {
@@ -148,6 +149,14 @@ namespace DuplicantStatusBar.Data
                 if (identity == null || identity.gameObject == null) continue;
 
                 var go = identity.gameObject;
+
+                // Skip dupes hidden by the filter popup
+                if (SortFilterPopup.HiddenDupes.Count > 0)
+                {
+                    string checkName = go.GetProperName();
+                    if (checkName != null && SortFilterPopup.HiddenDupes.Contains(checkName))
+                        continue;
+                }
                 int id = go.GetInstanceID();
                 var snap = new DupeSnapshot
                 {
