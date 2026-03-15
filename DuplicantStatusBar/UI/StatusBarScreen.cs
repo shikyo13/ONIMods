@@ -192,32 +192,30 @@ namespace DuplicantStatusBar.UI
             botImg.raycastTarget = false;
             botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
-            // Filter popup button (far left — ► Sort/Filter)
+            // Filter popup button (anchored far left, outside HLG flow)
             var filterGO = new GameObject("FilterBtn");
             filterGO.transform.SetParent(header.transform, false);
+
+            var filterRT = filterGO.GetComponent<RectTransform>();
+            filterRT.anchorMin = new Vector2(0f, 0f);
+            filterRT.anchorMax = new Vector2(0f, 1f);
+            filterRT.pivot = new Vector2(0f, 0.5f);
+            filterRT.anchoredPosition = new Vector2(6f, 0f);
+            filterRT.sizeDelta = new Vector2(80f, 0f);
+
             var filterBtnImg = filterGO.AddComponent<Image>();
             filterBtnImg.color = Color.clear;
             var filterBtn = filterGO.AddComponent<Button>();
             filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
+            filterGO.AddComponent<LayoutElement>().ignoreLayout = true;
 
-            var filterTextGO = new GameObject("Label");
-            filterTextGO.transform.SetParent(filterGO.transform, false);
-            var filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            filterTMP.text = "\u25BA Sort/Filter"; // ► Sort/Filter
+            var filterTMP = filterGO.AddComponent<TMPro.TextMeshProUGUI>();
+            filterTMP.text = "\u25BC Sort/Filter";
             filterTMP.fontSize = 11;
             filterTMP.color = Color.white;
             if (GameFont != null) filterTMP.font = GameFont;
             filterTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             filterTMP.raycastTarget = false;
-
-            var ftRT = filterTextGO.GetComponent<RectTransform>();
-            ftRT.anchorMin = Vector2.zero;
-            ftRT.anchorMax = Vector2.one;
-            ftRT.sizeDelta = Vector2.zero;
-
-            var filterLE = filterGO.AddComponent<LayoutElement>();
-            filterLE.preferredWidth = 80;
-            filterLE.preferredHeight = 14;
 
             // Drag-handle label
             var grip = new GameObject("Grip");
