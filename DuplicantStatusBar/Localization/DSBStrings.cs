@@ -15,6 +15,11 @@ namespace DuplicantStatusBar.Localization
                 public static LocString TOOLTIP_BODYTEMP = "Body Temp:";
                 public static LocString TOOLTIP_CALORIES = "Calories:";
                 public static LocString TOOLTIP_BLADDER = "Bladder:";
+                public static LocString POPUP_SORTBY = "Sort By";
+                public static LocString POPUP_FILTER = "Filter";
+                public static LocString POPUP_APPLY = "Apply";
+                public static LocString POPUP_RESET = "Reset";
+                public static LocString POPUP_SHOWALL = "Show All";
             }
 
             public static class ALERTS

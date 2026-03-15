@@ -15,6 +15,7 @@ namespace DuplicantStatusBar.UI
         private GameObject contentArea;
         private RectTransform contentRT;
         private TMPro.TextMeshProUGUI collapseLabel;
+        private TMPro.TextMeshProUGUI sortLabel;
         private readonly List<DupePortraitWidget> widgets = new List<DupePortraitWidget>();
 
         private Image panelImage;
@@ -78,6 +79,7 @@ namespace DuplicantStatusBar.UI
         private void OnDestroy()
         {
             DupeTooltip.Cleanup();
+            SortFilterPopup.Cleanup();
             PortraitCompositor.ClearCaches();
             SaveState();
         }
@@ -139,6 +141,7 @@ namespace DuplicantStatusBar.UI
             BuildContent(panelGO);
             BuildResizeHandle(canvasGO);
             DupeTooltip.Init(canvasGO.transform);
+            SortFilterPopup.Init(canvasGO.transform);
         }
 
         private void BuildHeader(GameObject parent)
@@ -202,6 +205,33 @@ namespace DuplicantStatusBar.UI
             var gripLE = grip.AddComponent<LayoutElement>();
             gripLE.preferredWidth = 40;
             gripLE.preferredHeight = 14;
+
+            // Sort/Filter popup button
+            var sortGO = new GameObject("SortFilterBtn");
+            sortGO.transform.SetParent(header.transform, false);
+            var sortBtnImg = sortGO.AddComponent<Image>();
+            sortBtnImg.color = Color.clear;
+            var sortBtn = sortGO.AddComponent<Button>();
+            sortBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
+
+            var sortTextGO = new GameObject("Label");
+            sortTextGO.transform.SetParent(sortGO.transform, false);
+            sortLabel = sortTextGO.AddComponent<TMPro.TextMeshProUGUI>();
+            sortLabel.text = "\u2630"; // hamburger menu ☰
+            sortLabel.fontSize = 12;
+            sortLabel.color = Color.white;
+            if (GameFont != null) sortLabel.font = GameFont;
+            sortLabel.alignment = TMPro.TextAlignmentOptions.Center;
+            sortLabel.raycastTarget = false;
+
+            var slRT = sortTextGO.GetComponent<RectTransform>();
+            slRT.anchorMin = Vector2.zero;
+            slRT.anchorMax = Vector2.one;
+            slRT.sizeDelta = Vector2.zero;
+
+            var sortLE = sortGO.AddComponent<LayoutElement>();
+            sortLE.preferredWidth = 16;
+            sortLE.preferredHeight = 14;
 
             // Collapse / expand button
             var btnGO = new GameObject("CollapseBtn");
