@@ -567,10 +567,10 @@ namespace DuplicantStatusBar.UI
         private void ClampPanelPosition()
         {
             if (barPanel == null || canvasRT == null) return;
-            var half = canvasRT.rect.size * 0.5f;
+            var size = canvasRT.rect.size;
             var pos = barPanel.anchoredPosition;
-            pos.x = Mathf.Clamp(pos.x, -half.x, half.x);
-            pos.y = Mathf.Clamp(pos.y, -half.y, 0f);
+            pos.x = Mathf.Clamp(pos.x, -size.x * 0.5f, size.x * 0.5f);
+            pos.y = Mathf.Clamp(pos.y, -(size.y - 20f), 0f);
             barPanel.anchoredPosition = pos;
         }
 
