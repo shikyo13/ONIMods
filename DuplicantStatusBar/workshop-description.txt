@@ -19,12 +19,13 @@ Portraits are expression-driven — dupes change facial expressions based on the
 [*] [b]Animated tooltip[/b] — name, current task, stress, health, breath, body temperature, calories, bladder, and all active alerts with color-coded text; stat values use green-to-red gradients; overjoyed alerts get rainbow cycling
 [*] [b]Click to select[/b] — selects the dupe and snaps the camera to them
 [*] [b]Portraits or initials[/b] — full dupe portraits by default; switch to colored initials in mod settings
-[*] [b]Sorting[/b] — by stress level, calories (lowest first), alphabetical, or job role
+[*] [b]Sort & Filter popup[/b] — click the ► Sort/Filter button to sort by stress, calories, name, or job role; filter to show only alerted or stressed dupes; filter by job role; or hide individual dupes by name
 [*] [b]Multi-row grid layout[/b] — wraps into rows automatically, with configurable max width and max rows
 [*] [b]Scroll overflow[/b] — thin scrollbar appears when dupes exceed visible rows
 [*] [b]Draggable & collapsible[/b] — drag the header to reposition; collapse to just the header bar; position saved across sessions
 [*] [b]Resize grip[/b] — drag the bottom-right corner to adjust portrait size (16–96px), persisted between sessions
 [*] [b]Configurable[/b] — portrait size, bar opacity, max width, max rows, display mode, expression toggle, stress thresholds, and individual alert toggles via PLib mod options
+[*] [b]Respects game UI scale[/b] — scales with the in-game UI Scale slider (Options → Graphics), updates live
 [/list]
 
 [h2]Localization[/h2]

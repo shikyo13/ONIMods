@@ -1,5 +1,13 @@
 [h1]Duplicant Status Bar — Changelog[/h1]
 
+[h2]v2.5.1 — Game UI Scale Support[/h2]
+[list]
+[*] The status bar now scales with the in-game UI Scale setting (Options → Graphics) — no longer stuck at 100% when the rest of the UI is scaled up
+[*] Scale updates live when the setting changes, no restart needed
+[*] Drag-to-resize and all other features unaffected
+[*] Fixed NRE in filter button construction (Image added before RectTransform access)
+[/list]
+
 [h2]v2.5.0 — Calorie Tracking, Sort by Calories, Color Centralization[/h2]
 [list]
 [*] Calorie percentage now shown in hover tooltip with green-to-red color gradient (60/40/20% breakpoints)

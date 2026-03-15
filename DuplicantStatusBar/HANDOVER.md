@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.3.4
+**Version**: v2.5.1
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -217,6 +217,10 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 - The perceived eye tilt is baked into the sprite's 3/4 perspective art, not a positioning bug
 - Positive yOffset = up on texture (Unity texture Y=0 is bottom)
 - Hat, HatHair, and Hair are three independent layers: Hat is the headwear, HatHair is hair visible under a hat, Hair is the full hairstyle when no hat is worn
+
+## v2.5.1 — Game UI Scale Support
+
+DSB now reads `KPlayerPrefs.GetFloat("UIScalePref")` (the in-game UI Scale slider, stored as percentage) and adjusts its `CanvasScaler.referenceResolution` by dividing the base 1920x1080 by `userScale`. A 150% game scale → reference 1280x720 → Unity renders DSB 1.5x larger. Polled every 0.25s in the existing `Update()` tick; updates live without restart. Clamped to 0.75–2.0x. Drag-to-resize unaffected (operates on logical portrait size, independent of canvas scale).
 
 ## Not Yet Implemented
 
