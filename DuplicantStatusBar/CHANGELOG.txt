@@ -1,5 +1,16 @@
 [h1]Duplicant Status Bar — Changelog[/h1]
 
+[h2]v2.5.0 — Calorie Tracking, Sort by Calories, Color Centralization[/h2]
+[list]
+[*] Calorie percentage now shown in hover tooltip with green-to-red color gradient (60/40/20% breakpoints)
+[*] Body temperature in tooltip is now color-coded by deviation from normal (36.85°C) — green within ±1.5°, amber ±3.5°, orange ±5.5°, red beyond
+[*] New sort mode: "Calories (lowest first)" — hungriest dupes appear first in the bar, useful for Carnivore achievement runs
+[*] All mod colors centralized into ColorUtil.cs — single source of truth for stat gradients, alert badges, stress tiers, and UI chrome; enables future theming
+[*] Mod settings "Homepage" button now links to the Steam Workshop page
+[*] Assembly version bumped to 2.5.0
+[*] Added German, Spanish, and French translations (now 7 languages total)
+[/list]
+
 [h2]v2.4.0 — Localization (7 Languages)[/h2]
 [list]
 [*] All UI text is now localizable — tooltip labels, alert names, option labels/descriptions, and the bar header

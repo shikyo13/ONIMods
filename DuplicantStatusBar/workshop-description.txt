@@ -5,7 +5,7 @@ Vanilla gives you a global stress number in the corner and that's about it. No p
 
 Each dupe gets a widget with a stress-colored border that shifts through a 5-tier gradient: green at calm, through lime, yellow, orange, up to pulsing red at 80%+. A health fill bar drains from top to bottom as dupes take damage, with a dark overlay making injuries immediately visible. Up to 3 alert badges can appear simultaneously on each portrait for critical states like suffocation, low health, scalding, hypothermia, starvation, radiation sickness, bladder emergencies, stuck dupes, idle dupes, and disease. Alerts are priority-ordered so the most dangerous condition always shows first.
 
-Click any widget to select that dupe and snap the camera to them. Hover for a detailed tooltip showing their current task, stress, health, breath, bladder, and body temperature, plus any active alerts with color-coded animated text — the tooltip stays on-screen even when hovering dupes near the edges.
+Click any widget to select that dupe and snap the camera to them. Hover for a detailed tooltip showing their current task, stress, health, breath, body temperature, calories, and bladder — all with green-to-red color gradients — plus any active alerts with color-coded animated text. The tooltip stays on-screen even when hovering dupes near the edges.
 
 Portraits are expression-driven — dupes change facial expressions based on their current alert or stress level, with periodic blinking. Overjoyed dupes get a rainbow-cycling border with sparkle effects. Displays dupe portraits by default, with a colored-initials mode available in mod settings for a lighter look or better readability in packed colonies. The bar wraps into multiple rows as your colony grows, with a scrollbar when rows exceed the configured limit. Drag the header to reposition anywhere on screen, or drag the resize grip to adjust portrait size on the fly.
 
@@ -16,10 +16,10 @@ Portraits are expression-driven — dupes change facial expressions based on the
 [*] [b]Overjoyed rainbow border[/b] — animated rainbow cycling with sparkle effects and glow
 [*] [b]Health fill bar[/b] — vertical drain with green-to-red gradient and a dark damage overlay above the portrait
 [*] [b]Alert badges[/b] — suffocating, low HP, incapacitated, scalding, hypothermia, irradiated, starving, disease, bladder urgent, stuck, idle, overstressed; up to 3 shown simultaneously with priority ordering
-[*] [b]Animated tooltip[/b] — name, current task, stress, health, breath, bladder, body temperature, and all active alerts with color-coded text; overjoyed alerts get rainbow cycling
+[*] [b]Animated tooltip[/b] — name, current task, stress, health, breath, body temperature, calories, bladder, and all active alerts with color-coded text; stat values use green-to-red gradients; overjoyed alerts get rainbow cycling
 [*] [b]Click to select[/b] — selects the dupe and snaps the camera to them
 [*] [b]Portraits or initials[/b] — full dupe portraits by default; switch to colored initials in mod settings
-[*] [b]Sorting[/b] — by stress level, alphabetical, or job role
+[*] [b]Sorting[/b] — by stress level, calories (lowest first), alphabetical, or job role
 [*] [b]Multi-row grid layout[/b] — wraps into rows automatically, with configurable max width and max rows
 [*] [b]Scroll overflow[/b] — thin scrollbar appears when dupes exceed visible rows
 [*] [b]Draggable & collapsible[/b] — drag the header to reposition; collapse to just the header bar; position saved across sessions
@@ -28,7 +28,7 @@ Portraits are expression-driven — dupes change facial expressions based on the
 [/list]
 
 [h2]Localization[/h2]
-All UI text is translated into Chinese, Korean, Russian, and Japanese. Translations load automatically based on your game language setting.
+All UI text is translated into Chinese, Korean, Russian, Japanese, German, Spanish, and French. Translations load automatically based on your game language setting.
 
 [h2]Compatibility[/h2]
 Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Display only — does not modify any game logic or save data.
