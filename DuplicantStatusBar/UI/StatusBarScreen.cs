@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DuplicantStatusBar.Config;
 using DuplicantStatusBar.Data;
+using DSB = DuplicantStatusBar.Localization.STRINGS.DUPLICANTSTATUSBAR;
 
 namespace DuplicantStatusBar.UI
 {
@@ -192,7 +193,7 @@ namespace DuplicantStatusBar.UI
             var grip = new GameObject("Grip");
             grip.transform.SetParent(header.transform, false);
             var gripTMP = grip.AddComponent<TMPro.TextMeshProUGUI>();
-            gripTMP.text = "Dupes";
+            gripTMP.text = DSB.UI.HEADER;
             gripTMP.fontSize = 11;
             gripTMP.color = new Color(0.627f, 0.678f, 0.722f); // #A0ADB8
             if (GameFont != null) gripTMP.font = GameFont;

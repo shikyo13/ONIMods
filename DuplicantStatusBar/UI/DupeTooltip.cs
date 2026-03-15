@@ -2,6 +2,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using DuplicantStatusBar.Data;
+using DSB = DuplicantStatusBar.Localization.STRINGS.DUPLICANTSTATUSBAR;
 
 namespace DuplicantStatusBar.UI
 {
@@ -104,27 +105,29 @@ namespace DuplicantStatusBar.UI
 
             sb.Clear();
             sb.AppendLine($"<b>{snap.Name}</b>");
-            var task = string.IsNullOrEmpty(snap.ChoreDescription) ? "Idle" : snap.ChoreDescription;
-            sb.AppendLine($"Task: {task}");
+            var task = string.IsNullOrEmpty(snap.ChoreDescription)
+                ? (string)DSB.UI.TOOLTIP_IDLE
+                : snap.ChoreDescription;
+            sb.AppendLine($"{DSB.UI.TOOLTIP_TASK} {task}");
             sb.AppendLine();
 
             var sc = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.TierColor(snap.Tier));
-            sb.AppendLine($"Stress: <color=#{sc}>{snap.StressPercent:F0}%</color>");
+            sb.AppendLine($"{DSB.UI.TOOLTIP_STRESS} <color=#{sc}>{snap.StressPercent:F0}%</color>");
 
             var hc = snap.HealthPercent >= 100f ? "4ADE80"
                    : snap.HealthPercent >= 60f  ? "FBBF24"
                    : snap.HealthPercent >= 30f  ? "F97316"
                    : "EF4444";
-            sb.AppendLine($"Health: <color=#{hc}>{snap.HealthPercent:F0}%</color>");
+            sb.AppendLine($"{DSB.UI.TOOLTIP_HEALTH} <color=#{hc}>{snap.HealthPercent:F0}%</color>");
 
             var bc = snap.BreathPercent < 30f ? "60A5FA" : "4ADE80";
-            sb.AppendLine($"Breath: <color=#{bc}>{snap.BreathPercent:F0}%</color>");
+            sb.AppendLine($"{DSB.UI.TOOLTIP_BREATH} <color=#{bc}>{snap.BreathPercent:F0}%</color>");
 
             float tempC = snap.BodyTemperature - 273.15f;
-            sb.AppendLine($"Body Temp: {tempC:F1} C");
+            sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} {tempC:F1} C");
 
             var blc = snap.BladderPercent >= 70f ? "FFEB3B" : "4ADE80";
-            sb.AppendLine($"Bladder: <color=#{blc}>{snap.BladderPercent:F0}%</color>");
+            sb.AppendLine($"{DSB.UI.TOOLTIP_BLADDER} <color=#{blc}>{snap.BladderPercent:F0}%</color>");
 
             // Populate animated alert text slots
             int slot = 0;
@@ -277,16 +280,19 @@ namespace DuplicantStatusBar.UI
             AlertType type, float timer)
         {
             var fx = AlertEffects.Get(type);
-            float alpha = AlertEffects.EvaluateAlpha(fx, timer);
+
+            // Static full-brightness color — no alpha animation (was hard to read)
+            // Brighten the base color slightly to ensure readability on dark tooltip bg
+            Color.RGBToHSV(fx.BaseColor, out float h, out float s, out float v);
+            v = Mathf.Max(v, 0.85f); // floor brightness at 85%
+            Color bright = Color.HSVToRGB(h, s, v);
 
             tmp.ForceMeshUpdate();
             var textInfo = tmp.textInfo;
 
-            byte r = (byte)(fx.BaseColor.r * 255f);
-            byte g = (byte)(fx.BaseColor.g * 255f);
-            byte b = (byte)(fx.BaseColor.b * 255f);
-            byte a = (byte)(alpha * 255f);
-            var color32 = new Color32(r, g, b, a);
+            var color32 = new Color32(
+                (byte)(bright.r * 255f), (byte)(bright.g * 255f),
+                (byte)(bright.b * 255f), 255);
 
             for (int i = 0; i < textInfo.characterCount; i++)
             {
@@ -304,29 +310,30 @@ namespace DuplicantStatusBar.UI
 
             tmp.UpdateVertexData(TMPro.TMP_VertexDataUpdateFlags.Colors32);
 
-            // Animate glow
+            // Subtle glow pulse — much gentler than before
+            float glowPulse = 0.3f + 0.1f * Mathf.Sin(timer * 2f);
             var mat = tmp.fontMaterial;
-            mat.SetColor(TMPro.ShaderUtilities.ID_GlowColor, fx.BaseColor);
-            mat.SetFloat(TMPro.ShaderUtilities.ID_GlowPower, 0.3f + 0.2f * alpha);
+            mat.SetColor(TMPro.ShaderUtilities.ID_GlowColor, bright);
+            mat.SetFloat(TMPro.ShaderUtilities.ID_GlowPower, glowPulse);
         }
 
         private static string AlertLabel(AlertType alert)
         {
             switch (alert)
             {
-                case AlertType.Suffocating:  return "Suffocating";
-                case AlertType.LowHP:        return "Low Health";
-                case AlertType.Scalding:     return "Scalding";
-                case AlertType.Hypothermia:  return "Hypothermia";
-                case AlertType.Irradiated:   return "Irradiated";
-                case AlertType.Starving:     return "Starving";
-                case AlertType.Overstressed: return "Overstressed";
-                case AlertType.BladderUrgent: return "Bladder Urgent";
-                case AlertType.Diseased:     return "Diseased";
-                case AlertType.Overjoyed:    return "Overjoyed";
-                case AlertType.Stuck:        return "Stuck";
-                case AlertType.Idle:          return "Idle";
-                case AlertType.Incapacitated: return "Incapacitated";
+                case AlertType.Suffocating:   return DSB.ALERTS.SUFFOCATING;
+                case AlertType.LowHP:         return DSB.ALERTS.LOWHEALTH;
+                case AlertType.Scalding:      return DSB.ALERTS.SCALDING;
+                case AlertType.Hypothermia:   return DSB.ALERTS.HYPOTHERMIA;
+                case AlertType.Irradiated:    return DSB.ALERTS.IRRADIATED;
+                case AlertType.Starving:      return DSB.ALERTS.STARVING;
+                case AlertType.Overstressed:  return DSB.ALERTS.OVERSTRESSED;
+                case AlertType.BladderUrgent: return DSB.ALERTS.BLADDERURGENT;
+                case AlertType.Diseased:      return DSB.ALERTS.DISEASED;
+                case AlertType.Overjoyed:     return DSB.ALERTS.OVERJOYED;
+                case AlertType.Stuck:         return DSB.ALERTS.STUCK;
+                case AlertType.Idle:          return DSB.ALERTS.IDLE;
+                case AlertType.Incapacitated: return DSB.ALERTS.INCAPACITATED;
                 default: return "";
             }
         }

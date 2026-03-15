@@ -1,0 +1,384 @@
+msgid ""
+msgstr ""
+"Language: zh-CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# UI strings
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.HEADER"
+msgid "Dupes"
+msgstr "复制人"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_TASK"
+msgid "Task:"
+msgstr "任务:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_IDLE"
+msgid "Idle"
+msgstr "空闲"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STRESS"
+msgid "Stress:"
+msgstr "压力:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_HEALTH"
+msgid "Health:"
+msgstr "生命值:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BREATH"
+msgid "Breath:"
+msgstr "呼吸:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BODYTEMP"
+msgid "Body Temp:"
+msgstr "体温:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
+msgid "Bladder:"
+msgstr "膀胱:"
+
+# Alert strings
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"
+msgid "Suffocating"
+msgstr "窒息"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWHEALTH"
+msgid "Low Health"
+msgstr "生命值低"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SCALDING"
+msgid "Scalding"
+msgstr "烫伤"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.HYPOTHERMIA"
+msgid "Hypothermia"
+msgstr "体温过低"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IRRADIATED"
+msgid "Irradiated"
+msgstr "辐射"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STARVING"
+msgid "Starving"
+msgstr "饥饿"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERSTRESSED"
+msgid "Overstressed"
+msgstr "压力过大"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.BLADDERURGENT"
+msgid "Bladder Urgent"
+msgstr "膀胱紧急"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.DISEASED"
+msgid "Diseased"
+msgstr "患病"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERJOYED"
+msgid "Overjoyed"
+msgstr "欣喜若狂"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STUCK"
+msgid "Stuck"
+msgstr "被困"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IDLE"
+msgid "Idle"
+msgstr "空闲"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.INCAPACITATED"
+msgid "Incapacitated"
+msgstr "丧失行动能力"
+
+# Options category strings
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL"
+msgid "General"
+msgstr "常规"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE"
+msgid "Appearance"
+msgstr "外观"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS"
+msgid "Stress Tiers"
+msgstr "压力等级"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS"
+msgid "Alerts"
+msgstr "警报"
+
+# Options enum strings
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.STRESSDESCENDING"
+msgid "Stress (highest first)"
+msgstr "压力 (从高到低)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ALPHABETICAL"
+msgid "Alphabetical"
+msgstr "按字母排序"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE"
+msgid "Job Role"
+msgstr "工作职位"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS"
+msgid "Portraits"
+msgstr "肖像"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.INITIALS"
+msgid "Initials Only"
+msgstr "仅显示首字母"
+
+# Options property strings — Sort Order
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME"
+msgid "Sort Order"
+msgstr "排序方式"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC"
+msgid "How to sort duplicants in the bar."
+msgstr "状态栏中复制人的排序方式。"
+
+# Options property strings — Portrait Size
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.NAME"
+msgid "Portrait Size"
+msgstr "肖像大小"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.DESC"
+msgid "Size of each portrait in pixels."
+msgstr "每个肖像的像素大小。"
+
+# Options property strings — Max Dupes Per Row
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME"
+msgid "Max Dupes Per Row"
+msgstr "每行最大复制人数"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC"
+msgid "Maximum portraits per row (0 = auto-fit to screen width)."
+msgstr "每行最大肖像数 (0 = 自动适应屏幕宽度)。"
+
+# Options property strings — Max Bar Width
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME"
+msgid "Max Bar Width (%)"
+msgstr "最大栏宽 (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC"
+msgid "Maximum bar width as percentage of screen (triggers row wrapping)."
+msgstr "状态栏最大宽度占屏幕百分比 (超出后自动换行)。"
+
+# Options property strings — Max Rows
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME"
+msgid "Max Rows"
+msgstr "最大行数"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC"
+msgid "Maximum visible rows before scrolling (0 = unlimited)."
+msgstr "滚动前可见的最大行数 (0 = 无限制)。"
+
+# Options property strings — Bar Opacity
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.NAME"
+msgid "Bar Opacity (%)"
+msgstr "栏不透明度 (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.DESC"
+msgid "Opacity of the status bar background."
+msgstr "状态栏背景的不透明度。"
+
+# Options property strings — Display Mode
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.NAME"
+msgid "Display Mode"
+msgstr "显示模式"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.DESC"
+msgid "Show portraits or initial letters."
+msgstr "显示肖像或首字母。"
+
+# Options property strings — Face Expressions
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.NAME"
+msgid "Face Expressions"
+msgstr "面部表情"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.DESC"
+msgid "Show dynamic facial expressions based on dupe status."
+msgstr "根据复制人状态显示动态面部表情。"
+
+# Options property strings — Calm Threshold
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.NAME"
+msgid "Calm Threshold"
+msgstr "平静阈值"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.DESC"
+msgid "Stress below this % is Calm (green)."
+msgstr "压力低于此百分比为平静 (绿色)。"
+
+# Options property strings — Mild Threshold
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.NAME"
+msgid "Mild Threshold"
+msgstr "轻微阈值"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.DESC"
+msgid "Stress below this % is Mild (lime)."
+msgstr "压力低于此百分比为轻微 (黄绿色)。"
+
+# Options property strings — Stressed Threshold
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.NAME"
+msgid "Stressed Threshold"
+msgstr "紧张阈值"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.DESC"
+msgid "Stress below this % is Stressed (yellow)."
+msgstr "压力低于此百分比为紧张 (黄色)。"
+
+# Options property strings — High Threshold
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.NAME"
+msgid "High Threshold"
+msgstr "严重阈值"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.DESC"
+msgid "Stress below this % is High (orange)."
+msgstr "压力低于此百分比为严重 (橙色)。"
+
+# Options property strings — Alert Suffocating
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.NAME"
+msgid "Suffocating Alert"
+msgstr "窒息警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.DESC"
+msgid "Show badge when dupe is suffocating."
+msgstr "复制人窒息时显示徽章。"
+
+# Options property strings — Alert Low HP
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.NAME"
+msgid "Low HP Alert"
+msgstr "生命值低警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.DESC"
+msgid "Show badge when dupe health is low."
+msgstr "复制人生命值低时显示徽章。"
+
+# Options property strings — Alert Scalding
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.NAME"
+msgid "Scalding Alert"
+msgstr "烫伤警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.DESC"
+msgid "Show badge when dupe is overheating."
+msgstr "复制人过热时显示徽章。"
+
+# Options property strings — Alert Hypothermia
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.NAME"
+msgid "Hypothermia Alert"
+msgstr "体温过低警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.DESC"
+msgid "Show badge when dupe is freezing."
+msgstr "复制人体温过低时显示徽章。"
+
+# Options property strings — Alert Diseased
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.NAME"
+msgid "Disease Alert"
+msgstr "患病警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.DESC"
+msgid "Show badge when dupe is sick."
+msgstr "复制人患病时显示徽章。"
+
+# Options property strings — Alert Overstressed
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.NAME"
+msgid "Overstressed Alert"
+msgstr "压力过大警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.DESC"
+msgid "Show badge at critical stress."
+msgstr "压力达到临界时显示徽章。"
+
+# Options property strings — Alert Overjoyed
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.NAME"
+msgid "Overjoyed Alert"
+msgstr "欣喜若狂警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.DESC"
+msgid "Show rainbow border and tooltip during joy reactions."
+msgstr "欣喜反应时显示彩虹边框和提示。"
+
+# Options property strings — Alert Irradiated
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.NAME"
+msgid "Irradiated Alert"
+msgstr "辐射警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.DESC"
+msgid "Show badge when dupe has radiation sickness."
+msgstr "复制人辐射中毒时显示徽章。"
+
+# Options property strings — Alert Starving
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.NAME"
+msgid "Starving Alert"
+msgstr "饥饿警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.DESC"
+msgid "Show badge when dupe is starving."
+msgstr "复制人饥饿时显示徽章。"
+
+# Options property strings — Alert Bladder
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.NAME"
+msgid "Bladder Alert"
+msgstr "膀胱警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.DESC"
+msgid "Show badge when dupe urgently needs a bathroom."
+msgstr "复制人急需上厕所时显示徽章。"
+
+# Options property strings — Alert Stuck
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.NAME"
+msgid "Stuck Alert"
+msgstr "被困警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.DESC"
+msgid "Show badge when dupe cannot reach the printing pod."
+msgstr "复制人无法到达打印舱时显示徽章。"
+
+# Options property strings — Alert Idle
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.NAME"
+msgid "Idle Alert"
+msgstr "空闲警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.DESC"
+msgid "Show badge when dupe has no task for an extended period."
+msgstr "复制人长时间无任务时显示徽章。"
+
+# Options property strings — Alert Incapacitated
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.NAME"
+msgid "Incapacitated Alert"
+msgstr "丧失行动能力警报"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
+msgid "Show badge when dupe is incapacitated (bleeding out)."
+msgstr "复制人丧失行动能力 (失血) 时显示徽章。"

@@ -1,0 +1,337 @@
+# Japanese translations for DuplicantStatusBar
+# Language: ja (Japanese)
+#
+msgid ""
+msgstr ""
+"Language: ja\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# ── UI ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.HEADER"
+msgid "Dupes"
+msgstr "デュプリカント"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_TASK"
+msgid "Task:"
+msgstr "タスク:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_IDLE"
+msgid "Idle"
+msgstr "待機中"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STRESS"
+msgid "Stress:"
+msgstr "ストレス:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_HEALTH"
+msgid "Health:"
+msgstr "体力:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BREATH"
+msgid "Breath:"
+msgstr "呼吸:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BODYTEMP"
+msgid "Body Temp:"
+msgstr "体温:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
+msgid "Bladder:"
+msgstr "膀胱:"
+
+# ── Alerts ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"
+msgid "Suffocating"
+msgstr "窒息"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWHEALTH"
+msgid "Low Health"
+msgstr "体力低下"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SCALDING"
+msgid "Scalding"
+msgstr "熱傷"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.HYPOTHERMIA"
+msgid "Hypothermia"
+msgstr "低体温症"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IRRADIATED"
+msgid "Irradiated"
+msgstr "被ばく"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STARVING"
+msgid "Starving"
+msgstr "飢餓"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERSTRESSED"
+msgid "Overstressed"
+msgstr "過剰ストレス"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.BLADDERURGENT"
+msgid "Bladder Urgent"
+msgstr "膀胱限界"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.DISEASED"
+msgid "Diseased"
+msgstr "罹病"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERJOYED"
+msgid "Overjoyed"
+msgstr "歓喜"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STUCK"
+msgid "Stuck"
+msgstr "立ち往生"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IDLE"
+msgid "Idle"
+msgstr "待機中"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.INCAPACITATED"
+msgid "Incapacitated"
+msgstr "行動不能"
+
+# ── Options — Categories ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL"
+msgid "General"
+msgstr "一般"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE"
+msgid "Appearance"
+msgstr "外観"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS"
+msgid "Stress Tiers"
+msgstr "ストレス段階"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS"
+msgid "Alerts"
+msgstr "アラート"
+
+# ── Options — Enums ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.STRESSDESCENDING"
+msgid "Stress (highest first)"
+msgstr "ストレス (高い順)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ALPHABETICAL"
+msgid "Alphabetical"
+msgstr "アルファベット順"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE"
+msgid "Job Role"
+msgstr "職業"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS"
+msgid "Portraits"
+msgstr "ポートレート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.INITIALS"
+msgid "Initials Only"
+msgstr "イニシャルのみ"
+
+# ── Options — Properties ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME"
+msgid "Sort Order"
+msgstr "並び順"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC"
+msgid "How to sort duplicants in the bar."
+msgstr "ステータスバーでのデュプリカントの並び順です。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.NAME"
+msgid "Portrait Size"
+msgstr "ポートレートサイズ"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.DESC"
+msgid "Size of each portrait in pixels."
+msgstr "各ポートレートのピクセルサイズです。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME"
+msgid "Max Dupes Per Row"
+msgstr "1行あたりの最大人数"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC"
+msgid "Maximum portraits per row (0 = auto-fit to screen width)."
+msgstr "1行あたりの最大ポートレート数です (0 = 画面幅に自動調整)。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME"
+msgid "Max Bar Width (%)"
+msgstr "バーの最大幅 (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC"
+msgid "Maximum bar width as percentage of screen (triggers row wrapping)."
+msgstr "画面に対するバーの最大幅の割合です (行の折り返しが発生します)。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME"
+msgid "Max Rows"
+msgstr "最大行数"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC"
+msgid "Maximum visible rows before scrolling (0 = unlimited)."
+msgstr "スクロール前の最大表示行数です (0 = 無制限)。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.NAME"
+msgid "Bar Opacity (%)"
+msgstr "バーの不透明度 (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.DESC"
+msgid "Opacity of the status bar background."
+msgstr "ステータスバー背景の不透明度です。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.NAME"
+msgid "Display Mode"
+msgstr "表示モード"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.DESC"
+msgid "Show portraits or initial letters."
+msgstr "ポートレートまたはイニシャルを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.NAME"
+msgid "Face Expressions"
+msgstr "表情"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.DESC"
+msgid "Show dynamic facial expressions based on dupe status."
+msgstr "デュプリカントの状態に応じた表情を表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.NAME"
+msgid "Calm Threshold"
+msgstr "平穏しきい値"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.DESC"
+msgid "Stress below this % is Calm (green)."
+msgstr "この%未満のストレスは平穏 (緑) です。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.NAME"
+msgid "Mild Threshold"
+msgstr "軽度しきい値"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.DESC"
+msgid "Stress below this % is Mild (lime)."
+msgstr "この%未満のストレスは軽度 (黄緑) です。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.NAME"
+msgid "Stressed Threshold"
+msgstr "ストレスしきい値"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.DESC"
+msgid "Stress below this % is Stressed (yellow)."
+msgstr "この%未満のストレスはストレス (黄) です。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.NAME"
+msgid "High Threshold"
+msgstr "高ストレスしきい値"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.DESC"
+msgid "Stress below this % is High (orange)."
+msgstr "この%未満のストレスは高 (橙) です。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.NAME"
+msgid "Suffocating Alert"
+msgstr "窒息アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.DESC"
+msgid "Show badge when dupe is suffocating."
+msgstr "デュプリカントが窒息している時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.NAME"
+msgid "Low HP Alert"
+msgstr "体力低下アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.DESC"
+msgid "Show badge when dupe health is low."
+msgstr "デュプリカントの体力が低い時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.NAME"
+msgid "Scalding Alert"
+msgstr "熱傷アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.DESC"
+msgid "Show badge when dupe is overheating."
+msgstr "デュプリカントが過熱している時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.NAME"
+msgid "Hypothermia Alert"
+msgstr "低体温症アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.DESC"
+msgid "Show badge when dupe is freezing."
+msgstr "デュプリカントが凍えている時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.NAME"
+msgid "Disease Alert"
+msgstr "罹病アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.DESC"
+msgid "Show badge when dupe is sick."
+msgstr "デュプリカントが病気の時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.NAME"
+msgid "Overstressed Alert"
+msgstr "過剰ストレスアラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.DESC"
+msgid "Show badge at critical stress."
+msgstr "ストレスが危険水準の時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.NAME"
+msgid "Overjoyed Alert"
+msgstr "歓喜アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.DESC"
+msgid "Show rainbow border and tooltip during joy reactions."
+msgstr "歓喜反応中に虹色の枠とツールチップを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.NAME"
+msgid "Irradiated Alert"
+msgstr "被ばくアラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.DESC"
+msgid "Show badge when dupe has radiation sickness."
+msgstr "デュプリカントが放射線障害の時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.NAME"
+msgid "Starving Alert"
+msgstr "飢餓アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.DESC"
+msgid "Show badge when dupe is starving."
+msgstr "デュプリカントが飢餓状態の時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.NAME"
+msgid "Bladder Alert"
+msgstr "膀胱アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.DESC"
+msgid "Show badge when dupe urgently needs a bathroom."
+msgstr "デュプリカントが緊急にトイレを必要としている時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.NAME"
+msgid "Stuck Alert"
+msgstr "立ち往生アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.DESC"
+msgid "Show badge when dupe cannot reach the printing pod."
+msgstr "デュプリカントが印刷ポッドに到達できない時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.NAME"
+msgid "Idle Alert"
+msgstr "待機中アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.DESC"
+msgid "Show badge when dupe has no task for an extended period."
+msgstr "デュプリカントが長時間タスクのない時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.NAME"
+msgid "Incapacitated Alert"
+msgstr "行動不能アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
+msgid "Show badge when dupe is incapacitated (bleeding out)."
+msgstr "デュプリカントが行動不能 (出血) の時にバッジを表示します。"

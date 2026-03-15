@@ -1,0 +1,337 @@
+# German translations for DuplicantStatusBar
+# Language: de (Deutsch)
+#
+msgid ""
+msgstr ""
+"Language: de\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# --- UI strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.HEADER"
+msgid "Dupes"
+msgstr "Duplikanten"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_TASK"
+msgid "Task:"
+msgstr "Aufgabe:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_IDLE"
+msgid "Idle"
+msgstr "Untätig"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STRESS"
+msgid "Stress:"
+msgstr "Stress:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_HEALTH"
+msgid "Health:"
+msgstr "Gesundheit:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BREATH"
+msgid "Breath:"
+msgstr "Atem:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BODYTEMP"
+msgid "Body Temp:"
+msgstr "Körpertemp.:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
+msgid "Bladder:"
+msgstr "Blase:"
+
+# --- ALERT strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"
+msgid "Suffocating"
+msgstr "Erstickend"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWHEALTH"
+msgid "Low Health"
+msgstr "Niedrige Gesundheit"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SCALDING"
+msgid "Scalding"
+msgstr "Verbrühung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.HYPOTHERMIA"
+msgid "Hypothermia"
+msgstr "Unterkühlung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IRRADIATED"
+msgid "Irradiated"
+msgstr "Verstrahlt"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STARVING"
+msgid "Starving"
+msgstr "Verhungernd"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERSTRESSED"
+msgid "Overstressed"
+msgstr "Überlastet"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.BLADDERURGENT"
+msgid "Bladder Urgent"
+msgstr "Blase dringend"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.DISEASED"
+msgid "Diseased"
+msgstr "Erkrankt"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERJOYED"
+msgid "Overjoyed"
+msgstr "Überglücklich"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STUCK"
+msgid "Stuck"
+msgstr "Festgesteckt"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IDLE"
+msgid "Idle"
+msgstr "Untätig"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.INCAPACITATED"
+msgid "Incapacitated"
+msgstr "Kampfunfähig"
+
+# --- OPTIONS category strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL"
+msgid "General"
+msgstr "Allgemein"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE"
+msgid "Appearance"
+msgstr "Darstellung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS"
+msgid "Stress Tiers"
+msgstr "Stressstufen"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS"
+msgid "Alerts"
+msgstr "Warnungen"
+
+# --- OPTIONS enum strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.STRESSDESCENDING"
+msgid "Stress (highest first)"
+msgstr "Stress (höchster zuerst)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ALPHABETICAL"
+msgid "Alphabetical"
+msgstr "Alphabetisch"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE"
+msgid "Job Role"
+msgstr "Berufsrolle"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS"
+msgid "Portraits"
+msgstr "Porträts"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.INITIALS"
+msgid "Initials Only"
+msgstr "Nur Initialen"
+
+# --- OPTIONS property strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME"
+msgid "Sort Order"
+msgstr "Sortierung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC"
+msgid "How to sort duplicants in the bar."
+msgstr "Sortierreihenfolge der Duplikanten in der Leiste."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.NAME"
+msgid "Portrait Size"
+msgstr "Porträtgröße"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.DESC"
+msgid "Size of each portrait in pixels."
+msgstr "Größe jedes Porträts in Pixeln."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME"
+msgid "Max Dupes Per Row"
+msgstr "Max. Duplikanten pro Reihe"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC"
+msgid "Maximum portraits per row (0 = auto-fit to screen width)."
+msgstr "Maximale Porträts pro Reihe (0 = automatisch an Bildschirmbreite anpassen)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME"
+msgid "Max Bar Width (%)"
+msgstr "Max. Leistenbreite (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC"
+msgid "Maximum bar width as percentage of screen (triggers row wrapping)."
+msgstr "Maximale Leistenbreite in Prozent des Bildschirms (löst Zeilenumbruch aus)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME"
+msgid "Max Rows"
+msgstr "Max. Reihen"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC"
+msgid "Maximum visible rows before scrolling (0 = unlimited)."
+msgstr "Maximale sichtbare Reihen vor dem Scrollen (0 = unbegrenzt)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.NAME"
+msgid "Bar Opacity (%)"
+msgstr "Leistendeckkraft (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.DESC"
+msgid "Opacity of the status bar background."
+msgstr "Deckkraft des Statusleisten-Hintergrunds."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.NAME"
+msgid "Display Mode"
+msgstr "Anzeigemodus"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.DESC"
+msgid "Show portraits or initial letters."
+msgstr "Porträts oder Anfangsbuchstaben anzeigen."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.NAME"
+msgid "Face Expressions"
+msgstr "Gesichtsausdrücke"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.DESC"
+msgid "Show dynamic facial expressions based on dupe status."
+msgstr "Dynamische Gesichtsausdrücke basierend auf dem Status des Duplikanten anzeigen."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.NAME"
+msgid "Calm Threshold"
+msgstr "Ruhig-Schwellenwert"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.DESC"
+msgid "Stress below this % is Calm (green)."
+msgstr "Stress unter diesem % ist Ruhig (grün)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.NAME"
+msgid "Mild Threshold"
+msgstr "Leicht-Schwellenwert"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.DESC"
+msgid "Stress below this % is Mild (lime)."
+msgstr "Stress unter diesem % ist Leicht (hellgrün)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.NAME"
+msgid "Stressed Threshold"
+msgstr "Gestresst-Schwellenwert"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.DESC"
+msgid "Stress below this % is Stressed (yellow)."
+msgstr "Stress unter diesem % ist Gestresst (gelb)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.NAME"
+msgid "High Threshold"
+msgstr "Hoch-Schwellenwert"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.DESC"
+msgid "Stress below this % is High (orange)."
+msgstr "Stress unter diesem % ist Hoch (orange)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.NAME"
+msgid "Suffocating Alert"
+msgstr "Erstickungswarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.DESC"
+msgid "Show badge when dupe is suffocating."
+msgstr "Abzeichen anzeigen, wenn der Duplikant erstickt."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.NAME"
+msgid "Low HP Alert"
+msgstr "Niedrige-LP-Warnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.DESC"
+msgid "Show badge when dupe health is low."
+msgstr "Abzeichen anzeigen, wenn die Gesundheit des Duplikanten niedrig ist."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.NAME"
+msgid "Scalding Alert"
+msgstr "Verbrühungswarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.DESC"
+msgid "Show badge when dupe is overheating."
+msgstr "Abzeichen anzeigen, wenn der Duplikant überhitzt."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.NAME"
+msgid "Hypothermia Alert"
+msgstr "Unterkühlungswarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.DESC"
+msgid "Show badge when dupe is freezing."
+msgstr "Abzeichen anzeigen, wenn der Duplikant unterkühlt."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.NAME"
+msgid "Disease Alert"
+msgstr "Krankheitswarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.DESC"
+msgid "Show badge when dupe is sick."
+msgstr "Abzeichen anzeigen, wenn der Duplikant erkrankt ist."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.NAME"
+msgid "Overstressed Alert"
+msgstr "Überlastungswarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.DESC"
+msgid "Show badge at critical stress."
+msgstr "Abzeichen bei kritischem Stress anzeigen."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.NAME"
+msgid "Overjoyed Alert"
+msgstr "Überglücklich-Warnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.DESC"
+msgid "Show rainbow border and tooltip during joy reactions."
+msgstr "Regenbogenrand und Tooltip bei Freudenreaktionen anzeigen."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.NAME"
+msgid "Irradiated Alert"
+msgstr "Strahlungswarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.DESC"
+msgid "Show badge when dupe has radiation sickness."
+msgstr "Abzeichen anzeigen, wenn der Duplikant verstrahlt ist."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.NAME"
+msgid "Starving Alert"
+msgstr "Verhungerungswarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.DESC"
+msgid "Show badge when dupe is starving."
+msgstr "Abzeichen anzeigen, wenn der Duplikant verhungert."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.NAME"
+msgid "Bladder Alert"
+msgstr "Blasenwarnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.DESC"
+msgid "Show badge when dupe urgently needs a bathroom."
+msgstr "Abzeichen anzeigen, wenn der Duplikant dringend ein Badezimmer braucht."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.NAME"
+msgid "Stuck Alert"
+msgstr "Festgesteckt-Warnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.DESC"
+msgid "Show badge when dupe cannot reach the printing pod."
+msgstr "Abzeichen anzeigen, wenn der Duplikant die Druckkapsel nicht erreichen kann."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.NAME"
+msgid "Idle Alert"
+msgstr "Untätig-Warnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.DESC"
+msgid "Show badge when dupe has no task for an extended period."
+msgstr "Abzeichen anzeigen, wenn der Duplikant längere Zeit keine Aufgabe hat."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.NAME"
+msgid "Incapacitated Alert"
+msgstr "Kampfunfähig-Warnung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
+msgid "Show badge when dupe is incapacitated (bleeding out)."
+msgstr "Abzeichen anzeigen, wenn der Duplikant kampfunfähig ist (verblutet)."
