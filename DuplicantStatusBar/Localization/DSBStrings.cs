@@ -26,6 +26,9 @@ namespace DuplicantStatusBar.Localization
                 public static LocString POPUP_ROLES = "Roles";
                 public static LocString POPUP_NOROLE = "No Specialization";
                 public static LocString POPUP_DUPES = "Dupes";
+                public static LocString POPUP_SORTFILTER = "\u25BC Sort/Filter";
+                public static LocString POPUP_ALL = "All";
+                public static LocString POPUP_NONE = "None";
             }
 
             public static class ALERTS

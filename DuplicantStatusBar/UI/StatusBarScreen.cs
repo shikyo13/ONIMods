@@ -229,7 +229,7 @@ namespace DuplicantStatusBar.UI
             var filterTextGO = new GameObject("Label");
             filterTextGO.transform.SetParent(filterGO.transform, false);
             var filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            filterTMP.text = "\u25BC Sort/Filter";
+            filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
             filterTMP.fontSize = 11;
             filterTMP.color = Color.white;
             if (GameFont != null) filterTMP.font = GameFont;
