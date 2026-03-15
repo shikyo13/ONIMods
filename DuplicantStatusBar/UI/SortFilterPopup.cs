@@ -19,13 +19,26 @@ namespace DuplicantStatusBar.UI
         private static GameObject blockerGO;
         private static RectTransform popupRT;
         private static Transform filterContent;
+        private static Transform roleContent;
 
         // Sort section state
         private static SortOrder pendingSort;
         private static readonly List<TextMeshProUGUI> sortLabels = new List<TextMeshProUGUI>();
         private static readonly SortOrder[] sortValues = (SortOrder[])Enum.GetValues(typeof(SortOrder));
 
-        // Filter section state
+        // Smart filter state (pending)
+        private static bool pendingAlertsOnly;
+        private static bool pendingStressedOnly;
+        private static TextMeshProUGUI alertsOnlyLabel;
+        private static TextMeshProUGUI stressedOnlyLabel;
+
+        // Role filter state (pending, rebuilt on open)
+        private static readonly List<string> roleKeys = new List<string>();
+        private static readonly List<string> roleDisplayNames = new List<string>();
+        private static readonly List<bool> roleVisible = new List<bool>();
+        private static readonly List<TextMeshProUGUI> roleLabels = new List<TextMeshProUGUI>();
+
+        // Per-dupe filter state
         private static readonly List<string> filterNames = new List<string>();
         private static readonly List<bool> filterVisible = new List<bool>();
         private static readonly List<TextMeshProUGUI> filterLabels = new List<TextMeshProUGUI>();
@@ -33,11 +46,20 @@ namespace DuplicantStatusBar.UI
         /// <summary>Set of dupe names currently hidden. Checked by DupeStatusTracker.</summary>
         public static readonly HashSet<string> HiddenDupes = new HashSet<string>();
 
+        // Active (committed) smart filter state — read by DupeStatusTracker
+        public static bool AlertsOnly { get; private set; }
+        public static bool StressedOnly { get; private set; }
+        public static readonly HashSet<string> HiddenRoles = new HashSet<string>();
+
         private const string PREFS_KEY = "DSB_HiddenDupes";
+        private const string PREFS_ALERTS = "DSB_AlertsOnly";
+        private const string PREFS_STRESSED = "DSB_StressedOnly";
+        private const string PREFS_ROLES = "DSB_HiddenRoles";
 
         public static void Init(Transform canvasRoot)
         {
             LoadHiddenDupes();
+            LoadSmartFilters();
 
             // Fullscreen click-away blocker
             blockerGO = new GameObject("DSB_PopupBlocker");
@@ -75,6 +97,8 @@ namespace DuplicantStatusBar.UI
 
             BuildSortSection(popupGO.transform);
             BuildSeparator(popupGO.transform);
+            BuildSmartFilters(popupGO.transform);
+            BuildSeparator(popupGO.transform);
             BuildFilterSection(popupGO.transform);
             BuildSeparator(popupGO.transform);
             BuildButtons(popupGO.transform);
@@ -94,7 +118,11 @@ namespace DuplicantStatusBar.UI
 
             // Initialize pending state from current options
             pendingSort = StatusBarOptions.Instance.SortOrder;
+            pendingAlertsOnly = AlertsOnly;
+            pendingStressedOnly = StressedOnly;
             RefreshSortVisuals();
+            RefreshSmartFilterVisuals();
+            RebuildRoleList();
             RebuildFilterList();
 
             // Position below the bar panel
@@ -154,7 +182,164 @@ namespace DuplicantStatusBar.UI
             }
         }
 
-        // ── Filter Section ─────────────────────────────────
+        // ── Smart Filters ──────────────────────────────────
+
+        private static void BuildSmartFilters(Transform parent)
+        {
+            AddHeader(parent, () => DSB.UI.POPUP_QUICKFILTERS);
+
+            alertsOnlyLabel = AddClickableItem(parent, "",
+                () => { pendingAlertsOnly = !pendingAlertsOnly; RefreshSmartFilterVisuals(); });
+
+            stressedOnlyLabel = AddClickableItem(parent, "",
+                () => { pendingStressedOnly = !pendingStressedOnly; RefreshSmartFilterVisuals(); });
+
+            RefreshSmartFilterVisuals();
+
+            // Roles sub-header
+            AddHeader(parent, () => DSB.UI.POPUP_ROLES);
+
+            // Scroll area for role items
+            var scrollGO = new GameObject("RoleScroll");
+            scrollGO.transform.SetParent(parent, false);
+            var scrollLE = scrollGO.AddComponent<LayoutElement>();
+            scrollLE.preferredWidth = 140;
+            scrollLE.preferredHeight = 60;
+
+            var scrollImg = scrollGO.AddComponent<Image>();
+            scrollImg.color = new Color(0f, 0f, 0f, 0.15f);
+            scrollGO.AddComponent<Mask>().showMaskGraphic = true;
+
+            var contentGO = new GameObject("Content");
+            contentGO.transform.SetParent(scrollGO.transform, false);
+            var contentRT = contentGO.AddComponent<RectTransform>();
+            contentRT.anchorMin = new Vector2(0f, 1f);
+            contentRT.anchorMax = new Vector2(1f, 1f);
+            contentRT.pivot = new Vector2(0.5f, 1f);
+
+            var contentVLG = contentGO.AddComponent<VerticalLayoutGroup>();
+            contentVLG.padding = new RectOffset(4, 4, 2, 2);
+            contentVLG.spacing = 1;
+            contentVLG.childForceExpandWidth = true;
+            contentVLG.childForceExpandHeight = false;
+
+            var contentFitter = contentGO.AddComponent<ContentSizeFitter>();
+            contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var scroll = scrollGO.AddComponent<ScrollRect>();
+            scroll.content = contentRT;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 20f;
+
+            roleContent = contentGO.transform;
+        }
+
+        private static void RefreshSmartFilterVisuals()
+        {
+            string aPrefix = pendingAlertsOnly ? "\u2713 " : "\u2717 ";
+            alertsOnlyLabel.text = aPrefix + (string)DSB.UI.POPUP_ALERTSONLY;
+            alertsOnlyLabel.color = pendingAlertsOnly ? Color.white : ColorUtil.TextMuted;
+
+            string sPrefix = pendingStressedOnly ? "\u2713 " : "\u2717 ";
+            stressedOnlyLabel.text = sPrefix + (string)DSB.UI.POPUP_STRESSEDONLY;
+            stressedOnlyLabel.color = pendingStressedOnly ? Color.white : ColorUtil.TextMuted;
+        }
+
+        private static void RebuildRoleList()
+        {
+            for (int i = roleContent.childCount - 1; i >= 0; i--)
+                UnityEngine.Object.Destroy(roleContent.GetChild(i).gameObject);
+
+            roleKeys.Clear();
+            roleDisplayNames.Clear();
+            roleVisible.Clear();
+            roleLabels.Clear();
+
+            var roles = GetAllRoles();
+            for (int i = 0; i < roles.Count; i++)
+            {
+                int idx = i;
+                string key = roles[i].Key;
+                string display = roles[i].Value;
+                bool visible = !HiddenRoles.Contains(key);
+
+                roleKeys.Add(key);
+                roleDisplayNames.Add(display);
+                roleVisible.Add(visible);
+
+                var item = AddClickableItem(roleContent, "", () => ToggleRole(idx));
+                item.fontSize = 10;
+                roleLabels.Add(item);
+                UpdateRoleItemVisual(idx);
+            }
+        }
+
+        private static void ToggleRole(int idx)
+        {
+            if (idx < 0 || idx >= roleVisible.Count) return;
+            roleVisible[idx] = !roleVisible[idx];
+            UpdateRoleItemVisual(idx);
+        }
+
+        private static void UpdateRoleItemVisual(int idx)
+        {
+            bool vis = roleVisible[idx];
+            string prefix = vis ? "\u2713 " : "\u2717 ";
+            roleLabels[idx].text = prefix + roleDisplayNames[idx];
+            roleLabels[idx].color = vis ? Color.white : new Color(0.6f, 0.4f, 0.4f);
+        }
+
+        private static List<KeyValuePair<string, string>> GetAllRoles()
+        {
+            var result = new List<KeyValuePair<string, string>>();
+            var seen = new HashSet<string>();
+
+            if (Components.LiveMinionIdentities.Count == 0) return result;
+            int worldId = ClusterManager.Instance?.activeWorldId ?? -1;
+            if (worldId < 0) return result;
+
+            var dupes = Components.LiveMinionIdentities.GetWorldItems(worldId);
+            if (dupes == null) return result;
+
+            foreach (var identity in dupes)
+            {
+                if (identity?.gameObject == null) continue;
+                var resume = identity.gameObject.GetComponent<MinionResume>();
+                string hat = resume?.CurrentHat ?? "";
+                if (!seen.Add(hat)) continue;
+
+                string display;
+                if (string.IsNullOrEmpty(hat))
+                {
+                    display = DSB.UI.POPUP_NOROLE;
+                }
+                else
+                {
+                    display = hat;
+                    // Try to find a readable name from the skill database
+                    var db = Db.Get();
+                    if (db?.Skills != null)
+                    {
+                        foreach (var skill in db.Skills.resources)
+                        {
+                            if (skill.hat == hat)
+                            {
+                                display = skill.Name;
+                                break;
+                            }
+                        }
+                    }
+                }
+                result.Add(new KeyValuePair<string, string>(hat, display));
+            }
+
+            result.Sort((a, b) => string.Compare(a.Value, b.Value, StringComparison.Ordinal));
+            return result;
+        }
+
+        // ── Filter Section (Per-Dupe) ─────────────────────
 
         private static void BuildFilterSection(Transform parent)
         {
@@ -167,7 +352,7 @@ namespace DuplicantStatusBar.UI
             hlg.childForceExpandHeight = false;
             hlg.childAlignment = TextAnchor.MiddleLeft;
 
-            AddHeaderInto(headerRow.transform, () => DSB.UI.POPUP_FILTER);
+            AddHeaderInto(headerRow.transform, () => DSB.UI.POPUP_DUPES);
 
             // Spacer
             var spacer = new GameObject("Spacer");
@@ -324,22 +509,41 @@ namespace DuplicantStatusBar.UI
             StatusBarOptions.Instance.SortOrder = pendingSort;
             DupeStatusTracker.SortSnapshots();
 
-            // Commit filter
+            // Commit smart filters
+            AlertsOnly = pendingAlertsOnly;
+            StressedOnly = pendingStressedOnly;
+            HiddenRoles.Clear();
+            for (int i = 0; i < roleKeys.Count; i++)
+            {
+                if (!roleVisible[i])
+                    HiddenRoles.Add(roleKeys[i]);
+            }
+
+            // Commit per-dupe filter
             HiddenDupes.Clear();
             for (int i = 0; i < filterNames.Count; i++)
             {
                 if (!filterVisible[i])
                     HiddenDupes.Add(filterNames[i]);
             }
-            SaveHiddenDupes();
 
+            SaveHiddenDupes();
+            SaveSmartFilters();
             Close();
         }
 
         private static void Reset()
         {
             pendingSort = SortOrder.StressDescending;
+            pendingAlertsOnly = false;
+            pendingStressedOnly = false;
             RefreshSortVisuals();
+            RefreshSmartFilterVisuals();
+            for (int i = 0; i < roleVisible.Count; i++)
+            {
+                roleVisible[i] = true;
+                UpdateRoleItemVisual(i);
+            }
             ShowAllDupes();
         }
 
@@ -364,6 +568,36 @@ namespace DuplicantStatusBar.UI
                 PlayerPrefs.SetString(PREFS_KEY, string.Join(",", arr));
             }
             PlayerPrefs.Save();
+        }
+
+        private static void SaveSmartFilters()
+        {
+            PlayerPrefs.SetInt(PREFS_ALERTS, AlertsOnly ? 1 : 0);
+            PlayerPrefs.SetInt(PREFS_STRESSED, StressedOnly ? 1 : 0);
+            if (HiddenRoles.Count == 0)
+            {
+                PlayerPrefs.DeleteKey(PREFS_ROLES);
+            }
+            else
+            {
+                var arr = new string[HiddenRoles.Count];
+                HiddenRoles.CopyTo(arr);
+                PlayerPrefs.SetString(PREFS_ROLES, string.Join(",", arr));
+            }
+            PlayerPrefs.Save();
+        }
+
+        private static void LoadSmartFilters()
+        {
+            AlertsOnly = PlayerPrefs.GetInt(PREFS_ALERTS, 0) == 1;
+            StressedOnly = PlayerPrefs.GetInt(PREFS_STRESSED, 0) == 1;
+            HiddenRoles.Clear();
+            string saved = PlayerPrefs.GetString(PREFS_ROLES, "");
+            if (!string.IsNullOrEmpty(saved))
+            {
+                foreach (var role in saved.Split(','))
+                    if (role != null) HiddenRoles.Add(role);
+            }
         }
 
         private static void LoadHiddenDupes()

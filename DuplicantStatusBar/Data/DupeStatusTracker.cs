@@ -150,13 +150,6 @@ namespace DuplicantStatusBar.Data
 
                 var go = identity.gameObject;
 
-                // Skip dupes hidden by the filter popup
-                if (SortFilterPopup.HiddenDupes.Count > 0)
-                {
-                    string checkName = go.GetProperName();
-                    if (checkName != null && SortFilterPopup.HiddenDupes.Contains(checkName))
-                        continue;
-                }
                 int id = go.GetInstanceID();
                 var snap = new DupeSnapshot
                 {
@@ -283,6 +276,21 @@ namespace DuplicantStatusBar.Data
                 ComputeAlerts(snap, options, out var mask, out var highest);
                 snap.AlertMask = mask;
                 snap.HighestAlert = highest;
+
+                // Apply filters (per-dupe, smart filters, role filter)
+                if (SortFilterPopup.HiddenDupes.Count > 0 && SortFilterPopup.HiddenDupes.Contains(snap.Name))
+                    continue;
+                if (SortFilterPopup.AlertsOnly && snap.AlertMask == 0)
+                    continue;
+                if (SortFilterPopup.StressedOnly && snap.Tier < StressTier.Stressed)
+                    continue;
+                if (SortFilterPopup.HiddenRoles.Count > 0)
+                {
+                    var resume = go.GetComponent<MinionResume>();
+                    string hat = resume?.CurrentHat ?? "";
+                    if (SortFilterPopup.HiddenRoles.Contains(hat))
+                        continue;
+                }
 
                 snapshots.Add(snap);
             }

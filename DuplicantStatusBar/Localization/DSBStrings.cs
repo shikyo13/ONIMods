@@ -20,6 +20,12 @@ namespace DuplicantStatusBar.Localization
                 public static LocString POPUP_APPLY = "Apply";
                 public static LocString POPUP_RESET = "Reset";
                 public static LocString POPUP_SHOWALL = "Show All";
+                public static LocString POPUP_QUICKFILTERS = "Quick Filters";
+                public static LocString POPUP_ALERTSONLY = "Alerts Only";
+                public static LocString POPUP_STRESSEDONLY = "Stressed+ Only";
+                public static LocString POPUP_ROLES = "Roles";
+                public static LocString POPUP_NOROLE = "No Specialization";
+                public static LocString POPUP_DUPES = "Dupes";
             }
 
             public static class ALERTS
