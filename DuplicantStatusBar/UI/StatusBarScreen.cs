@@ -192,21 +192,20 @@ namespace DuplicantStatusBar.UI
             botImg.raycastTarget = false;
             botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
-            // Filter button (funnel icon — left-most element)
+            // Filter button (funnel icon — far left, vanilla toolbar style)
             var filterGO = new GameObject("FilterBtn");
             filterGO.transform.SetParent(header.transform, false);
 
-            // Beveled button background
             var filterBg = filterGO.AddComponent<Image>();
             filterBg.sprite = DupePortraitWidget.RoundedRect;
             filterBg.type = Image.Type.Sliced;
-            filterBg.color = new Color(0.30f, 0.30f, 0.35f, 0.85f);
+            filterBg.color = new Color(0.12f, 0.14f, 0.18f, 0.75f);
 
             var filterBtn = filterGO.AddComponent<Button>();
             filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
             filterBtn.targetGraphic = filterBg;
 
-            // Funnel icon (loaded from mod directory)
+            // White funnel icon
             var iconGO = new GameObject("Icon");
             iconGO.transform.SetParent(filterGO.transform, false);
             var iconImg = iconGO.AddComponent<Image>();
@@ -220,20 +219,14 @@ namespace DuplicantStatusBar.UI
             iconRT.anchorMax = new Vector2(0.85f, 0.9f);
             iconRT.sizeDelta = Vector2.zero;
 
-            // Top bevel highlight on button
-            var filterHL = new GameObject("Highlight");
-            filterHL.transform.SetParent(filterGO.transform, false);
-            var fhRT = filterHL.AddComponent<RectTransform>();
-            fhRT.anchorMin = new Vector2(0.1f, 0.85f);
-            fhRT.anchorMax = new Vector2(0.9f, 1f);
-            fhRT.sizeDelta = Vector2.zero;
-            var fhImg = filterHL.AddComponent<Image>();
-            fhImg.color = new Color(1f, 1f, 1f, 0.15f);
-            fhImg.raycastTarget = false;
-
             var filterLE = filterGO.AddComponent<LayoutElement>();
-            filterLE.preferredWidth = 18;
-            filterLE.preferredHeight = 14;
+            filterLE.preferredWidth = 22;
+            filterLE.preferredHeight = 16;
+
+            // Spacer between filter button and Dupes text
+            var filterSpacer = new GameObject("FilterSpacer");
+            filterSpacer.transform.SetParent(header.transform, false);
+            filterSpacer.AddComponent<LayoutElement>().flexibleWidth = 1;
 
             // Drag-handle label
             var grip = new GameObject("Grip");
@@ -483,13 +476,24 @@ namespace DuplicantStatusBar.UI
             if (!System.IO.File.Exists(file)) return;
             var bytes = System.IO.File.ReadAllBytes(file);
             var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            if (tex.LoadImage(bytes))
+            if (!tex.LoadImage(bytes)) return;
+
+            // Invert: dark pixels → white opaque, light pixels → transparent
+            var pixels = tex.GetPixels32();
+            for (int i = 0; i < pixels.Length; i++)
             {
-                tex.filterMode = FilterMode.Bilinear;
-                target.sprite = Sprite.Create(tex,
-                    new Rect(0, 0, tex.width, tex.height),
-                    new Vector2(0.5f, 0.5f));
+                var p = pixels[i];
+                float lum = (p.r + p.g + p.b) / (3f * 255f);
+                byte alpha = (byte)((1f - lum) * 255f);
+                pixels[i] = new Color32(255, 255, 255, alpha);
             }
+            tex.SetPixels32(pixels);
+            tex.Apply();
+            tex.filterMode = FilterMode.Bilinear;
+
+            target.sprite = Sprite.Create(tex,
+                new Rect(0, 0, tex.width, tex.height),
+                new Vector2(0.5f, 0.5f));
         }
 
         private void ToggleCollapse()
