@@ -233,7 +233,11 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 
 ## v2.5.1 — Game UI Scale Support
 
-DSB now reads `KPlayerPrefs.GetFloat("UIScalePref")` (the in-game UI Scale slider, stored as percentage) and adjusts its `CanvasScaler.referenceResolution` by dividing the base 1920x1080 by `userScale`. A 150% game scale → reference 1280x720 → Unity renders DSB 1.5x larger. Polled every 0.25s in the existing `Update()` tick; updates live without restart. Clamped to 0.75–2.0x. Drag-to-resize unaffected (operates on logical portrait size, independent of canvas scale).
+DSB matches the game's UI scale by using `ConstantPixelSize` mode and reading the game's `KCanvasScaler.GetCanvasScale()` directly. This mirrors the game's own scaling approach (which combines user scale preference with a resolution-based step table via `ScreenRelativeScale()`), ensuring correct sizing on all displays including Mac Retina / high-DPI.
+
+**Previous approach (pre-fix)**: used `ScaleWithScreenSize` mode with adjusted `referenceResolution`. This caused oversized bars on high-DPI displays (GitHub issue #1) because Unity's automatic screen÷reference division produces different scale factors than the game's `ConstantPixelSize` + manual `scaleFactor` approach, especially when `Screen.height` ≠ 1080.
+
+**Fix**: switched to `ConstantPixelSize` and reading `KCanvasScaler.GetCanvasScale()` from the game's own canvas scaler instance (cached on first access, with `FindObjectOfType` fallback). Zero maintenance if Klei changes their scale steps.
 
 ## v2.6.0 — Extensibility API
 

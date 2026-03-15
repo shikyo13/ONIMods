@@ -34,6 +34,7 @@ namespace DuplicantStatusBar.UI
         internal bool forceRefresh;
         private int lastConfiguredSize;
         private CanvasScaler canvasScaler;
+        private KCanvasScaler gameCanvasScaler;
         private float lastUIScale = 1f;
 
         // Game font (ONI-native, with fallback)
@@ -92,13 +93,14 @@ namespace DuplicantStatusBar.UI
 
         private void ApplyGameUIScale()
         {
-            float scale = KPlayerPrefs.HasKey(KCanvasScaler.UIScalePrefKey)
-                ? KPlayerPrefs.GetFloat(KCanvasScaler.UIScalePrefKey) / 100f
+            if (gameCanvasScaler == null)
+                gameCanvasScaler = FindObjectOfType<KCanvasScaler>();
+            float scale = gameCanvasScaler != null
+                ? gameCanvasScaler.GetCanvasScale()
                 : 1f;
-            scale = Mathf.Clamp(scale, 0.75f, 2f);
             if (scale != lastUIScale)
             {
-                canvasScaler.referenceResolution = new Vector2(1920f / scale, 1080f / scale);
+                canvasScaler.scaleFactor = scale;
                 lastUIScale = scale;
             }
         }
@@ -118,9 +120,7 @@ namespace DuplicantStatusBar.UI
             canvas.sortingOrder = 100;
 
             canvasScaler = canvasGO.AddComponent<CanvasScaler>();
-            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasScaler.referenceResolution = new Vector2(1920, 1080);
-            canvasScaler.matchWidthOrHeight = 0.5f;
+            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
             ApplyGameUIScale();
 
             canvasGO.AddComponent<GraphicRaycaster>();
