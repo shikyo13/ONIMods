@@ -36,7 +36,7 @@ namespace DuplicantStatusBar.UI
             var bg = panel.AddComponent<Image>();
             bg.sprite = DupePortraitWidget.RoundedRect;
             bg.type = Image.Type.Sliced;
-            bg.color = new Color(0.118f, 0.165f, 0.220f, 0.95f); // #1E2A38
+            bg.color = ColorUtil.WithAlpha(ColorUtil.CardBg, 0.95f);
             bg.raycastTarget = false;
 
             var vlg = panel.AddComponent<VerticalLayoutGroup>();
@@ -53,7 +53,7 @@ namespace DuplicantStatusBar.UI
             textGO.transform.SetParent(panel.transform, false);
             tooltipText = textGO.AddComponent<TMPro.TextMeshProUGUI>();
             tooltipText.fontSize = 12;
-            tooltipText.color = new Color(0.910f, 0.929f, 0.949f); // #E8EDF2
+            tooltipText.color = ColorUtil.TextPrimary;
             var gameFont = StatusBarScreen.GameFont;
             if (gameFont != null) tooltipText.font = gameFont;
             tooltipText.alignment = TMPro.TextAlignmentOptions.TopLeft;

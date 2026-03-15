@@ -112,7 +112,7 @@ namespace DuplicantStatusBar.UI
             panelImage = panelGO.AddComponent<Image>();
             panelImage.sprite = DupePortraitWidget.RoundedRect;
             panelImage.type = Image.Type.Sliced;
-            panelImage.color = new Color(0.165f, 0.208f, 0.271f, alpha); // #2A3545
+            panelImage.color = ColorUtil.WithAlpha(ColorUtil.PanelBg, alpha);
 
             // Mask clips children (header bg) to rounded rect shape
             panelGO.AddComponent<Mask>().showMaskGraphic = true;
@@ -148,7 +148,7 @@ namespace DuplicantStatusBar.UI
             headerRT = header.AddComponent<RectTransform>();
 
             var headerBg = header.AddComponent<Image>();
-            headerBg.color = new Color(0.420f, 0.200f, 0.314f); // #6B3350 ONI burgundy
+            headerBg.color = ColorUtil.HeaderBg;
 
             var dragHandler = header.AddComponent<HeaderDragHandler>();
             dragHandler.screen = this;
@@ -172,7 +172,7 @@ namespace DuplicantStatusBar.UI
             topRT.pivot = new Vector2(0.5f, 1f);
             topRT.sizeDelta = new Vector2(0f, 1.5f);
             var topImg = topHL.AddComponent<Image>();
-            topImg.color = new Color(1f, 1f, 1f, 0.15f);
+            topImg.color = ColorUtil.BevelLight;
             topImg.raycastTarget = false;
             topHL.AddComponent<LayoutElement>().ignoreLayout = true;
 
@@ -185,7 +185,7 @@ namespace DuplicantStatusBar.UI
             botRT.pivot = new Vector2(0.5f, 0f);
             botRT.sizeDelta = new Vector2(0f, 1.5f);
             var botImg = botSH.AddComponent<Image>();
-            botImg.color = new Color(0f, 0f, 0f, 0.25f);
+            botImg.color = ColorUtil.BevelShadow;
             botImg.raycastTarget = false;
             botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
@@ -195,7 +195,7 @@ namespace DuplicantStatusBar.UI
             var gripTMP = grip.AddComponent<TMPro.TextMeshProUGUI>();
             gripTMP.text = DSB.UI.HEADER;
             gripTMP.fontSize = 11;
-            gripTMP.color = new Color(0.627f, 0.678f, 0.722f); // #A0ADB8
+            gripTMP.color = Color.white;
             if (GameFont != null) gripTMP.font = GameFont;
             gripTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             gripTMP.raycastTarget = false;
@@ -296,7 +296,7 @@ namespace DuplicantStatusBar.UI
             var handleImg = handleGO.AddComponent<Image>();
             handleImg.sprite = DupePortraitWidget.RoundedRect;
             handleImg.type = Image.Type.Sliced;
-            handleImg.color = new Color(0.5f, 0.5f, 0.5f, 0.35f);
+            handleImg.color = ColorUtil.ScrollHandle;
 
             var scrollbar = scrollbarGO.AddComponent<Scrollbar>();
             scrollbar.handleRect = handleRT;

@@ -117,14 +117,14 @@ namespace DuplicantStatusBar.UI
             bgFill = AddImage(cardGO.transform, "Fill");
             bgFill.sprite = RoundedRect;
             bgFill.type = Image.Type.Sliced;
-            bgFill.color = new Color(0.118f, 0.165f, 0.220f); // #1E2A38
+            bgFill.color = ColorUtil.CardBg;
             bgFill.raycastTarget = false;
             Stretch(bgFill.rectTransform, -4f);
 
             // Health fill (anchor-based vertical bar, hidden at 100%)
             healthFill = AddImage(cardGO.transform, "HealthFill");
             healthFill.type = Image.Type.Simple;
-            healthFill.color = new Color(0.298f, 0.686f, 0.314f, 0.55f);
+            healthFill.color = ColorUtil.HealthFill;
             healthFill.raycastTarget = false;
             var hrt = healthFill.rectTransform;
             hrt.anchorMin = new Vector2(0f, 0f);
@@ -143,7 +143,7 @@ namespace DuplicantStatusBar.UI
             // Large initial letter (fallback when portrait too small)
             initialText = AddText(cardGO.transform, "Initial");
             initialText.fontSize = size * 0.5f;
-            initialText.color = new Color(0.9f, 0.9f, 0.9f);
+            initialText.color = ColorUtil.TextMuted;
             initialText.alignment = TextAlignmentOptions.Center;
             initialText.fontStyle = FontStyles.Bold;
             initialText.raycastTarget = false;
@@ -153,7 +153,7 @@ namespace DuplicantStatusBar.UI
             // Damage overlay (above portrait + initials — dark red tint over missing HP)
             damageOverlay = AddImage(cardGO.transform, "DamageOverlay");
             damageOverlay.type = Image.Type.Simple;
-            damageOverlay.color = new Color(0.15f, 0f, 0f, 0.45f);
+            damageOverlay.color = ColorUtil.WithAlpha(ColorUtil.DamageBase, 0.45f);
             damageOverlay.raycastTarget = false;
             var dort = damageOverlay.rectTransform;
             dort.anchorMin = new Vector2(0f, 1f);
@@ -190,7 +190,7 @@ namespace DuplicantStatusBar.UI
             // ── Name label (below card) ───────────────────
             nameLabel = AddText(transform, "Name");
             nameLabel.fontSize = 10;
-            nameLabel.color = new Color(0.910f, 0.929f, 0.949f); // #E8EDF2
+            nameLabel.color = ColorUtil.TextPrimary;
             if (StatusBarScreen.GameFont != null) nameLabel.font = StatusBarScreen.GameFont;
             nameLabel.alignment = TextAlignmentOptions.Center;
             nameLabel.enableWordWrapping = false;
@@ -277,8 +277,7 @@ namespace DuplicantStatusBar.UI
             targetBorderColor = tc;
 
             // Background = dark base blended with stress color (smoothed)
-            targetFillColor = Color.Lerp(
-                new Color(0.08f, 0.10f, 0.14f), tc, 0.30f);
+            targetFillColor = Color.Lerp(ColorUtil.DarkBase, tc, 0.30f);
 
             // Health fill (below portrait)
             float hp = Mathf.Clamp01(snapshot.HealthPercent / 100f);
@@ -299,7 +298,7 @@ namespace DuplicantStatusBar.UI
                 dort.offsetMin = new Vector2(2f, 0f);
                 dort.offsetMax = new Vector2(-2f, -2f);
                 float damageAlpha = Mathf.Lerp(0.40f, 0.65f, 1f - hp);
-                damageOverlay.color = new Color(0.15f, 0f, 0f, damageAlpha);
+                damageOverlay.color = ColorUtil.WithAlpha(ColorUtil.DamageBase, damageAlpha);
             }
 
             // Pulse on critical
@@ -599,11 +598,11 @@ namespace DuplicantStatusBar.UI
         {
             switch (tier)
             {
-                case StressTier.Calm:     return Hex(0x4ade80);
-                case StressTier.Mild:     return Hex(0x84cc16);
-                case StressTier.Stressed: return Hex(0xfbbf24);
-                case StressTier.High:     return Hex(0xf97316);
-                case StressTier.Critical: return Hex(0xef4444);
+                case StressTier.Calm:     return ColorUtil.Hex(ColorUtil.Green);
+                case StressTier.Mild:     return ColorUtil.Hex(ColorUtil.Lime);
+                case StressTier.Stressed: return ColorUtil.Hex(ColorUtil.Amber);
+                case StressTier.High:     return ColorUtil.Hex(ColorUtil.Orange);
+                case StressTier.Critical: return ColorUtil.Hex(ColorUtil.Red);
                 default: return Color.gray;
             }
         }
@@ -614,19 +613,12 @@ namespace DuplicantStatusBar.UI
         {
             // 3-segment gradient: green → yellow → orange → red
             // Alpha increases as health drops (0.75 → 0.90)
-            var green  = new Color(0.298f, 0.780f, 0.314f, 0.78f);
-            var yellow = new Color(1.000f, 0.835f, 0.180f, 0.84f);
-            var orange = new Color(1.000f, 0.400f, 0.120f, 0.90f);
-            var red    = new Color(0.960f, 0.180f, 0.180f, 0.95f);
-
             if (hp > 0.6f)
-                return Color.Lerp(yellow, green, (hp - 0.6f) / 0.4f);
+                return Color.Lerp(ColorUtil.HealthYellow, ColorUtil.HealthGreen, (hp - 0.6f) / 0.4f);
             if (hp > 0.3f)
-                return Color.Lerp(orange, yellow, (hp - 0.3f) / 0.3f);
-            return Color.Lerp(red, orange, hp / 0.3f);
+                return Color.Lerp(ColorUtil.HealthOrange, ColorUtil.HealthYellow, (hp - 0.3f) / 0.3f);
+            return Color.Lerp(ColorUtil.HealthRed, ColorUtil.HealthOrange, hp / 0.3f);
         }
-
-        private static Color Hex(int rgb) => ColorUtil.Hex(rgb);
 
         // ── Sprites ─────────────────────────────────────
 
