@@ -36,6 +36,10 @@ msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BODYTEMP"
 msgid "Body Temp:"
 msgstr "Температура тела:"
 
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_CALORIES"
+msgid "Calories:"
+msgstr "Калории:"
+
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
 msgid "Bladder:"
 msgstr "Мочевой пузырь:"

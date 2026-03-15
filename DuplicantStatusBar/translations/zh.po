@@ -35,6 +35,10 @@ msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BODYTEMP"
 msgid "Body Temp:"
 msgstr "体温:"
 
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_CALORIES"
+msgid "Calories:"
+msgstr "热量:"
+
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
 msgid "Bladder:"
 msgstr "膀胱:"

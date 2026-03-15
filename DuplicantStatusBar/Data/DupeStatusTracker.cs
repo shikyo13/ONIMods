@@ -50,6 +50,7 @@ namespace DuplicantStatusBar.Data
         public bool IsDiseased;
         public bool IsOverjoyed;
         public float BladderPercent;
+        public float CaloriesPercent;
         public bool IsStarving;
         public bool IsIrradiated;
         public bool IsScalding;
@@ -83,6 +84,7 @@ namespace DuplicantStatusBar.Data
         private static Klei.AI.Amount healthAmount;
         private static Klei.AI.Amount breathAmount;
         private static Klei.AI.Amount bladderAmount;
+        private static Klei.AI.Amount caloriesAmount;
 
         // Stuck/Idle detection state
         private static readonly Dictionary<int, float> stuckTimers = new Dictionary<int, float>();
@@ -206,6 +208,14 @@ namespace DuplicantStatusBar.Data
                 var bladderInst = bladderAmount?.Lookup(go);
                 if (bladderInst != null) snap.BladderPercent = bladderInst.value;
 
+                // Calories
+                var calInst = caloriesAmount?.Lookup(go);
+                if (calInst != null)
+                {
+                    float max = calInst.GetMax();
+                    snap.CaloriesPercent = max > 0f ? calInst.value / max * 100f : 100f;
+                }
+
                 // Starving
                 var calSMI = go.GetSMI<CalorieMonitor.Instance>();
                 snap.IsStarving = calSMI != null && calSMI.IsStarving();
@@ -313,6 +323,7 @@ namespace DuplicantStatusBar.Data
             healthAmount = db.Amounts.HitPoints;
             breathAmount = db.Amounts.Breath;
             bladderAmount = db.Amounts.Bladder;
+            caloriesAmount = db.Amounts.Calories;
         }
 
         private static StressTier ComputeTier(float stress, StatusBarOptions opts)
