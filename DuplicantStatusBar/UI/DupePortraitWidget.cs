@@ -608,26 +608,7 @@ namespace DuplicantStatusBar.UI
             }
         }
 
-        public static Color AlertColor(AlertType alert)
-        {
-            switch (alert)
-            {
-                case AlertType.Suffocating:   return Hex(0x2979FF);
-                case AlertType.LowHP:         return Hex(0xD50000);
-                case AlertType.Scalding:      return Hex(0xFF5722);
-                case AlertType.Hypothermia:   return Hex(0x00ACC1);
-                case AlertType.Overstressed:  return Hex(0xEC407A);
-                case AlertType.Diseased:      return Hex(0xAB47BC);
-                case AlertType.Overjoyed:     return Hex(0xAEEA00);
-                case AlertType.Irradiated:    return Hex(0x00E676);
-                case AlertType.Starving:      return Hex(0xFF9800);
-                case AlertType.BladderUrgent: return Hex(0xFFEB3B);
-                case AlertType.Stuck:         return Hex(0x7E57C2);
-                case AlertType.Idle:          return Hex(0x9CA3AF);
-                case AlertType.Incapacitated: return Hex(0xFF00DD);
-                default: return Color.clear;
-            }
-        }
+        public static Color AlertColor(AlertType alert) => AlertEffects.GetColor(alert);
 
         private static Color HealthColor(float hp)
         {
@@ -645,13 +626,7 @@ namespace DuplicantStatusBar.UI
             return Color.Lerp(red, orange, hp / 0.3f);
         }
 
-        private static Color Hex(int rgb)
-        {
-            return new Color(
-                ((rgb >> 16) & 0xFF) / 255f,
-                ((rgb >> 8) & 0xFF) / 255f,
-                (rgb & 0xFF) / 255f);
-        }
+        private static Color Hex(int rgb) => ColorUtil.Hex(rgb);
 
         // ── Sprites ─────────────────────────────────────
 
@@ -748,12 +723,14 @@ namespace DuplicantStatusBar.UI
             return go.AddComponent<TextMeshProUGUI>();
         }
 
-        private static void Stretch(RectTransform rt, float inset = 0f)
+        /// <summary>Stretch to fill parent. Positive = grow beyond parent, negative = shrink inward.</summary>
+        private static void Stretch(RectTransform rt, float expand = 0f)
         {
             rt.anchorMin = Vector2.zero;
             rt.anchorMax = Vector2.one;
-            rt.sizeDelta = new Vector2(inset, inset);
-            rt.anchoredPosition = Vector2.zero;
+            float half = expand * 0.5f;
+            rt.offsetMin = new Vector2(-half, -half);
+            rt.offsetMax = new Vector2(half, half);
         }
     }
 }

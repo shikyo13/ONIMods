@@ -13,12 +13,14 @@ namespace DuplicantStatusBar.UI
     /// </summary>
     internal static class DiagnosticDump
     {
+        /// <summary>Set to true to enable diagnostic dump on next portrait compose. Off by default.</summary>
+        public static bool Enabled = false;
         private static bool hasRun;
         private const int PORTRAIT_Y_SHIFT = -8; // matches PortraitCompositor
 
         public static void RunOnce(MinionIdentity identity)
         {
-            if (hasRun) return;
+            if (!Enabled || hasRun) return;
             hasRun = true;
             try
             {

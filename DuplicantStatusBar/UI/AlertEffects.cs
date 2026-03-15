@@ -34,24 +34,31 @@ namespace DuplicantStatusBar.UI
         {
             default,                                                                                        // 0  None
             default,                                                                                        // 1  Overjoyed (rainbow)
-            new AlertEffect(Hex(0xCDDC39), 2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.55f), // 2  Diseased
-            new AlertEffect(Hex(0xFFEB3B), 1.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.60f), // 3  BladderUrgent
-            new AlertEffect(Hex(0xAA00FF), 1.5f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 4  Overstressed
-            new AlertEffect(Hex(0x76FF03), 2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.35f, 0.60f), // 5  Irradiated
-            new AlertEffect(Hex(0xFFA000), 2.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.55f), // 6  Starving
-            new AlertEffect(Hex(0x90CAF9), 3.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 7  Hypothermia
-            new AlertEffect(Hex(0xFF6400), 0.8f, AlertPattern.Flicker,   GradientShape.FromBottom,  0.40f, 0.70f), // 8  Scalding
-            new AlertEffect(Hex(0xD50000), 1.2f, AlertPattern.Heartbeat, GradientShape.Radial,     0.30f, 0.70f), // 9  LowHP
-            new AlertEffect(Hex(0x2979FF), 2.0f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.40f, 0.75f), // 10 Suffocating
-            new AlertEffect(Hex(0x795548), 2.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.40f, 0.55f), // 11 Stuck
-            new AlertEffect(Hex(0x9E9E9E), 3.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.15f, 0.35f), // 12 Idle
-            new AlertEffect(Hex(0xE91E63), 0.6f, AlertPattern.Pulse,     GradientShape.Radial,     0.45f, 0.85f), // 13 Incapacitated
+            new AlertEffect(H(0xAB47BC), 2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.55f), // 2  Diseased
+            new AlertEffect(H(0xFFEB3B), 1.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.60f), // 3  BladderUrgent
+            new AlertEffect(H(0xEC407A), 1.5f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 4  Overstressed
+            new AlertEffect(H(0x00E676), 2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.35f, 0.60f), // 5  Irradiated
+            new AlertEffect(H(0xFF9800), 2.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.55f), // 6  Starving
+            new AlertEffect(H(0x00ACC1), 3.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 7  Hypothermia
+            new AlertEffect(H(0xFF5722), 0.8f, AlertPattern.Flicker,   GradientShape.FromBottom,  0.40f, 0.70f), // 8  Scalding
+            new AlertEffect(H(0xD50000), 1.2f, AlertPattern.Heartbeat, GradientShape.Radial,     0.30f, 0.70f), // 9  LowHP
+            new AlertEffect(H(0x2979FF), 2.0f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.40f, 0.75f), // 10 Suffocating
+            new AlertEffect(H(0x7E57C2), 2.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.40f, 0.55f), // 11 Stuck
+            new AlertEffect(H(0x9CA3AF), 3.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.15f, 0.35f), // 12 Idle
+            new AlertEffect(H(0xFF00DD), 0.6f, AlertPattern.Pulse,     GradientShape.Radial,     0.45f, 0.85f), // 13 Incapacitated
         };
 
         public static AlertEffect Get(AlertType type)
         {
             int i = (int)type;
             return (i >= 0 && i < effects.Length) ? effects[i] : default;
+        }
+
+        /// <summary>Returns the canonical color for an alert type (single source of truth).</summary>
+        public static Color GetColor(AlertType type)
+        {
+            var fx = Get(type);
+            return fx.BaseColor != default ? fx.BaseColor : Color.clear;
         }
 
         public static float EvaluateAlpha(in AlertEffect fx, float t)
@@ -84,14 +91,6 @@ namespace DuplicantStatusBar.UI
             }
         }
 
-        public static void Cleanup() { }
-
-        private static Color Hex(int rgb)
-        {
-            return new Color(
-                ((rgb >> 16) & 0xFF) / 255f,
-                ((rgb >> 8) & 0xFF) / 255f,
-                (rgb & 0xFF) / 255f);
-        }
+        private static Color H(int rgb) => ColorUtil.Hex(rgb);
     }
 }
