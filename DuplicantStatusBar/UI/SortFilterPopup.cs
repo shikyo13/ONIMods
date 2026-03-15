@@ -122,8 +122,8 @@ namespace DuplicantStatusBar.UI
             pendingStressedOnly = StressedOnly;
             RefreshSortVisuals();
             RefreshSmartFilterVisuals();
-            RebuildRoleList();
-            RebuildFilterList();
+            try { RebuildRoleList(); } catch (System.Exception) { }
+            try { RebuildFilterList(); } catch (System.Exception) { }
 
             // Position below the bar panel
             Vector3[] corners = new Vector3[4];
@@ -203,7 +203,7 @@ namespace DuplicantStatusBar.UI
             var scrollGO = new GameObject("RoleScroll");
             scrollGO.transform.SetParent(parent, false);
             var scrollLE = scrollGO.AddComponent<LayoutElement>();
-            scrollLE.preferredWidth = 140;
+            scrollLE.preferredWidth = 200;
             scrollLE.preferredHeight = 60;
 
             var scrollImg = scrollGO.AddComponent<Image>();
@@ -378,7 +378,7 @@ namespace DuplicantStatusBar.UI
             var scrollGO = new GameObject("FilterScroll");
             scrollGO.transform.SetParent(parent, false);
             var scrollLE = scrollGO.AddComponent<LayoutElement>();
-            scrollLE.preferredWidth = 140;
+            scrollLE.preferredWidth = 200;
             scrollLE.preferredHeight = 120;
 
             var scrollRT = scrollGO.GetComponent<RectTransform>();
@@ -687,6 +687,7 @@ namespace DuplicantStatusBar.UI
 
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 14;
+            le.minWidth = 120;
 
             return tmp;
         }
