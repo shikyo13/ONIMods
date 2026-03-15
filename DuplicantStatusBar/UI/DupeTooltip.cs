@@ -114,30 +114,30 @@ namespace DuplicantStatusBar.UI
             var sc = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.TierColor(snap.Tier));
             sb.AppendLine($"{DSB.UI.TOOLTIP_STRESS} <color=#{sc}>{snap.StressPercent:F0}%</color>");
 
-            var hc = snap.HealthPercent >= 100f ? "4ADE80"
-                   : snap.HealthPercent >= 60f  ? "FBBF24"
-                   : snap.HealthPercent >= 30f  ? "F97316"
-                   : "EF4444";
+            var hc = snap.HealthPercent >= 100f ? ColorUtil.ToHtml(ColorUtil.Green)
+                   : snap.HealthPercent >= 60f  ? ColorUtil.ToHtml(ColorUtil.Amber)
+                   : snap.HealthPercent >= 30f  ? ColorUtil.ToHtml(ColorUtil.Orange)
+                   : ColorUtil.ToHtml(ColorUtil.Red);
             sb.AppendLine($"{DSB.UI.TOOLTIP_HEALTH} <color=#{hc}>{snap.HealthPercent:F0}%</color>");
 
-            var bc = snap.BreathPercent < 30f ? "60A5FA" : "4ADE80";
+            var bc = snap.BreathPercent < 30f ? ColorUtil.ToHtml(ColorUtil.Blue) : ColorUtil.ToHtml(ColorUtil.Green);
             sb.AppendLine($"{DSB.UI.TOOLTIP_BREATH} <color=#{bc}>{snap.BreathPercent:F0}%</color>");
 
             float tempC = snap.BodyTemperature - 273.15f;
             float dev = Mathf.Abs(tempC - 36.85f);
-            var tc = dev < 1.5f ? "4ADE80"
-                   : dev < 3.5f ? "FCD34D"
-                   : dev < 5.5f ? "F97316"
-                   : "EF4444";
+            var tc = dev < 1.5f ? ColorUtil.ToHtml(ColorUtil.Green)
+                   : dev < 3.5f ? ColorUtil.ToHtml(ColorUtil.Gold)
+                   : dev < 5.5f ? ColorUtil.ToHtml(ColorUtil.Orange)
+                   : ColorUtil.ToHtml(ColorUtil.Red);
             sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} <color=#{tc}>{tempC:F1}\u00B0C</color>");
 
-            var cc = snap.CaloriesPercent >= 60f ? "4ADE80"
-                   : snap.CaloriesPercent >= 40f ? "FCD34D"
-                   : snap.CaloriesPercent >= 20f ? "F97316"
-                   : "EF4444";
+            var cc = snap.CaloriesPercent >= 60f ? ColorUtil.ToHtml(ColorUtil.Green)
+                   : snap.CaloriesPercent >= 40f ? ColorUtil.ToHtml(ColorUtil.Gold)
+                   : snap.CaloriesPercent >= 20f ? ColorUtil.ToHtml(ColorUtil.Orange)
+                   : ColorUtil.ToHtml(ColorUtil.Red);
             sb.AppendLine($"{DSB.UI.TOOLTIP_CALORIES} <color=#{cc}>{snap.CaloriesPercent:F0}%</color>");
 
-            var blc = snap.BladderPercent >= 70f ? "FFEB3B" : "4ADE80";
+            var blc = snap.BladderPercent >= 70f ? ColorUtil.ToHtml(ColorUtil.Yellow) : ColorUtil.ToHtml(ColorUtil.Green);
             sb.AppendLine($"{DSB.UI.TOOLTIP_BLADDER} <color=#{blc}>{snap.BladderPercent:F0}%</color>");
 
             // Populate animated alert text slots
