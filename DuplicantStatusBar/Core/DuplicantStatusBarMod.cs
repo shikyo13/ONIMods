@@ -1,7 +1,6 @@
 using HarmonyLib;
 using KMod;
 using PeterHan.PLib.Core;
-using PeterHan.PLib.Database;
 using PeterHan.PLib.Options;
 
 namespace DuplicantStatusBar.Core
@@ -15,7 +14,7 @@ namespace DuplicantStatusBar.Core
         {
             base.OnLoad(harmony);
             PUtil.InitLibrary();
-            new PLocalization().Register();
+            LocString.CreateLocStringKeys(typeof(Localization.STRINGS), "");
             new POptions().RegisterOptions(this, typeof(Config.StatusBarOptions));
         }
     }
