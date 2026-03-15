@@ -11,6 +11,7 @@
 [*] Camera controls disabled while popup is open — no accidental scrolling/panning
 [*] [b]Respects game UI scale[/b] — the status bar now scales with the in-game UI Scale setting (Options → Graphics), updates live when the setting changes
 [*] Assembly version now visible in mod options
+[*] Sort/filter popup fully localized — button text, section headers, and All/None links translated into all 7 supported languages
 [*] Fixed NRE in filter button construction
 [/list]
 
