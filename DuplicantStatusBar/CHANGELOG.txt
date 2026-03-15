@@ -1,5 +1,63 @@
 [h1]Duplicant Status Bar — Changelog[/h1]
 
+[h2]v2.4.0 — Localization (7 Languages)[/h2]
+[list]
+[*] All UI text is now localizable — tooltip labels, alert names, option labels/descriptions, and the bar header
+[*] Translations included for: Chinese, Korean, Russian, and Japanese (matching ONI's supported languages)
+[*] Translations load automatically when the game language matches a supported locale
+[*] English remains the default; community translation contributions welcome via .po files in the translations/ folder
+[/list]
+
+[h2]v2.3.4 — Portrait Tuning + Code Quality[/h2]
+[list]
+[*] Tuned portrait feature offsets for better eye/mouth/hat alignment across all dupe variants
+[*] Added 3° counter-clockwise eye rotation to level out ONI's 3/4 perspective tilt
+[*] Unified alert color palette — overlays, badges, and tooltips now share a single color source
+[*] Tooltip alert text is now full-brightness static color instead of pulsing alpha (much easier to read); overjoyed rainbow animation unchanged
+[*] Fixed sprite cache key collision that could cause wrong expression frames on rare hash overlaps
+[*] Batch-read source pixels in portrait compositing for fewer managed-to-native calls
+[*] Added cache eviction for dead/transferred dupes (previously leaked portrait textures)
+[*] Diagnostic dump disabled by default (was running once per session in production)
+[*] Sparkle expression debug log now fires once instead of every 0.25s per overjoyed dupe
+[*] Reusable HashSet for dupe ID tracking (was allocating a new one every 0.25s)
+[*] Named constants for all portrait positioning offsets
+[/list]
+
+[h2]v2.3.3 — Edge-Anchored Feature Positioning[/h2]
+[list]
+[*] Eyes and mouth now use edge-anchored positioning — eye bottom edge and mouth top edge are fixed at absolute y-coordinates, so the gap between features is constant regardless of sprite dimensions
+[*] Fixes per-dupe eye-mouth spacing variation (e.g., Hassan's mouth crowding his eyes while other dupes looked correct)
+[/list]
+
+[h2]v2.3.2 — Y-Offset Tuning + Sparkle Eye Fix[/h2]
+[list]
+[*] Tuned eye and mouth Y-offsets for better vertical placement on head
+[*] Fixed Sparkle expression showing white circle overlay instead of normal eyes — now uses known-good frame indices
+[/list]
+
+[h2]v2.3.1 — Expression Sprite Sizing + Blink Fallback[/h2]
+[list]
+[*] Proportional size clamping for expression sprites — oversized frames (e.g., Sparkle mouth) are uniformly scaled down to prevent clipping
+[*] Added Tired face as third blink fallback when Sleep and Dead faces aren't available in kanim variants
+[/list]
+
+[h2]v2.3.0 — Expression-Driven Portraits[/h2]
+[list]
+[*] Portraits now show contextual facial expressions based on alert state and stress level
+[*] 13 expression types: Neutral, Happy, Angry, Suffocate, Cold, Hot, Hungry, Tired, Sick, Sparkle, Uncomfortable, Dead, Productive
+[*] Blink system with randomized per-dupe timing (3-8s interval, 0.15s blink duration)
+[*] Expression frames discovered at runtime from head_master_swap_kanim — works with all body type variants
+[*] New EnableExpressions option (default on) to revert to static portraits if desired
+[/list]
+
+[h2]v2.2.0 — Per-Alert Visual Effects[/h2]
+[list]
+[*] Animated tooltip text: each alert gets per-character color animation with glow
+[*] Overjoyed alerts use smooth rainbow color cycling; other alerts pulse monochromatically
+[*] New AlertEffects system with three animation patterns (Pulse, Heartbeat, Flicker)
+[*] Incapacitated alert: detects dupes bleeding out (120s to death)
+[/list]
+
 [h2]v2.1.3 — Pause-Safe Timers + Distinct Alert Colors[/h2]
 [list]
 [*] Idle and stuck timers no longer tick while the game is paused — no more false alerts from reading tooltips
