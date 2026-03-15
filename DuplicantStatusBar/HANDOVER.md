@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.3.0
+**Version**: v2.3.4
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -83,7 +83,7 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 2. For each slot: `symbol.GetFrame(0)` → `uvMin/uvMax` → atlas rect → `Sprite.Create()`
 3. `GetReadableCopy()` via `RenderTexture` + `ReadPixels` (GPU textures aren't CPU-readable by default)
 4. Extract sprite region pixels → alpha-blend onto output texture with pivot-based positioning
-5. Layer order (back to front): HeadShape → Eyes (flipped) → Mouth (frame 22) → Hair (or HatHair+Hat)
+5. Layer order (back to front): HeadShape → Eyes (3° CCW rotation, bottom-anchored) → Mouth (top-anchored) → Hair (or HatHair+Hat)
 
 **Caching**: Readable atlas copies cached in `Dictionary<Texture2D, Texture2D>`. Sprite region textures cached per `Sprite`. Caches cleared on `StatusBarScreen.OnDestroy()`.
 
@@ -194,6 +194,29 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 **Growth direction**: taller eyes extend upward (into hat/hair area — covered by hair/hat layer drawn last), taller mouths extend downward (toward chin — harmless).
 
 **Tuning**: adjust `-14` (eye yOffset) and `-20` (mouth yOffset) to move anchor positions. The gap equals `eyeAnchor - mouthAnchor` in offset terms (currently 6px).
+
+## v2.3.4 — Portrait Offset Tuning Round 2 + Eye Rotation
+
+**Offset tuning**: multiple rounds of visual tuning to fix eye/mouth spacing, hat positioning, and eye tilt asymmetry from ONI's 3/4 perspective sprites.
+
+**Final offsets** (all relative to canvas center 62, `PORTRAIT_Y_SHIFT=-8`):
+
+| Layer | xOffset | yOffset | Notes |
+|-|-|-|-|
+| Head | 0 | 0 (shifted by PORTRAIT_Y_SHIFT) | — |
+| Eyes | 4 | -16 | Bottom-anchored, 3° CCW rotation |
+| Mouth | 6 | -12 | Top-anchored |
+| Hair (no hat) | 8 | 28 | Pivot-based |
+| HatHair (under hat) | 8 | 30 | Pivot-based |
+| Hat | 6 | 30 | Pivot-based |
+
+**Eye rotation**: `WriteSymbolDirect` gained a `rotation` parameter (float, degrees). When non-zero, uses inverse-mapped pixel sampling (iterate output pixels, reverse-rotate to find source coords) to avoid gaps. Eyes use 3° CCW to counteract the perceived tilt from ONI's 3/4 perspective eye sprites where the right eye appears lower than the left.
+
+**Key learnings**:
+- ONI eye sprites are a single image containing both eyes — no independent left/right control
+- The perceived eye tilt is baked into the sprite's 3/4 perspective art, not a positioning bug
+- Positive yOffset = up on texture (Unity texture Y=0 is bottom)
+- Hat, HatHair, and Hair are three independent layers: Hat is the headwear, HatHair is hair visible under a hat, Hair is the full hairstyle when no hat is worn
 
 ## Not Yet Implemented
 
