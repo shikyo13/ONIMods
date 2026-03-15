@@ -215,7 +215,8 @@ namespace DuplicantStatusBar.UI
             var contentRT = contentGO.AddComponent<RectTransform>();
             contentRT.anchorMin = new Vector2(0f, 1f);
             contentRT.anchorMax = new Vector2(1f, 1f);
-            contentRT.pivot = new Vector2(0.5f, 1f);
+            contentRT.pivot = new Vector2(0f, 1f);
+            contentRT.anchoredPosition = Vector2.zero;
 
             var contentVLG = contentGO.AddComponent<VerticalLayoutGroup>();
             contentVLG.padding = new RectOffset(4, 4, 2, 2);
@@ -391,7 +392,8 @@ namespace DuplicantStatusBar.UI
             var contentRT = contentGO.AddComponent<RectTransform>();
             contentRT.anchorMin = new Vector2(0f, 1f);
             contentRT.anchorMax = new Vector2(1f, 1f);
-            contentRT.pivot = new Vector2(0.5f, 1f);
+            contentRT.pivot = new Vector2(0f, 1f);
+            contentRT.anchoredPosition = Vector2.zero;
 
             var contentVLG = contentGO.AddComponent<VerticalLayoutGroup>();
             contentVLG.padding = new RectOffset(4, 4, 2, 2);
@@ -687,7 +689,6 @@ namespace DuplicantStatusBar.UI
 
             var le = go.AddComponent<LayoutElement>();
             le.preferredHeight = 14;
-            le.minWidth = 120;
 
             return tmp;
         }
