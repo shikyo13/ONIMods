@@ -217,7 +217,7 @@ namespace DuplicantStatusBar.UI
             var sortTextGO = new GameObject("Label");
             sortTextGO.transform.SetParent(sortGO.transform, false);
             sortLabel = sortTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            sortLabel.text = "\u2630"; // hamburger menu ☰
+            sortLabel.text = "\u25BC"; // down triangle ▼
             sortLabel.fontSize = 12;
             sortLabel.color = Color.white;
             if (GameFont != null) sortLabel.font = GameFont;
