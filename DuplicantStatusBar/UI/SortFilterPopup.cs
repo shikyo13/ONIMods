@@ -131,6 +131,7 @@ namespace DuplicantStatusBar.UI
             float cx = (corners[0].x + corners[2].x) * 0.5f;
             float bot = corners[0].y;
 
+            SetCameraControl(false);
             blockerGO.SetActive(true);
             blockerGO.transform.SetAsLastSibling();
             popupGO.SetActive(true);
@@ -553,6 +554,13 @@ namespace DuplicantStatusBar.UI
         {
             if (popupGO != null) popupGO.SetActive(false);
             if (blockerGO != null) blockerGO.SetActive(false);
+            SetCameraControl(true);
+        }
+
+        private static void SetCameraControl(bool enabled)
+        {
+            if (CameraController.Instance != null)
+                CameraController.Instance.DisableUserCameraControl = !enabled;
         }
 
         // ── Persistence ────────────────────────────────────
