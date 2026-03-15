@@ -192,41 +192,32 @@ namespace DuplicantStatusBar.UI
             botImg.raycastTarget = false;
             botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
-            // Filter button (funnel icon — far left, vanilla toolbar style)
+            // Filter popup button (far left of header)
             var filterGO = new GameObject("FilterBtn");
             filterGO.transform.SetParent(header.transform, false);
-
-            var filterBg = filterGO.AddComponent<Image>();
-            filterBg.sprite = DupePortraitWidget.RoundedRect;
-            filterBg.type = Image.Type.Sliced;
-            filterBg.color = new Color(0.12f, 0.14f, 0.18f, 0.75f);
-
+            var filterBtnImg = filterGO.AddComponent<Image>();
+            filterBtnImg.color = Color.clear;
             var filterBtn = filterGO.AddComponent<Button>();
             filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
-            filterBtn.targetGraphic = filterBg;
 
-            // White funnel icon
-            var iconGO = new GameObject("Icon");
-            iconGO.transform.SetParent(filterGO.transform, false);
-            var iconImg = iconGO.AddComponent<Image>();
-            iconImg.color = Color.white;
-            iconImg.raycastTarget = false;
-            iconImg.preserveAspect = true;
-            LoadFilterIcon(iconImg);
+            var filterTextGO = new GameObject("Label");
+            filterTextGO.transform.SetParent(filterGO.transform, false);
+            var filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
+            filterTMP.text = "\u25BC"; // ▼
+            filterTMP.fontSize = 10;
+            filterTMP.color = Color.white;
+            if (GameFont != null) filterTMP.font = GameFont;
+            filterTMP.alignment = TMPro.TextAlignmentOptions.Center;
+            filterTMP.raycastTarget = false;
 
-            var iconRT = iconGO.GetComponent<RectTransform>();
-            iconRT.anchorMin = new Vector2(0.15f, 0.1f);
-            iconRT.anchorMax = new Vector2(0.85f, 0.9f);
-            iconRT.sizeDelta = Vector2.zero;
+            var ftRT = filterTextGO.GetComponent<RectTransform>();
+            ftRT.anchorMin = Vector2.zero;
+            ftRT.anchorMax = Vector2.one;
+            ftRT.sizeDelta = Vector2.zero;
 
             var filterLE = filterGO.AddComponent<LayoutElement>();
-            filterLE.preferredWidth = 22;
-            filterLE.preferredHeight = 16;
-
-            // Spacer between filter button and Dupes text
-            var filterSpacer = new GameObject("FilterSpacer");
-            filterSpacer.transform.SetParent(header.transform, false);
-            filterSpacer.AddComponent<LayoutElement>().flexibleWidth = 1;
+            filterLE.preferredWidth = 16;
+            filterLE.preferredHeight = 14;
 
             // Drag-handle label
             var grip = new GameObject("Grip");
