@@ -28,7 +28,7 @@ A persistent bar showing every duplicant on the current asteroid — stress-colo
 
 ### Install
 
-[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3450387042)
+[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3682732647)
 
 ---
 
