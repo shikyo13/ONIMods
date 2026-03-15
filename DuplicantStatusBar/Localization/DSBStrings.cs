@@ -13,6 +13,7 @@ namespace DuplicantStatusBar.Localization
                 public static LocString TOOLTIP_HEALTH = "Health:";
                 public static LocString TOOLTIP_BREATH = "Breath:";
                 public static LocString TOOLTIP_BODYTEMP = "Body Temp:";
+                public static LocString TOOLTIP_CALORIES = "Calories:";
                 public static LocString TOOLTIP_BLADDER = "Bladder:";
             }
 

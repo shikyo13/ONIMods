@@ -124,7 +124,18 @@ namespace DuplicantStatusBar.UI
             sb.AppendLine($"{DSB.UI.TOOLTIP_BREATH} <color=#{bc}>{snap.BreathPercent:F0}%</color>");
 
             float tempC = snap.BodyTemperature - 273.15f;
-            sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} {tempC:F1} C");
+            float dev = Mathf.Abs(tempC - 36.85f);
+            var tc = dev < 1.5f ? "4ADE80"
+                   : dev < 3.5f ? "FCD34D"
+                   : dev < 5.5f ? "F97316"
+                   : "EF4444";
+            sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} <color=#{tc}>{tempC:F1}\u00B0C</color>");
+
+            var cc = snap.CaloriesPercent >= 60f ? "4ADE80"
+                   : snap.CaloriesPercent >= 40f ? "FCD34D"
+                   : snap.CaloriesPercent >= 20f ? "F97316"
+                   : "EF4444";
+            sb.AppendLine($"{DSB.UI.TOOLTIP_CALORIES} <color=#{cc}>{snap.CaloriesPercent:F0}%</color>");
 
             var blc = snap.BladderPercent >= 70f ? "FFEB3B" : "4ADE80";
             sb.AppendLine($"{DSB.UI.TOOLTIP_BLADDER} <color=#{blc}>{snap.BladderPercent:F0}%</color>");
