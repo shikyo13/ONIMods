@@ -32,6 +32,8 @@ namespace DuplicantStatusBar.UI
         internal int lastComputedSize;
         internal bool forceRefresh;
         private int lastConfiguredSize;
+        private CanvasScaler canvasScaler;
+        private float lastUIScale = 1f;
 
         // Game font (ONI-native, with fallback)
         private static TMPro.TMP_FontAsset _gameFont;
@@ -71,6 +73,7 @@ namespace DuplicantStatusBar.UI
             if (updateTimer <= 0f)
             {
                 updateTimer = UPDATE_INTERVAL;
+                ApplyGameUIScale();
                 DupeStatusTracker.Update();
                 RefreshWidgets();
             }
@@ -82,6 +85,19 @@ namespace DuplicantStatusBar.UI
             SortFilterPopup.Cleanup();
             PortraitCompositor.ClearCaches();
             SaveState();
+        }
+
+        private void ApplyGameUIScale()
+        {
+            float scale = KPlayerPrefs.HasKey(KCanvasScaler.UIScalePrefKey)
+                ? KPlayerPrefs.GetFloat(KCanvasScaler.UIScalePrefKey) / 100f
+                : 1f;
+            scale = Mathf.Clamp(scale, 0.75f, 2f);
+            if (scale != lastUIScale)
+            {
+                canvasScaler.referenceResolution = new Vector2(1920f / scale, 1080f / scale);
+                lastUIScale = scale;
+            }
         }
 
         // ── UI Construction ─────────────────────────────────────
@@ -98,10 +114,11 @@ namespace DuplicantStatusBar.UI
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100;
 
-            var scaler = canvasGO.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
-            scaler.matchWidthOrHeight = 0.5f;
+            canvasScaler = canvasGO.AddComponent<CanvasScaler>();
+            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasScaler.referenceResolution = new Vector2(1920, 1080);
+            canvasScaler.matchWidthOrHeight = 0.5f;
+            ApplyGameUIScale();
 
             canvasGO.AddComponent<GraphicRaycaster>();
             canvasRT = canvasGO.GetComponent<RectTransform>();
