@@ -23,7 +23,7 @@ namespace DuplicantStatusBar.Config
     /// PLib options schema for the Duplicant Status Bar. Live-reloaded via OnOptionsChanged — no restart required.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    [ModInfo("Duplicant Status Bar")]
+    [ModInfo("https://steamcommunity.com/sharedfiles/filedetails/?id=3682732647")]
     public sealed class StatusBarOptions : SingletonOptions<StatusBarOptions>, IOptions
     {
         [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL")]
