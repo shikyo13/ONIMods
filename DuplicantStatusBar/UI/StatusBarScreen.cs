@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DuplicantStatusBar.Config;
+using DuplicantStatusBar.Core;
 using DuplicantStatusBar.Data;
 using DSB = DuplicantStatusBar.Localization.STRINGS.DUPLICANTSTATUSBAR;
 
@@ -15,7 +16,6 @@ namespace DuplicantStatusBar.UI
         private GameObject contentArea;
         private RectTransform contentRT;
         private TMPro.TextMeshProUGUI collapseLabel;
-        private TMPro.TextMeshProUGUI sortLabel;
         private readonly List<DupePortraitWidget> widgets = new List<DupePortraitWidget>();
 
         private Image panelImage;
@@ -192,6 +192,49 @@ namespace DuplicantStatusBar.UI
             botImg.raycastTarget = false;
             botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
+            // Filter button (funnel icon — left-most element)
+            var filterGO = new GameObject("FilterBtn");
+            filterGO.transform.SetParent(header.transform, false);
+
+            // Beveled button background
+            var filterBg = filterGO.AddComponent<Image>();
+            filterBg.sprite = DupePortraitWidget.RoundedRect;
+            filterBg.type = Image.Type.Sliced;
+            filterBg.color = new Color(0.30f, 0.30f, 0.35f, 0.85f);
+
+            var filterBtn = filterGO.AddComponent<Button>();
+            filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
+            filterBtn.targetGraphic = filterBg;
+
+            // Funnel icon (loaded from mod directory)
+            var iconGO = new GameObject("Icon");
+            iconGO.transform.SetParent(filterGO.transform, false);
+            var iconImg = iconGO.AddComponent<Image>();
+            iconImg.color = Color.white;
+            iconImg.raycastTarget = false;
+            iconImg.preserveAspect = true;
+            LoadFilterIcon(iconImg);
+
+            var iconRT = iconGO.GetComponent<RectTransform>();
+            iconRT.anchorMin = new Vector2(0.15f, 0.1f);
+            iconRT.anchorMax = new Vector2(0.85f, 0.9f);
+            iconRT.sizeDelta = Vector2.zero;
+
+            // Top bevel highlight on button
+            var filterHL = new GameObject("Highlight");
+            filterHL.transform.SetParent(filterGO.transform, false);
+            var fhRT = filterHL.AddComponent<RectTransform>();
+            fhRT.anchorMin = new Vector2(0.1f, 0.85f);
+            fhRT.anchorMax = new Vector2(0.9f, 1f);
+            fhRT.sizeDelta = Vector2.zero;
+            var fhImg = filterHL.AddComponent<Image>();
+            fhImg.color = new Color(1f, 1f, 1f, 0.15f);
+            fhImg.raycastTarget = false;
+
+            var filterLE = filterGO.AddComponent<LayoutElement>();
+            filterLE.preferredWidth = 18;
+            filterLE.preferredHeight = 14;
+
             // Drag-handle label
             var grip = new GameObject("Grip");
             grip.transform.SetParent(header.transform, false);
@@ -205,33 +248,6 @@ namespace DuplicantStatusBar.UI
             var gripLE = grip.AddComponent<LayoutElement>();
             gripLE.preferredWidth = 40;
             gripLE.preferredHeight = 14;
-
-            // Sort/Filter popup button
-            var sortGO = new GameObject("SortFilterBtn");
-            sortGO.transform.SetParent(header.transform, false);
-            var sortBtnImg = sortGO.AddComponent<Image>();
-            sortBtnImg.color = Color.clear;
-            var sortBtn = sortGO.AddComponent<Button>();
-            sortBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
-
-            var sortTextGO = new GameObject("Label");
-            sortTextGO.transform.SetParent(sortGO.transform, false);
-            sortLabel = sortTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            sortLabel.text = "\u25BC"; // down triangle ▼
-            sortLabel.fontSize = 12;
-            sortLabel.color = Color.white;
-            if (GameFont != null) sortLabel.font = GameFont;
-            sortLabel.alignment = TMPro.TextAlignmentOptions.Center;
-            sortLabel.raycastTarget = false;
-
-            var slRT = sortTextGO.GetComponent<RectTransform>();
-            slRT.anchorMin = Vector2.zero;
-            slRT.anchorMax = Vector2.one;
-            slRT.sizeDelta = Vector2.zero;
-
-            var sortLE = sortGO.AddComponent<LayoutElement>();
-            sortLE.preferredWidth = 16;
-            sortLE.preferredHeight = 14;
 
             // Collapse / expand button
             var btnGO = new GameObject("CollapseBtn");
@@ -458,6 +474,23 @@ namespace DuplicantStatusBar.UI
         }
 
         // ── Collapse ────────────────────────────────────────────
+
+        private static void LoadFilterIcon(Image target)
+        {
+            string path = DuplicantStatusBarMod.ModPath;
+            if (string.IsNullOrEmpty(path)) return;
+            string file = System.IO.Path.Combine(path, "funnel.png");
+            if (!System.IO.File.Exists(file)) return;
+            var bytes = System.IO.File.ReadAllBytes(file);
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (tex.LoadImage(bytes))
+            {
+                tex.filterMode = FilterMode.Bilinear;
+                target.sprite = Sprite.Create(tex,
+                    new Rect(0, 0, tex.width, tex.height),
+                    new Vector2(0.5f, 0.5f));
+            }
+        }
 
         private void ToggleCollapse()
         {

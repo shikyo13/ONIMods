@@ -197,8 +197,8 @@ namespace DuplicantStatusBar.UI
 
             RefreshSmartFilterVisuals();
 
-            // Roles sub-header
-            AddHeader(parent, () => DSB.UI.POPUP_ROLES);
+            // Roles sub-header with All/None
+            AddHeaderWithAllNone(parent, () => DSB.UI.POPUP_ROLES, EnableAllRoles, DisableAllRoles);
 
             // Scroll area for role items
             var scrollGO = new GameObject("RoleScroll");
@@ -345,36 +345,7 @@ namespace DuplicantStatusBar.UI
 
         private static void BuildFilterSection(Transform parent)
         {
-            // Header row with "Show All" button
-            var headerRow = new GameObject("FilterHeader");
-            headerRow.transform.SetParent(parent, false);
-            var hlg = headerRow.AddComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 6;
-            hlg.childForceExpandWidth = false;
-            hlg.childForceExpandHeight = false;
-            hlg.childAlignment = TextAnchor.MiddleLeft;
-
-            AddHeaderInto(headerRow.transform, () => DSB.UI.POPUP_DUPES);
-
-            // Spacer
-            var spacer = new GameObject("Spacer");
-            spacer.transform.SetParent(headerRow.transform, false);
-            var spacerLE = spacer.AddComponent<LayoutElement>();
-            spacerLE.flexibleWidth = 1;
-
-            // Show All button
-            var showAllGO = new GameObject("ShowAll");
-            showAllGO.transform.SetParent(headerRow.transform, false);
-            var showAllTMP = showAllGO.AddComponent<TextMeshProUGUI>();
-            showAllTMP.text = DSB.UI.POPUP_SHOWALL;
-            showAllTMP.fontSize = 9;
-            showAllTMP.color = ColorUtil.Hex(ColorUtil.Blue);
-            if (StatusBarScreen.GameFont != null) showAllTMP.font = StatusBarScreen.GameFont;
-            showAllTMP.alignment = TextAlignmentOptions.MidlineRight;
-            var showAllBtn = showAllGO.AddComponent<Button>();
-            showAllBtn.onClick.AddListener(ShowAllDupes);
-            var showAllLE = showAllGO.AddComponent<LayoutElement>();
-            showAllLE.preferredHeight = 14;
+            AddHeaderWithAllNone(parent, () => DSB.UI.POPUP_DUPES, ShowAllDupes, HideAllDupes);
 
             // Scroll area for filter items
             var scrollGO = new GameObject("FilterScroll");
@@ -464,6 +435,33 @@ namespace DuplicantStatusBar.UI
             {
                 filterVisible[i] = true;
                 UpdateFilterItemVisual(i);
+            }
+        }
+
+        private static void HideAllDupes()
+        {
+            for (int i = 0; i < filterVisible.Count; i++)
+            {
+                filterVisible[i] = false;
+                UpdateFilterItemVisual(i);
+            }
+        }
+
+        private static void EnableAllRoles()
+        {
+            for (int i = 0; i < roleVisible.Count; i++)
+            {
+                roleVisible[i] = true;
+                UpdateRoleItemVisual(i);
+            }
+        }
+
+        private static void DisableAllRoles()
+        {
+            for (int i = 0; i < roleVisible.Count; i++)
+            {
+                roleVisible[i] = false;
+                UpdateRoleItemVisual(i);
             }
         }
 
@@ -633,6 +631,49 @@ namespace DuplicantStatusBar.UI
             if (c[2].x > Screen.width) pos.x -= (c[2].x - Screen.width);
             if (c[0].y < 0f) pos.y -= c[0].y;
             popupRT.position = pos;
+        }
+
+        private static void AddHeaderWithAllNone(Transform parent, Func<string> getText,
+            UnityEngine.Events.UnityAction onAll, UnityEngine.Events.UnityAction onNone)
+        {
+            var row = new GameObject("HeaderRow");
+            row.transform.SetParent(parent, false);
+            var hlg = row.AddComponent<HorizontalLayoutGroup>();
+            hlg.spacing = 4;
+            hlg.childForceExpandWidth = false;
+            hlg.childForceExpandHeight = false;
+            hlg.childAlignment = TextAnchor.MiddleLeft;
+
+            AddHeaderInto(row.transform, getText);
+
+            // Spacer
+            var spacer = new GameObject("Spacer");
+            spacer.transform.SetParent(row.transform, false);
+            spacer.AddComponent<LayoutElement>().flexibleWidth = 1;
+
+            // "All" link
+            var allGO = new GameObject("All");
+            allGO.transform.SetParent(row.transform, false);
+            var allTMP = allGO.AddComponent<TextMeshProUGUI>();
+            allTMP.text = "All";
+            allTMP.fontSize = 9;
+            allTMP.color = ColorUtil.Hex(ColorUtil.Blue);
+            if (StatusBarScreen.GameFont != null) allTMP.font = StatusBarScreen.GameFont;
+            allTMP.alignment = TextAlignmentOptions.MidlineRight;
+            allGO.AddComponent<Button>().onClick.AddListener(onAll);
+            allGO.AddComponent<LayoutElement>().preferredHeight = 14;
+
+            // "None" link
+            var noneGO = new GameObject("None");
+            noneGO.transform.SetParent(row.transform, false);
+            var noneTMP = noneGO.AddComponent<TextMeshProUGUI>();
+            noneTMP.text = "None";
+            noneTMP.fontSize = 9;
+            noneTMP.color = ColorUtil.TextMuted;
+            if (StatusBarScreen.GameFont != null) noneTMP.font = StatusBarScreen.GameFont;
+            noneTMP.alignment = TextAlignmentOptions.MidlineRight;
+            noneGO.AddComponent<Button>().onClick.AddListener(onNone);
+            noneGO.AddComponent<LayoutElement>().preferredHeight = 14;
         }
 
         private static void AddHeader(Transform parent, Func<string> getText)
