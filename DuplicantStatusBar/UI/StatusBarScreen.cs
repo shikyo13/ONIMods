@@ -192,7 +192,7 @@ namespace DuplicantStatusBar.UI
             botImg.raycastTarget = false;
             botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
-            // Filter popup button (far left of header)
+            // Filter popup button (far left — ► Sort/Filter)
             var filterGO = new GameObject("FilterBtn");
             filterGO.transform.SetParent(header.transform, false);
             var filterBtnImg = filterGO.AddComponent<Image>();
@@ -203,11 +203,11 @@ namespace DuplicantStatusBar.UI
             var filterTextGO = new GameObject("Label");
             filterTextGO.transform.SetParent(filterGO.transform, false);
             var filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            filterTMP.text = "\u25BC"; // ▼
-            filterTMP.fontSize = 10;
+            filterTMP.text = "\u25BA Sort/Filter"; // ► Sort/Filter
+            filterTMP.fontSize = 11;
             filterTMP.color = Color.white;
             if (GameFont != null) filterTMP.font = GameFont;
-            filterTMP.alignment = TMPro.TextAlignmentOptions.Center;
+            filterTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             filterTMP.raycastTarget = false;
 
             var ftRT = filterTextGO.GetComponent<RectTransform>();
@@ -216,7 +216,7 @@ namespace DuplicantStatusBar.UI
             ftRT.sizeDelta = Vector2.zero;
 
             var filterLE = filterGO.AddComponent<LayoutElement>();
-            filterLE.preferredWidth = 16;
+            filterLE.preferredWidth = 80;
             filterLE.preferredHeight = 14;
 
             // Drag-handle label
