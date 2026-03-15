@@ -408,6 +408,13 @@ namespace DuplicantStatusBar.Data
                             string.Compare(a.Name, b.Name, StringComparison.Ordinal);
                     });
                     break;
+                case SortOrder.CaloriesAscending:
+                    snapshots.Sort((a, b) =>
+                    {
+                        int cmp = a.CaloriesPercent.CompareTo(b.CaloriesPercent);
+                        return cmp != 0 ? cmp : string.Compare(a.Name, b.Name, StringComparison.Ordinal);
+                    });
+                    break;
             }
         }
     }

@@ -129,6 +129,10 @@ msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE"
 msgid "Job Role"
 msgstr "工作职位"
 
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.CALORIESASCENDING"
+msgid "Calories (lowest first)"
+msgstr "热量 (从低到高)"
+
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS"
 msgid "Portraits"
 msgstr "肖像"
