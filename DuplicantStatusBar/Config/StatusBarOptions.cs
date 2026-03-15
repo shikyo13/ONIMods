@@ -7,16 +7,16 @@ namespace DuplicantStatusBar.Config
     /// <summary>Controls whether dupe widgets show full portraits or letter initials.</summary>
     public enum DisplayMode
     {
-        [Option("Portraits")] Portraits,
-        [Option("Initials Only")] Initials
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS")] Portraits,
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.INITIALS")] Initials
     }
 
     /// <summary>Determines how duplicants are ordered in the status bar.</summary>
     public enum SortOrder
     {
-        [Option("Stress (highest first)")] StressDescending,
-        [Option("Alphabetical")] Alphabetical,
-        [Option("Job Role")] Role
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.STRESSDESCENDING")] StressDescending,
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ALPHABETICAL")] Alphabetical,
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE")] Role
     }
 
     /// <summary>
@@ -26,112 +26,112 @@ namespace DuplicantStatusBar.Config
     [ModInfo("Duplicant Status Bar")]
     public sealed class StatusBarOptions : SingletonOptions<StatusBarOptions>, IOptions
     {
-        [Option("Sort Order", "How to sort duplicants in the bar.", "General")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL")]
         [JsonProperty]
         public SortOrder SortOrder { get; set; } = SortOrder.StressDescending;
 
-        [Option("Portrait Size", "Size of each portrait in pixels.", "Appearance")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
         [Limit(16, 96)]
         [JsonProperty]
         public int PortraitSize { get; set; } = 36;
 
-        [Option("Max Dupes Per Row", "Maximum portraits per row (0 = auto-fit to screen width).", "Appearance")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
         [Limit(0, 50)]
         [JsonProperty]
         public int MaxDupesPerRow { get; set; } = 0;
 
-        [Option("Max Bar Width (%)", "Maximum bar width as percentage of screen (triggers row wrapping).", "Appearance")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
         [Limit(20, 100)]
         [JsonProperty]
         public int MaxBarWidth { get; set; } = 50;
 
-        [Option("Max Rows", "Maximum visible rows before scrolling (0 = unlimited).", "Appearance")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
         [Limit(0, 10)]
         [JsonProperty]
         public int MaxBarRows { get; set; } = 3;
 
-        [Option("Bar Opacity (%)", "Opacity of the status bar background.", "Appearance")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
         [Limit(10, 100)]
         [JsonProperty]
         public int BarOpacity { get; set; } = 90;
 
-        [Option("Display Mode", "Show portraits or initial letters.", "Appearance")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
         [JsonProperty]
         public DisplayMode DisplayMode { get; set; } = DisplayMode.Portraits;
 
-        [Option("Face Expressions", "Show dynamic facial expressions based on dupe status.", "Appearance")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
         [JsonProperty]
         public bool EnableExpressions { get; set; } = true;
 
-        [Option("Calm Threshold", "Stress below this % is Calm (green).", "Stress Tiers")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS")]
         [Limit(5, 50)]
         [JsonProperty]
         public int CalmThreshold { get; set; } = 20;
 
-        [Option("Mild Threshold", "Stress below this % is Mild (lime).", "Stress Tiers")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS")]
         [Limit(10, 60)]
         [JsonProperty]
         public int MildThreshold { get; set; } = 40;
 
-        [Option("Stressed Threshold", "Stress below this % is Stressed (yellow).", "Stress Tiers")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS")]
         [Limit(20, 70)]
         [JsonProperty]
         public int StressedThreshold { get; set; } = 60;
 
-        [Option("High Threshold", "Stress below this % is High (orange).", "Stress Tiers")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS")]
         [Limit(30, 90)]
         [JsonProperty]
         public int HighThreshold { get; set; } = 80;
 
-        [Option("Suffocating Alert", "Show badge when dupe is suffocating.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertSuffocating { get; set; } = true;
 
-        [Option("Low HP Alert", "Show badge when dupe health is low.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertLowHP { get; set; } = true;
 
-        [Option("Scalding Alert", "Show badge when dupe is overheating.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertScalding { get; set; } = true;
 
-        [Option("Hypothermia Alert", "Show badge when dupe is freezing.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertHypothermia { get; set; } = true;
 
-        [Option("Disease Alert", "Show badge when dupe is sick.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertDiseased { get; set; } = true;
 
-        [Option("Overstressed Alert", "Show badge at critical stress.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertOverstressed { get; set; } = true;
 
-        [Option("Overjoyed Alert", "Show rainbow border and tooltip during joy reactions.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertOverjoyed { get; set; } = true;
 
-        [Option("Irradiated Alert", "Show badge when dupe has radiation sickness.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertIrradiated { get; set; } = true;
 
-        [Option("Starving Alert", "Show badge when dupe is starving.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertStarving { get; set; } = true;
 
-        [Option("Bladder Alert", "Show badge when dupe urgently needs a bathroom.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertBladder { get; set; } = true;
 
-        [Option("Stuck Alert", "Show badge when dupe cannot reach the printing pod.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertStuck { get; set; } = true;
 
-        [Option("Idle Alert", "Show badge when dupe has no task for an extended period.", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertIdle { get; set; } = true;
 
-        [Option("Incapacitated Alert", "Show badge when dupe is incapacitated (bleeding out).", "Alerts")]
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
         [JsonProperty]
         public bool AlertIncapacitated { get; set; } = true;
 
