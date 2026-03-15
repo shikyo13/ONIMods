@@ -655,7 +655,7 @@ namespace DuplicantStatusBar.UI
             var allGO = new GameObject("All");
             allGO.transform.SetParent(row.transform, false);
             var allTMP = allGO.AddComponent<TextMeshProUGUI>();
-            allTMP.text = "All";
+            allTMP.text = (string)DSB.UI.POPUP_ALL;
             allTMP.fontSize = 9;
             allTMP.color = ColorUtil.Hex(ColorUtil.Blue);
             if (StatusBarScreen.GameFont != null) allTMP.font = StatusBarScreen.GameFont;
@@ -667,7 +667,7 @@ namespace DuplicantStatusBar.UI
             var noneGO = new GameObject("None");
             noneGO.transform.SetParent(row.transform, false);
             var noneTMP = noneGO.AddComponent<TextMeshProUGUI>();
-            noneTMP.text = "None";
+            noneTMP.text = (string)DSB.UI.POPUP_NONE;
             noneTMP.fontSize = 9;
             noneTMP.color = ColorUtil.TextMuted;
             if (StatusBarScreen.GameFont != null) noneTMP.font = StatusBarScreen.GameFont;

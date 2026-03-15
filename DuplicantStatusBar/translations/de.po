@@ -44,6 +44,64 @@ msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
 msgid "Bladder:"
 msgstr "Blase:"
 
+# --- Popup strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
+msgid "\u25BC Sort/Filter"
+msgstr "\u25BC Sortieren/Filtern"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
+msgid "Sort By"
+msgstr "Sortieren nach"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_FILTER"
+msgid "Filter"
+msgstr "Filter"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_APPLY"
+msgid "Apply"
+msgstr "Anwenden"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_RESET"
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SHOWALL"
+msgid "Show All"
+msgstr "Alle anzeigen"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_QUICKFILTERS"
+msgid "Quick Filters"
+msgstr "Schnellfilter"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALERTSONLY"
+msgid "Alerts Only"
+msgstr "Nur Warnungen"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_STRESSEDONLY"
+msgid "Stressed+ Only"
+msgstr "Nur Stress+"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ROLES"
+msgid "Roles"
+msgstr "Berufe"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NOROLE"
+msgid "No Specialization"
+msgstr "Keine Spezialisierung"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_DUPES"
+msgid "Dupes"
+msgstr "Duplikanten"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALL"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NONE"
+msgid "None"
+msgstr "Keine"
+
 # --- ALERT strings ---
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"

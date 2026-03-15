@@ -44,6 +44,64 @@ msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
 msgid "Bladder:"
 msgstr "방광:"
 
+# ── Popup ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
+msgid "\u25BC Sort/Filter"
+msgstr "\u25BC 정렬/필터"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
+msgid "Sort By"
+msgstr "정렬 기준"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_FILTER"
+msgid "Filter"
+msgstr "필터"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_APPLY"
+msgid "Apply"
+msgstr "적용"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_RESET"
+msgid "Reset"
+msgstr "초기화"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SHOWALL"
+msgid "Show All"
+msgstr "전체 표시"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_QUICKFILTERS"
+msgid "Quick Filters"
+msgstr "빠른 필터"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALERTSONLY"
+msgid "Alerts Only"
+msgstr "경고만"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_STRESSEDONLY"
+msgid "Stressed+ Only"
+msgstr "스트레스+ 만"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ROLES"
+msgid "Roles"
+msgstr "직업"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NOROLE"
+msgid "No Specialization"
+msgstr "전문화 없음"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_DUPES"
+msgid "Dupes"
+msgstr "복제인"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALL"
+msgid "All"
+msgstr "전체"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NONE"
+msgid "None"
+msgstr "없음"
+
 # ── Alerts ──
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"

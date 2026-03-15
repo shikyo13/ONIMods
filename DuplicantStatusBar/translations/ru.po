@@ -44,6 +44,64 @@ msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
 msgid "Bladder:"
 msgstr "Мочевой пузырь:"
 
+# ── Popup ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
+msgid "\u25BC Sort/Filter"
+msgstr "\u25BC Сортировка/Фильтр"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
+msgid "Sort By"
+msgstr "Сортировать по"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_FILTER"
+msgid "Filter"
+msgstr "Фильтр"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_APPLY"
+msgid "Apply"
+msgstr "Применить"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_RESET"
+msgid "Reset"
+msgstr "Сбросить"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SHOWALL"
+msgid "Show All"
+msgstr "Показать всех"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_QUICKFILTERS"
+msgid "Quick Filters"
+msgstr "Быстрые фильтры"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALERTSONLY"
+msgid "Alerts Only"
+msgstr "Только тревоги"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_STRESSEDONLY"
+msgid "Stressed+ Only"
+msgstr "Только стресс+"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ROLES"
+msgid "Roles"
+msgstr "Профессии"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NOROLE"
+msgid "No Specialization"
+msgstr "Без специализации"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_DUPES"
+msgid "Dupes"
+msgstr "Дупликанты"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALL"
+msgid "All"
+msgstr "Все"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NONE"
+msgid "None"
+msgstr "Никто"
+
 # ── ALERTS ──
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"
