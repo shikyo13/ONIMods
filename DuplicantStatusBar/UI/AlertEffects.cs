@@ -32,20 +32,20 @@ namespace DuplicantStatusBar.UI
         // Indexed by (int)AlertType — None(0) and Overjoyed(1) are unused placeholders
         private static readonly AlertEffect[] effects = new AlertEffect[]
         {
-            default,                                                                                        // 0  None
-            default,                                                                                        // 1  Overjoyed (rainbow)
-            new AlertEffect(H(0xAB47BC), 2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.55f), // 2  Diseased
-            new AlertEffect(H(0xFFEB3B), 1.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.60f), // 3  BladderUrgent
-            new AlertEffect(H(0xEC407A), 1.5f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 4  Overstressed
-            new AlertEffect(H(0x00E676), 2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.35f, 0.60f), // 5  Irradiated
-            new AlertEffect(H(0xFF9800), 2.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.55f), // 6  Starving
-            new AlertEffect(H(0x00ACC1), 3.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 7  Hypothermia
-            new AlertEffect(H(0xFF5722), 0.8f, AlertPattern.Flicker,   GradientShape.FromBottom,  0.40f, 0.70f), // 8  Scalding
-            new AlertEffect(H(0xD50000), 1.2f, AlertPattern.Heartbeat, GradientShape.Radial,     0.30f, 0.70f), // 9  LowHP
-            new AlertEffect(H(0x2979FF), 2.0f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.40f, 0.75f), // 10 Suffocating
-            new AlertEffect(H(0x7E57C2), 2.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.40f, 0.55f), // 11 Stuck
-            new AlertEffect(H(0x9CA3AF), 3.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.15f, 0.35f), // 12 Idle
-            new AlertEffect(H(0xFF00DD), 0.6f, AlertPattern.Pulse,     GradientShape.Radial,     0.45f, 0.85f), // 13 Incapacitated
+            default,                                                                                                    // 0  None
+            default,                                                                                                    // 1  Overjoyed (rainbow)
+            new AlertEffect(H(ColorUtil.AlertDiseased),      2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.55f), // 2  Diseased
+            new AlertEffect(H(ColorUtil.AlertBladder),       1.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.60f), // 3  BladderUrgent
+            new AlertEffect(H(ColorUtil.AlertOverstressed),  1.5f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 4  Overstressed
+            new AlertEffect(H(ColorUtil.AlertIrradiated),    2.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.35f, 0.60f), // 5  Irradiated
+            new AlertEffect(H(ColorUtil.AlertStarving),      2.5f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.25f, 0.55f), // 6  Starving
+            new AlertEffect(H(ColorUtil.AlertHypothermia),   3.0f, AlertPattern.Pulse,     GradientShape.Radial,     0.30f, 0.60f), // 7  Hypothermia
+            new AlertEffect(H(ColorUtil.AlertScalding),      0.8f, AlertPattern.Flicker,   GradientShape.FromBottom,  0.40f, 0.70f), // 8  Scalding
+            new AlertEffect(H(ColorUtil.AlertLowHP),         1.2f, AlertPattern.Heartbeat, GradientShape.Radial,     0.30f, 0.70f), // 9  LowHP
+            new AlertEffect(H(ColorUtil.AlertSuffocating),   2.0f, AlertPattern.Pulse,     GradientShape.FromBottom,  0.40f, 0.75f), // 10 Suffocating
+            new AlertEffect(H(ColorUtil.AlertStuck),         2.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.40f, 0.55f), // 11 Stuck
+            new AlertEffect(H(ColorUtil.AlertIdle),          3.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.15f, 0.35f), // 12 Idle
+            new AlertEffect(H(ColorUtil.AlertIncapacitated), 0.6f, AlertPattern.Pulse,     GradientShape.Radial,     0.45f, 0.85f), // 13 Incapacitated
         };
 
         public static AlertEffect Get(AlertType type)
