@@ -308,7 +308,7 @@ namespace DuplicantStatusBar.UI
                      || snapshot.HasAlert(AlertType.Incapacitated);
 
             // Multi-badge with per-alert hysteresis
-            UpdateBadges(snapshot.AlertMask);
+            UpdateBadges(snapshot.AlertMask, snapshot.CustomAlerts);
 
             // Resize
             rootLayout.preferredWidth = totalW;
@@ -440,7 +440,8 @@ namespace DuplicantStatusBar.UI
             rainbowTexSize = 0;
         }
 
-        private void UpdateBadges(ushort activeMask)
+        private void UpdateBadges(ushort activeMask,
+            System.Collections.Generic.Dictionary<string, bool> customAlerts)
         {
             currentAlertMask = activeMask;
 
@@ -469,6 +470,21 @@ namespace DuplicantStatusBar.UI
                 if (badgeSymbols[slot].text != sym)
                     badgeSymbols[slot].text = sym;
                 slot++;
+            }
+
+            // Custom alert badges in remaining slots
+            var activeCustom = API.Internal.AlertRegistry.GetActiveCustomAlerts(customAlerts);
+            if (activeCustom != null)
+            {
+                foreach (var reg in activeCustom)
+                {
+                    if (slot >= MAX_BADGES) break;
+                    badgeImages[slot].gameObject.SetActive(true);
+                    badgeImages[slot].color = reg.BaseColor;
+                    if (badgeSymbols[slot].text != reg.BadgeSymbol)
+                        badgeSymbols[slot].text = reg.BadgeSymbol;
+                    slot++;
+                }
             }
 
             // Hide unused slots

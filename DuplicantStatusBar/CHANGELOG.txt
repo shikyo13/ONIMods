@@ -1,5 +1,15 @@
 [h1]Duplicant Status Bar — Changelog[/h1]
 
+[h2]v2.6.0 — Extensibility API[/h2]
+[list]
+[*] [b]Mod API[/b] — other mods can now register custom alerts, hook into tooltips, and listen to status bar events via `DuplicantStatusBar.API.Experimental.DSBApi`
+[*] Custom alerts get badge icons, tooltip entries, and animation patterns — same visual treatment as built-in alerts
+[*] Tooltip hooks let external mods append custom stat lines to the hover tooltip
+[*] Event system: react to alert changes, widget lifecycle, snapshot updates, and bar visibility changes
+[*] All external callbacks are error-isolated — a broken mod never crashes the status bar
+[*] See `docs/api-guide.md` for the full guide and examples
+[/list]
+
 [h2]v2.5.1 — In-Game Sort/Filter Popup + Game UI Scale[/h2]
 [list]
 [*] [b]In-game Sort/Filter popup[/b] — click the ► Sort/Filter button on the header bar to open a drop-down right below the bar. No more digging through mod settings to change sort order or hide dupes

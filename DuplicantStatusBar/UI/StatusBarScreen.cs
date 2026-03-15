@@ -11,6 +11,7 @@ namespace DuplicantStatusBar.UI
 {
     public sealed class StatusBarScreen : MonoBehaviour
     {
+        internal static StatusBarScreen Instance { get; private set; }
         private RectTransform canvasRT;
         private RectTransform barPanel;
         private GameObject contentArea;
@@ -61,6 +62,7 @@ namespace DuplicantStatusBar.UI
 
         private void Start()
         {
+            Instance = this;
             BuildUI();
             LoadState();
         }
@@ -81,6 +83,7 @@ namespace DuplicantStatusBar.UI
 
         private void OnDestroy()
         {
+            Instance = null;
             DupeTooltip.Cleanup();
             SortFilterPopup.Cleanup();
             PortraitCompositor.ClearCaches();
@@ -514,6 +517,7 @@ namespace DuplicantStatusBar.UI
             scrollViewGO.SetActive(!isCollapsed);
             collapseLabel.text = isCollapsed ? "+" : "\u2212";
             SaveState();
+            API.Internal.AlertRegistry.FireBarVisibilityChanged(!isCollapsed);
         }
 
         // ── Drag (EventSystem-driven) ─────────────────────────────
@@ -623,19 +627,32 @@ namespace DuplicantStatusBar.UI
 
             // Add widgets if needed
             while (widgets.Count < snaps.Count)
-                widgets.Add(DupePortraitWidget.Create(contentRT, size));
+            {
+                var w = DupePortraitWidget.Create(contentRT, size);
+                widgets.Add(w);
+            }
 
             // Remove excess widgets
             while (widgets.Count > snaps.Count)
             {
                 int last = widgets.Count - 1;
-                Destroy(widgets[last].gameObject);
+                var w = widgets[last];
+                if (last < snaps.Count)
+                    API.Internal.AlertRegistry.FireWidgetDestroyed(
+                        new API.Experimental.WidgetEvent(w, snaps[last]));
+                Destroy(w.gameObject);
                 widgets.RemoveAt(last);
             }
 
             // Update each
+            int prevCount = lastDupeCount < 0 ? 0 : lastDupeCount;
             for (int i = 0; i < snaps.Count; i++)
+            {
                 widgets[i].SetSnapshot(snaps[i], size);
+                if (i >= prevCount)
+                    API.Internal.AlertRegistry.FireWidgetCreated(
+                        new API.Experimental.WidgetEvent(widgets[i], snaps[i]));
+            }
 
             // Evict cached portrait textures for dead/transferred dupes
             PortraitCompositor.EvictStale(

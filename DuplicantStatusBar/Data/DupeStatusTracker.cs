@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DuplicantStatusBar.API.Internal;
 using DuplicantStatusBar.Config;
 using DuplicantStatusBar.UI;
 
@@ -61,6 +62,9 @@ namespace DuplicantStatusBar.Data
         public bool IsIdle;
         public bool IsIncapacitated;
 
+        /// <summary>Custom alert state from registered external alerts. Null if no custom alerts registered.</summary>
+        public Dictionary<string, bool> CustomAlerts;
+
         /// <summary>Tests whether a specific alert is active in this snapshot's bitmask.</summary>
         public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (1 << (int)a)) != 0;
 
@@ -81,6 +85,8 @@ namespace DuplicantStatusBar.Data
     public static class DupeStatusTracker
     {
         private static readonly List<DupeSnapshot> snapshots = new List<DupeSnapshot>(35);
+        private static readonly Dictionary<int, ushort> previousAlertMasks
+            = new Dictionary<int, ushort>();
         private static Klei.AI.Amount stressAmount;
         private static Klei.AI.Amount healthAmount;
         private static Klei.AI.Amount breathAmount;
@@ -277,6 +283,29 @@ namespace DuplicantStatusBar.Data
                 snap.AlertMask = mask;
                 snap.HighestAlert = highest;
 
+                // Diff built-in alerts for change events
+                previousAlertMasks.TryGetValue(id, out ushort prevMask);
+                ushort changed = (ushort)(mask ^ prevMask);
+                if (changed != 0)
+                {
+                    previousAlertMasks[id] = mask;
+                    foreach (var a in DupeSnapshot.AlertPriority)
+                    {
+                        int bit = 1 << (int)a;
+                        if ((changed & bit) != 0)
+                            AlertRegistry.FireAlertChanged(
+                                new API.Experimental.AlertChangedEvent(
+                                    identity, "Builtin." + a, (mask & bit) != 0));
+                    }
+                }
+
+                // Custom alerts from API registrations
+                snap.CustomAlerts = AlertRegistry.EvaluateCustomAlerts(identity, id);
+
+                // Fire snapshot updated event
+                AlertRegistry.FireSnapshotUpdated(
+                    new API.Experimental.SnapshotEvent(snap));
+
                 // Apply filters (per-dupe, smart filters, role filter)
                 if (SortFilterPopup.HiddenDupes.Count > 0 && SortFilterPopup.HiddenDupes.Contains(snap.Name))
                     continue;
@@ -297,7 +326,12 @@ namespace DuplicantStatusBar.Data
 
             // Prune stale timer entries for dead/departed dupes
             if (liveIds.Count > 0)
+            {
                 PruneTimers(liveIds);
+                AlertRegistry.PruneState(liveIds);
+                if (previousAlertMasks.Count > liveIds.Count + 5)
+                    RemoveStaleKeys(previousAlertMasks, liveIds);
+            }
 
             SortSnapshots();
         }
@@ -319,7 +353,7 @@ namespace DuplicantStatusBar.Data
                 RemoveStaleKeys(idleTimers, liveIds);
         }
 
-        private static void RemoveStaleKeys(Dictionary<int, float> dict, HashSet<int> liveIds)
+        private static void RemoveStaleKeys<T>(Dictionary<int, T> dict, HashSet<int> liveIds)
         {
             var stale = new List<int>();
             foreach (var key in dict.Keys)
