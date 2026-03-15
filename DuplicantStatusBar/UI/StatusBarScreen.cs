@@ -196,15 +196,15 @@ namespace DuplicantStatusBar.UI
             var filterGO = new GameObject("FilterBtn");
             filterGO.transform.SetParent(header.transform, false);
 
+            var filterBtnImg = filterGO.AddComponent<Image>();
+            filterBtnImg.color = Color.clear;
+
             var filterRT = filterGO.GetComponent<RectTransform>();
             filterRT.anchorMin = new Vector2(0f, 0f);
             filterRT.anchorMax = new Vector2(0f, 1f);
             filterRT.pivot = new Vector2(0f, 0.5f);
             filterRT.anchoredPosition = new Vector2(6f, 0f);
             filterRT.sizeDelta = new Vector2(80f, 0f);
-
-            var filterBtnImg = filterGO.AddComponent<Image>();
-            filterBtnImg.color = Color.clear;
             var filterBtn = filterGO.AddComponent<Button>();
             filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
             filterGO.AddComponent<LayoutElement>().ignoreLayout = true;
