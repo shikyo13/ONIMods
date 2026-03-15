@@ -10,9 +10,12 @@ namespace DuplicantStatusBar.Core
     /// </summary>
     public sealed class DuplicantStatusBarMod : UserMod2
     {
+        public static string ModPath { get; private set; }
+
         public override void OnLoad(Harmony harmony)
         {
             base.OnLoad(harmony);
+            ModPath = mod.ContentPath;
             PUtil.InitLibrary();
             LocString.CreateLocStringKeys(typeof(Localization.STRINGS), "");
             new POptions().RegisterOptions(this, typeof(Config.StatusBarOptions));
