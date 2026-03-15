@@ -209,13 +209,19 @@ namespace DuplicantStatusBar.UI
             filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
             filterGO.AddComponent<LayoutElement>().ignoreLayout = true;
 
-            var filterTMP = filterGO.AddComponent<TMPro.TextMeshProUGUI>();
+            var filterTextGO = new GameObject("Label");
+            filterTextGO.transform.SetParent(filterGO.transform, false);
+            var filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
             filterTMP.text = "\u25BC Sort/Filter";
             filterTMP.fontSize = 11;
             filterTMP.color = Color.white;
             if (GameFont != null) filterTMP.font = GameFont;
             filterTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             filterTMP.raycastTarget = false;
+            var ftRT = filterTextGO.GetComponent<RectTransform>();
+            ftRT.anchorMin = Vector2.zero;
+            ftRT.anchorMax = Vector2.one;
+            ftRT.sizeDelta = Vector2.zero;
 
             // Drag-handle label
             var grip = new GameObject("Grip");
