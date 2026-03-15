@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Database;
 using UnityEngine;
 
@@ -18,6 +19,19 @@ namespace DuplicantStatusBar.UI
     {
         /// <summary>Shift all layers down to give tall hats more headroom above center.</summary>
         private const int PORTRAIT_Y_SHIFT = -8;
+
+        // Portrait feature offsets (pixels relative to canvas center + PORTRAIT_Y_SHIFT)
+        private const int EYE_X = 4;
+        private const int EYE_Y = -16;
+        private const int MOUTH_X = 6;
+        private const int MOUTH_Y = -12;
+        private const int HAIR_X = 8;
+        private const int HAIR_Y = 28;
+        private const int HATHAIR_X = 8;
+        private const int HATHAIR_Y = 30;
+        private const int HAT_X = 6;
+        private const int HAT_Y = 30;
+        private const float EYE_ROTATION = 3f; // degrees CCW to level 3/4 perspective tilt
 
         // Cache readable copies of GPU textures to avoid repeated readbacks
         private static readonly Dictionary<Texture2D, Texture2D> readableCache
@@ -96,9 +110,9 @@ namespace DuplicantStatusBar.UI
                     int ef = eyeFrame;
                     if (ef >= eyeAcc.symbol.frameLookup.Length) ef = 0;
                     WriteSymbolDirect(baseTex, eyeAcc.symbol,
-                        xOffset: 4, yOffset: -16 + PORTRAIT_Y_SHIFT, frameOverride: ef,
+                        xOffset: EYE_X, yOffset: EYE_Y + PORTRAIT_Y_SHIFT, frameOverride: ef,
                         maxWidth: MAX_EYE_W, maxHeight: MAX_EYE_H,
-                        anchor: VerticalAnchor.Bottom, rotation: 3f);
+                        anchor: VerticalAnchor.Bottom, rotation: EYE_ROTATION);
                 }
 
                 // Mouth — center-offset, shifted down
@@ -108,7 +122,7 @@ namespace DuplicantStatusBar.UI
                     int mf = mouthFrame;
                     if (mf >= mouthAcc.symbol.frameLookup.Length) mf = 0;
                     WriteSymbolDirect(baseTex, mouthAcc.symbol,
-                        xOffset: 6, yOffset: -12 + PORTRAIT_Y_SHIFT, frameOverride: mf,
+                        xOffset: MOUTH_X, yOffset: MOUTH_Y + PORTRAIT_Y_SHIFT, frameOverride: mf,
                         maxWidth: MAX_MOUTH_W, maxHeight: MAX_MOUTH_H,
                         anchor: VerticalAnchor.Top);
                 }
@@ -130,14 +144,14 @@ namespace DuplicantStatusBar.UI
 
             if (hasHat)
             {
-                WriteSymbol(output, accessorizer, slots.HatHair, xOffset: 8, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
+                WriteSymbol(output, accessorizer, slots.HatHair, xOffset: HATHAIR_X, yOffset: HATHAIR_Y + PORTRAIT_Y_SHIFT, usePivot: true);
                 var hatAcc = slots.Hat.Lookup(hatId);
                 if (hatAcc != null)
-                    WriteSymbolDirect(output, hatAcc.symbol, xOffset: 6, yOffset: 30 + PORTRAIT_Y_SHIFT, usePivot: true);
+                    WriteSymbolDirect(output, hatAcc.symbol, xOffset: HAT_X, yOffset: HAT_Y + PORTRAIT_Y_SHIFT, usePivot: true);
             }
             else
             {
-                WriteSymbol(output, accessorizer, slots.Hair, xOffset: 8, yOffset: 28 + PORTRAIT_Y_SHIFT, usePivot: true);
+                WriteSymbol(output, accessorizer, slots.Hair, xOffset: HAIR_X, yOffset: HAIR_Y + PORTRAIT_Y_SHIFT, usePivot: true);
             }
 
             output.Apply();
@@ -167,7 +181,7 @@ namespace DuplicantStatusBar.UI
             int frameIdx = frameOverride >= 0 ? frameOverride : 0;
             if (frameIdx >= symbol.frameLookup.Length)
                 frameIdx = 0;
-            long cacheKey = ((long)symbol.hash.HashValue << 16) ^ frameIdx;
+            long cacheKey = ((long)symbol.hash.HashValue << 32) | (uint)frameIdx;
 
             var sprite = GetSpriteFromSymbol(symbol, frameIdx);
             if (sprite == null) return;
@@ -217,13 +231,18 @@ namespace DuplicantStatusBar.UI
                 yStart -= pivotY / 2;
             }
 
+            // Batch-read source pixels to avoid per-pixel managed-to-native calls
+            var srcPixels = source.GetPixels();
+            int srcW = source.width;
+            int outW = output.width;
+
             if (rotation != 0f)
             {
                 // Inverse-mapped rotation: iterate output pixels, sample rotated source
                 float rad = rotation * Mathf.Deg2Rad;
                 float cos = Mathf.Cos(rad);
                 float sin = Mathf.Sin(rad);
-                float cx = source.width * 0.5f;
+                float cx = srcW * 0.5f;
                 float cy = source.height * 0.5f;
 
                 for (int oy = yStart; oy < yStart + source.height; oy++)
@@ -231,13 +250,13 @@ namespace DuplicantStatusBar.UI
                     if (oy < 0 || oy >= output.height) continue;
                     for (int ox = xStart; ox < xStart + source.width; ox++)
                     {
-                        if (ox < 0 || ox >= output.width) continue;
+                        if (ox < 0 || ox >= outW) continue;
                         float lx = (ox - xStart) - cx;
                         float ly = (oy - yStart) - cy;
                         int sx = Mathf.RoundToInt(cos * lx + sin * ly + cx);
                         int sy = Mathf.RoundToInt(-sin * lx + cos * ly + cy);
-                        if (sx < 0 || sx >= source.width || sy < 0 || sy >= source.height) continue;
-                        var px = source.GetPixel(sx, sy);
+                        if (sx < 0 || sx >= srcW || sy < 0 || sy >= source.height) continue;
+                        var px = srcPixels[sy * srcW + sx];
                         if (px.a <= ALPHA_THRESHOLD) continue;
                         var existing = output.GetPixel(ox, oy);
                         output.SetPixel(ox, oy, AlphaBlend(existing, px));
@@ -246,17 +265,17 @@ namespace DuplicantStatusBar.UI
             }
             else
             {
-                for (int x = 0; x < source.width; x++)
+                for (int x = 0; x < srcW; x++)
                 {
                     for (int y = 0; y < source.height; y++)
                     {
-                        var px = source.GetPixel(x, y);
+                        var px = srcPixels[y * srcW + x];
                         if (px.a <= ALPHA_THRESHOLD) continue;
 
-                        int outX = flipX ? (source.width - 1 - x) + xStart : x + xStart;
+                        int outX = flipX ? (srcW - 1 - x) + xStart : x + xStart;
                         int outY = y + yStart;
 
-                        if (outX >= 0 && outX < output.width &&
+                        if (outX >= 0 && outX < outW &&
                             outY >= 0 && outY < output.height)
                         {
                             var existing = output.GetPixel(outX, outY);
@@ -391,6 +410,27 @@ namespace DuplicantStatusBar.UI
             RenderTexture.active = prev;
             RenderTexture.ReleaseTemporary(rt);
             return result;
+        }
+
+        /// <summary>
+        /// Evicts baseCache entries for dupes no longer in the active snapshot set.
+        /// Call periodically (e.g., on widget refresh) to prevent texture leaks from dead/transferred dupes.
+        /// </summary>
+        public static void EvictStale(IEnumerable<int> liveInstanceIds)
+        {
+            var liveSet = new HashSet<int>(liveInstanceIds);
+            var stale = new List<int>();
+            foreach (var kv in baseCache)
+            {
+                if (!liveSet.Contains(kv.Key))
+                    stale.Add(kv.Key);
+            }
+            for (int i = 0; i < stale.Count; i++)
+            {
+                if (baseCache.TryGetValue(stale[i], out var entry) && entry.Texture != null)
+                    Object.Destroy(entry.Texture);
+                baseCache.Remove(stale[i]);
+            }
         }
 
         /// <summary>

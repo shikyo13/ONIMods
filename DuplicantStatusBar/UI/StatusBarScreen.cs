@@ -77,7 +77,6 @@ namespace DuplicantStatusBar.UI
         private void OnDestroy()
         {
             DupeTooltip.Cleanup();
-            AlertEffects.Cleanup();
             PortraitCompositor.ClearCaches();
             SaveState();
         }
@@ -557,6 +556,11 @@ namespace DuplicantStatusBar.UI
             // Update each
             for (int i = 0; i < snaps.Count; i++)
                 widgets[i].SetSnapshot(snaps[i], size);
+
+            // Evict cached portrait textures for dead/transferred dupes
+            PortraitCompositor.EvictStale(
+                System.Linq.Enumerable.Select(snaps,
+                    s => s.Identity != null ? s.Identity.GetInstanceID() : 0));
         }
 
         private void ClampPanelPosition()

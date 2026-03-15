@@ -30,6 +30,7 @@ namespace DuplicantStatusBar.UI
 
         private static Dictionary<HashedString, ExpressionFrames> faceFrames;
         private static int blinkEyeFrame = -1;
+        private static bool sparkleLogged;
 
         /// <summary>
         /// Highest-priority alert determines expression; falls back to stress tier.
@@ -75,7 +76,11 @@ namespace DuplicantStatusBar.UI
                 // not standalone eyes. Override with known-good frames per sgt_imalas.
                 if (expr == ExpressionType.Sparkle)
                 {
-                    Debug.Log($"[DSB] Sparkle override: discovered eye={frames.EyeFrame} mouth={frames.MouthFrame} → using eye=22 mouth=28");
+                    if (!sparkleLogged)
+                    {
+                        sparkleLogged = true;
+                        Debug.Log($"[DSB] Sparkle override: discovered eye={frames.EyeFrame} mouth={frames.MouthFrame} → using eye=22 mouth=28");
+                    }
                     frames.EyeFrame = 22;
                     frames.MouthFrame = 28;
                 }
@@ -203,6 +208,7 @@ namespace DuplicantStatusBar.UI
         {
             faceFrames = null;
             blinkEyeFrame = -1;
+            sparkleLogged = false;
         }
     }
 }

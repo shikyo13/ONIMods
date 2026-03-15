@@ -91,6 +91,7 @@ namespace DuplicantStatusBar.Data
         private static float lastUpdateTime = -1f;
         private static int cachedPodCell = -1;
         private static float podCacheTimer;
+        private static readonly HashSet<int> liveIds = new HashSet<int>();
         private const float STUCK_CHECK_INTERVAL = 2f;
         private const float STUCK_THRESHOLD = 10f;
         private const float IDLE_THRESHOLD = 30f;
@@ -138,8 +139,7 @@ namespace DuplicantStatusBar.Data
                 }
             }
 
-            // Track live dupe IDs for stale-entry cleanup
-            HashSet<int> liveIds = null;
+            liveIds.Clear();
 
             foreach (var identity in dupes)
             {
@@ -257,8 +257,6 @@ namespace DuplicantStatusBar.Data
                 stuckTimers.TryGetValue(id, out float stuckTime);
                 snap.IsStuck = stuckTime >= STUCK_THRESHOLD;
 
-                // Track live IDs
-                if (liveIds == null) liveIds = new HashSet<int>();
                 liveIds.Add(id);
 
                 // Compute derived values
@@ -271,7 +269,7 @@ namespace DuplicantStatusBar.Data
             }
 
             // Prune stale timer entries for dead/departed dupes
-            if (liveIds != null)
+            if (liveIds.Count > 0)
                 PruneTimers(liveIds);
 
             SortSnapshots();
