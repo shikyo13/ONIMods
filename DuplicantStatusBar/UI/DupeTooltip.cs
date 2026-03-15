@@ -159,6 +159,24 @@ namespace DuplicantStatusBar.UI
 
                 slot++;
             }
+            // Custom alert tooltip slots
+            if (snap.CustomAlerts != null)
+            {
+                var active = API.Internal.AlertRegistry.GetActiveCustomAlerts(snap.CustomAlerts);
+                if (active != null)
+                {
+                    foreach (var reg in active)
+                    {
+                        if (slot >= MAX_ALERT_SLOTS) break;
+                        var hx = ColorUtility.ToHtmlStringRGB(reg.BaseColor);
+                        alertTexts[slot].gameObject.SetActive(true);
+                        alertTexts[slot].text = $"<color=#{hx}>{reg.DisplayName}</color>";
+                        activeAlertTypes[slot] = AlertType.None;
+                        alertTimers[slot] = 0f;
+                        slot++;
+                    }
+                }
+            }
             activeAlertCount = slot;
 
             // Deactivate unused slots
@@ -168,6 +186,10 @@ namespace DuplicantStatusBar.UI
             // Blank line separator before alert section
             if (activeAlertCount > 0)
                 sb.AppendLine();
+
+            // Invoke external tooltip hooks
+            API.Internal.AlertRegistry.InvokeTooltipHooks(
+                new API.Experimental.TooltipContext(snap, sb, activeAlertCount));
 
             tooltipText.text = sb.ToString();
 

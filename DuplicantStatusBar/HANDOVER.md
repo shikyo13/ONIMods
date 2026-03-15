@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.5.1
+**Version**: v2.6.0
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -221,6 +221,44 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 ## v2.5.1 — Game UI Scale Support
 
 DSB now reads `KPlayerPrefs.GetFloat("UIScalePref")` (the in-game UI Scale slider, stored as percentage) and adjusts its `CanvasScaler.referenceResolution` by dividing the base 1920x1080 by `userScale`. A 150% game scale → reference 1280x720 → Unity renders DSB 1.5x larger. Polled every 0.25s in the existing `Update()` tick; updates live without restart. Clamped to 0.75–2.0x. Drag-to-resize unaffected (operates on logical portrait size, independent of canvas scale).
+
+## v2.6.0 — Extensibility API
+
+Public API in `DuplicantStatusBar.API.Experimental` namespace. External mods can:
+
+- **Register custom alerts** via `DSBApi.RegisterAlert()` — detector function called every 0.25s per dupe, results displayed as badges and tooltip entries alongside built-in alerts
+- **Hook tooltip construction** via `DSBApi.RegisterTooltipHook()` — append/modify tooltip text
+- **Listen to events** — `OnAlertChanged`, `OnWidgetCreated/Destroyed`, `OnSnapshotUpdated`, `OnBarVisibilityChanged`
+
+### Internal Architecture
+
+| File | Purpose |
+|-|-|
+| `API/Experimental/DSBApi.cs` | Public static entry point — validation + delegation |
+| `API/Experimental/AlertRegistration.cs` | Registration type + AlertPattern enum |
+| `API/Experimental/TooltipContext.cs` | Tooltip hook context |
+| `API/Experimental/Events.cs` | Event struct definitions |
+| `API/Internal/AlertRegistry.cs` | Registration storage, detection, event dispatch |
+
+### Key Design Decisions
+
+- **No enum changes**: custom alerts use string IDs, not `AlertType` enum values. Built-in `AlertMask` bitmask unchanged.
+- **Separate storage**: custom alert state stored in `Dictionary<string, bool>` per snapshot (`DupeSnapshot.CustomAlerts`), not in the bitmask.
+- **Error isolation**: every external callback is try/caught. A broken mod never crashes the status bar.
+- **Copy-on-iterate**: event dispatch snapshots listener lists into arrays before iteration, so `Dispose()` during a callback is safe.
+- **`System.Action` qualification**: Unity's `PlayerLoop` namespace shadows `System.Action` — fully qualified in AlertRegistry.
+- **Snapshot semantics**: `AlertRegistration` fields are snapshotted at registration time via `Snapshot()`. Mutations after `RegisterAlert()` have no effect.
+
+### Integration Points
+
+1. **Alert detection**: `DupeStatusTracker.Update()` → after `ComputeAlerts()`, calls `AlertRegistry.EvaluateCustomAlerts()` per dupe
+2. **Alert change events**: built-in alerts diffed via `previousAlertMasks` dictionary; custom alerts diffed inside `AlertRegistry`
+3. **Badge rendering**: `DupePortraitWidget.UpdateBadges()` renders custom alert badges in slots after built-in badges
+4. **Tooltip**: `DupeTooltip.Show()` adds custom alert text slots after built-in slots, then invokes tooltip hooks
+5. **Widget events**: `StatusBarScreen.RefreshWidgets()` fires `WidgetCreated`/`WidgetDestroyed`
+6. **Visibility events**: `StatusBarScreen.ToggleCollapse()` fires `BarVisibilityChanged`
+
+See `docs/api-guide.md` for the external mod author guide.
 
 ## Not Yet Implemented
 
