@@ -95,4 +95,8 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 
 ## Breaking Changes
 
-(None tracked yet — add game patch notes here when ONI updates break mod behavior.)
+Track game updates that break mod behavior here.
+
+| Date | Game Build | What Broke | Fix |
+|-|-|-|-|
+| (none yet) | | | |
