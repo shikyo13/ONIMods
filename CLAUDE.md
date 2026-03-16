@@ -1,3 +1,5 @@
+# Parent workspace: See `../CLAUDE.md` for shared RE toolkit, engine docs, and modding conventions.
+
 # ONI Mods — Multi-Mod Workspace
 
 C# class libraries using Harmony 2.0 to patch Oxygen Not Included at runtime. .NET Framework 4.7.1, `using HarmonyLib;`, `APIVersion: 2`.
