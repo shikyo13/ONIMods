@@ -1,10 +1,14 @@
 [h1]Duplicant Status Bar — Changelog[/h1]
 
-[h2]v2.6.1 — HiDPI Fix + UI Polish[/h2]
+[h2]v2.7.0 — Unity 6 / Testing Branch Compatibility[/h2]
 [list]
-[*] [b]Fixed oversized status bar on Mac Retina / high-DPI displays[/b] (GitHub issue #1) — switched from Unity's ScaleWithScreenSize to ConstantPixelSize, now reads the game's own KCanvasScaler scale factor directly. Correct on all displays and UI scale settings.
-[*] Bumped font sizes across tooltip, header, popup, and name labels to compensate for the new scaling baseline
+[*] [b]Fixed crash when opening Sort/Filter popup on testing branch[/b] — vanilla KScreenManager dispatches input to a screen referencing a removed TMP method; popup now calls DisableInput while open
+[*] [b]Fixed ForceMeshUpdate crash on Unity 6[/b] — parameterless overload removed in built-in TMP; uses reflection to find the correct signature at runtime
+[*] [b]Fixed missing checkbox glyphs on testing branch[/b] — replaced ✓/✗ (U+2713/U+2717) with [x]/[ ] since the game font lacks those codepoints on Unity 6
+[*] [b]Fixed build against Unity 6 game DLLs[/b] — ImageConversionModule now references netstandard 2.1 which causes an unsuppressible CS1705; LoadImage and EncodeToPNG called via reflection instead
+[*] Fixed oversized status bar on Mac Retina / high-DPI displays (GitHub issue #1)
 [*] Sort/Filter button now hides when the bar is collapsed
+[*] Backwards compatible — single binary works on both public and testing branches
 [/list]
 
 [h2]v2.6.0 — Extensibility API[/h2]
