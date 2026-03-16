@@ -49,10 +49,8 @@
       <HintPath>$(GameManaged)\UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>$(GameManaged)\UnityEngine.ImageConversionModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <!-- ImageConversionModule omitted — on Unity 6 it chains netstandard 2.1 → ReadOnlySpan,
+         causing CS1705 (unsuppressible). LoadImage/EncodeToPNG called via reflection instead. -->
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(GameManaged)\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>false</Private>

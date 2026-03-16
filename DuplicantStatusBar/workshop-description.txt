@@ -25,7 +25,7 @@ Portraits are expression-driven — dupes change facial expressions based on the
 [*] [b]Draggable & collapsible[/b] — drag the header to reposition; collapse to just the header bar; position saved across sessions
 [*] [b]Resize grip[/b] — drag the bottom-right corner to adjust portrait size (16–96px), persisted between sessions
 [*] [b]Configurable[/b] — portrait size, bar opacity, max width, max rows, display mode, expression toggle, stress thresholds, and individual alert toggles via PLib mod options
-[*] [b]Respects game UI scale[/b] — scales with the in-game UI Scale slider (Options → Graphics), updates live
+[*] [b]Respects game UI scale[/b] — matches the game's own scaling on all displays including Mac Retina / high-DPI, updates live with the UI Scale slider
 [*] [b]Mod API[/b] — other mods can register custom alerts, hook tooltips, and listen to events via `DSBApi` (see docs/api-guide.md)
 [/list]
 

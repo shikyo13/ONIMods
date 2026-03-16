@@ -189,7 +189,7 @@ namespace DuplicantStatusBar.UI
 
             // ── Name label (below card) ───────────────────
             nameLabel = AddText(transform, "Name");
-            nameLabel.fontSize = 10;
+            nameLabel.fontSize = 12;
             nameLabel.color = ColorUtil.TextPrimary;
             if (StatusBarScreen.GameFont != null) nameLabel.font = StatusBarScreen.GameFont;
             nameLabel.alignment = TextAlignmentOptions.Center;

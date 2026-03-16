@@ -389,7 +389,7 @@ namespace DuplicantStatusBar.UI
                 {
                     try
                     {
-                        var bytes = portrait.texture.EncodeToPNG();
+                        var bytes = Core.ImageConversionHelper.EncodeToPNG(portrait.texture);
                         File.WriteAllBytes(Path.Combine(dir, "composited.png"), bytes);
                         Log("  Saved composited.png");
                     }
@@ -399,7 +399,7 @@ namespace DuplicantStatusBar.UI
                         var readable = ReadbackTexture(portrait.texture);
                         if (readable != null)
                         {
-                            File.WriteAllBytes(Path.Combine(dir, "composited.png"), readable.EncodeToPNG());
+                            File.WriteAllBytes(Path.Combine(dir, "composited.png"), Core.ImageConversionHelper.EncodeToPNG(readable));
                             UnityEngine.Object.Destroy(readable);
                             Log("  Saved composited.png (via readback)");
                         }
@@ -428,7 +428,7 @@ namespace DuplicantStatusBar.UI
                     var pixels = readable.GetPixels((int)r.x, (int)r.y, (int)r.width, (int)r.height);
                     cropped.SetPixels(pixels);
                     cropped.Apply();
-                    File.WriteAllBytes(Path.Combine(dir, filename), cropped.EncodeToPNG());
+                    File.WriteAllBytes(Path.Combine(dir, filename), Core.ImageConversionHelper.EncodeToPNG(cropped));
                     Log($"  Saved {filename} ({(int)r.width}x{(int)r.height})");
                     UnityEngine.Object.Destroy(cropped);
                     UnityEngine.Object.Destroy(readable);

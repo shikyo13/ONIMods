@@ -240,11 +240,11 @@ namespace DuplicantStatusBar.UI
 
         private static void RefreshSmartFilterVisuals()
         {
-            string aPrefix = pendingAlertsOnly ? "\u2713 " : "\u2717 ";
+            string aPrefix = pendingAlertsOnly ? "[x] " : "[ ] ";
             alertsOnlyLabel.text = aPrefix + (string)DSB.UI.POPUP_ALERTSONLY;
             alertsOnlyLabel.color = pendingAlertsOnly ? Color.white : ColorUtil.TextMuted;
 
-            string sPrefix = pendingStressedOnly ? "\u2713 " : "\u2717 ";
+            string sPrefix = pendingStressedOnly ? "[x] " : "[ ] ";
             stressedOnlyLabel.text = sPrefix + (string)DSB.UI.POPUP_STRESSEDONLY;
             stressedOnlyLabel.color = pendingStressedOnly ? Color.white : ColorUtil.TextMuted;
         }
@@ -272,7 +272,7 @@ namespace DuplicantStatusBar.UI
                 roleVisible.Add(visible);
 
                 var item = AddClickableItem(roleContent, "", () => ToggleRole(idx));
-                item.fontSize = 10;
+                item.fontSize = 12;
                 roleLabels.Add(item);
                 UpdateRoleItemVisual(idx);
             }
@@ -288,7 +288,7 @@ namespace DuplicantStatusBar.UI
         private static void UpdateRoleItemVisual(int idx)
         {
             bool vis = roleVisible[idx];
-            string prefix = vis ? "\u2713 " : "\u2717 ";
+            string prefix = vis ? "[x] " : "[ ] ";
             roleLabels[idx].text = prefix + roleDisplayNames[idx];
             roleLabels[idx].color = vis ? Color.white : new Color(0.6f, 0.4f, 0.4f);
         }
@@ -409,7 +409,7 @@ namespace DuplicantStatusBar.UI
 
                 var item = AddClickableItem(filterContent, "", () => ToggleFilter(idx));
                 filterLabels.Add(item);
-                item.fontSize = 10;
+                item.fontSize = 12;
                 UpdateFilterItemVisual(idx);
             }
         }
@@ -424,7 +424,7 @@ namespace DuplicantStatusBar.UI
         private static void UpdateFilterItemVisual(int idx)
         {
             bool vis = filterVisible[idx];
-            string prefix = vis ? "\u2713 " : "\u2717 "; // ✓ vs ✗
+            string prefix = vis ? "[x] " : "[ ] ";
             filterLabels[idx].text = prefix + filterNames[idx];
             filterLabels[idx].color = vis ? Color.white : new Color(0.6f, 0.4f, 0.4f);
         }
@@ -559,6 +559,8 @@ namespace DuplicantStatusBar.UI
         {
             if (CameraController.Instance != null)
                 CameraController.Instance.DisableUserCameraControl = !enabled;
+            if (KScreenManager.Instance != null)
+                KScreenManager.Instance.DisableInput(!enabled);
         }
 
         // ── Persistence ────────────────────────────────────
@@ -656,7 +658,7 @@ namespace DuplicantStatusBar.UI
             allGO.transform.SetParent(row.transform, false);
             var allTMP = allGO.AddComponent<TextMeshProUGUI>();
             allTMP.text = (string)DSB.UI.POPUP_ALL;
-            allTMP.fontSize = 9;
+            allTMP.fontSize = 11;
             allTMP.color = ColorUtil.Hex(ColorUtil.Blue);
             if (StatusBarScreen.GameFont != null) allTMP.font = StatusBarScreen.GameFont;
             allTMP.alignment = TextAlignmentOptions.MidlineRight;
@@ -668,7 +670,7 @@ namespace DuplicantStatusBar.UI
             noneGO.transform.SetParent(row.transform, false);
             var noneTMP = noneGO.AddComponent<TextMeshProUGUI>();
             noneTMP.text = (string)DSB.UI.POPUP_NONE;
-            noneTMP.fontSize = 9;
+            noneTMP.fontSize = 11;
             noneTMP.color = ColorUtil.TextMuted;
             if (StatusBarScreen.GameFont != null) noneTMP.font = StatusBarScreen.GameFont;
             noneTMP.alignment = TextAlignmentOptions.MidlineRight;
@@ -682,7 +684,7 @@ namespace DuplicantStatusBar.UI
             go.transform.SetParent(parent, false);
             var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.text = getText();
-            tmp.fontSize = 11;
+            tmp.fontSize = 13;
             tmp.fontStyle = FontStyles.Bold;
             tmp.color = Color.white;
             if (StatusBarScreen.GameFont != null) tmp.font = StatusBarScreen.GameFont;
@@ -698,7 +700,7 @@ namespace DuplicantStatusBar.UI
             go.transform.SetParent(parent, false);
             var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.text = getText();
-            tmp.fontSize = 11;
+            tmp.fontSize = 13;
             tmp.fontStyle = FontStyles.Bold;
             tmp.color = Color.white;
             if (StatusBarScreen.GameFont != null) tmp.font = StatusBarScreen.GameFont;
@@ -724,7 +726,7 @@ namespace DuplicantStatusBar.UI
             textGO.transform.SetParent(go.transform, false);
             var tmp = textGO.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
-            tmp.fontSize = 10;
+            tmp.fontSize = 12;
             tmp.color = Color.white;
             if (StatusBarScreen.GameFont != null) tmp.font = StatusBarScreen.GameFont;
             tmp.alignment = TextAlignmentOptions.MidlineLeft;
@@ -760,7 +762,7 @@ namespace DuplicantStatusBar.UI
             textGO.transform.SetParent(go.transform, false);
             var tmp = textGO.AddComponent<TextMeshProUGUI>();
             tmp.text = getText();
-            tmp.fontSize = 10;
+            tmp.fontSize = 12;
             tmp.color = Color.white;
             if (StatusBarScreen.GameFont != null) tmp.font = StatusBarScreen.GameFont;
             tmp.alignment = TextAlignmentOptions.Center;
