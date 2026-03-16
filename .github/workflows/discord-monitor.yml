@@ -1,0 +1,142 @@
+name: Discord Mod Monitor
+
+on:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore last-checked state
+        uses: actions/cache@v4
+        with:
+          path: .monitor-state.json
+          key: monitor-state-${{ github.run_id }}
+          restore-keys: |
+            monitor-state-
+
+      - name: Initialize state file if missing
+        run: |
+          if [ ! -f .monitor-state.json ]; then
+            echo '{"nexus": {}, "workshop": {}}' > .monitor-state.json
+          fi
+
+      - name: Check Nexus Mods for updates
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          DISCORD_WEBHOOK_NEXUS: ${{ secrets.DISCORD_WEBHOOK_NEXUS }}
+        run: |
+          if [ -z "$NEXUS_API_KEY" ] || [ -z "$DISCORD_WEBHOOK_NEXUS" ]; then
+            echo "Nexus secrets not configured, skipping"
+            exit 0
+          fi
+
+          # Define mods to monitor: game_domain:mod_id:mod_name
+          NEXUS_MODS=(
+            "oxygennnotincluded:0:ONI Mods"
+            # Add more Nexus mod entries as they're published
+          )
+
+          STATE=$(cat .monitor-state.json)
+
+          for entry in "${NEXUS_MODS[@]}"; do
+            IFS=':' read -r domain mod_id mod_name <<< "$entry"
+
+            if [ "$mod_id" = "0" ]; then
+              echo "Skipping placeholder entry: $mod_name"
+              continue
+            fi
+
+            echo "Checking Nexus: $mod_name ($domain/$mod_id)"
+
+            RESPONSE=$(curl -s -H "apikey: $NEXUS_API_KEY" \
+              "https://api.nexusmods.com/v1/games/$domain/mods/$mod_id.json")
+
+            UPDATED=$(echo "$RESPONSE" | jq -r '.updated_timestamp // 0')
+            MOD_VERSION=$(echo "$RESPONSE" | jq -r '.version // "unknown"')
+            SUMMARY=$(echo "$RESPONSE" | jq -r '.summary // "No description"')
+
+            LAST_SEEN=$(echo "$STATE" | jq -r ".nexus[\"${domain}_${mod_id}\"] // 0")
+
+            if [ "$UPDATED" -gt "$LAST_SEEN" ] && [ "$LAST_SEEN" -ne 0 ]; then
+              echo "New update detected for $mod_name!"
+
+              curl -s -H "Content-Type: application/json" \
+                -d "{
+                  \"embeds\": [{
+                    \"title\": \"Nexus Mods Update: $mod_name\",
+                    \"description\": \"$SUMMARY\",
+                    \"color\": 14051644,
+                    \"fields\": [
+                      {\"name\": \"Version\", \"value\": \"$MOD_VERSION\", \"inline\": true},
+                      {\"name\": \"Game\", \"value\": \"$domain\", \"inline\": true}
+                    ],
+                    \"url\": \"https://www.nexusmods.com/$domain/mods/$mod_id\",
+                    \"footer\": {\"text\": \"Nexus Mods\"}
+                  }]
+                }" "$DISCORD_WEBHOOK_NEXUS"
+            fi
+
+            STATE=$(echo "$STATE" | jq ".nexus[\"${domain}_${mod_id}\"] = $UPDATED")
+          done
+
+          echo "$STATE" > .monitor-state.json
+
+      - name: Check Steam Workshop for updates
+        env:
+          DISCORD_WEBHOOK_WORKSHOP: ${{ secrets.DISCORD_WEBHOOK_WORKSHOP }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_WORKSHOP" ]; then
+            echo "Workshop webhook not configured, skipping"
+            exit 0
+          fi
+
+          # Steam Workshop file IDs to monitor
+          WORKSHOP_IDS=(
+            "3682732647:Duplicant Status Bar"
+            "3667874678:Barricade Context Menu"
+            "3402208866:Barricades Hurt Zombies"
+          )
+
+          STATE=$(cat .monitor-state.json)
+
+          for entry in "${WORKSHOP_IDS[@]}"; do
+            IFS=':' read -r file_id mod_name <<< "$entry"
+
+            echo "Checking Workshop: $mod_name ($file_id)"
+
+            RESPONSE=$(curl -s -X POST \
+              -d "itemcount=1&publishedfileids[0]=$file_id" \
+              "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/")
+
+            UPDATED=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].time_updated // 0')
+            TITLE=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].title // "Unknown"')
+
+            LAST_SEEN=$(echo "$STATE" | jq -r ".workshop[\"$file_id\"] // 0")
+
+            if [ "$UPDATED" -gt "$LAST_SEEN" ] && [ "$LAST_SEEN" -ne 0 ]; then
+              echo "Workshop update detected for $mod_name!"
+
+              curl -s -H "Content-Type: application/json" \
+                -d "{
+                  \"embeds\": [{
+                    \"title\": \"Steam Workshop Update: $TITLE\",
+                    \"color\": 1785874,
+                    \"fields\": [
+                      {\"name\": \"Mod\", \"value\": \"$mod_name\", \"inline\": true}
+                    ],
+                    \"url\": \"https://steamcommunity.com/sharedfiles/filedetails/?id=$file_id\",
+                    \"footer\": {\"text\": \"Steam Workshop\"}
+                  }]
+                }" "$DISCORD_WEBHOOK_WORKSHOP"
+            fi
+
+            STATE=$(echo "$STATE" | jq ".workshop[\"$file_id\"] = $UPDATED")
+          done
+
+          echo "$STATE" > .monitor-state.json
