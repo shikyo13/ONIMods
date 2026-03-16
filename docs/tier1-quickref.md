@@ -10,7 +10,7 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 | BuildThrough | `Core/BuildThroughMod.cs` | Initial commit |
 | OniProfiler | `Core/OniProfilerMod.cs` | Active — see `OniProfiler/HANDOVER.md` for architecture |
 | GCBudget | `Core/GCBudgetMod.cs` | POC, alloc-gated gen0 GC collections |
-| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.6.0 — persistent dupe status HUD, expression-driven portraits + blink + eye rotation, extensibility API |
+| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.7.0 — persistent dupe status HUD, Unity 6 compat, expression-driven portraits, extensibility API |
 
 ## ReplaceStuff Module Map
 
@@ -84,6 +84,14 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 - `KPlayerPrefs` lives in `Assembly-CSharp-firstpass.dll`, not `Assembly-CSharp.dll` — decompile from the right assembly
 - `LocString` fields must be `public static` (not `readonly`) for ONI's string registration to find them
 - TMP and Image can't share a GameObject — TMP requires its own child GO under the Image GO
+
+## Unity 6 Testing Branch Gotchas
+
+- `ImageConversionModule.dll` references `netstandard 2.1` → CS1705 against `net471`. Use reflection for `LoadImage`/`EncodeToPNG` instead of direct reference.
+- `TMP_Text.ForceMeshUpdate()` parameterless overload removed — use reflection to probe for available signature
+- `TMP_InputField.DeactivateInputField()` removed — vanilla `KScreenManager.OnKeyDown` crashes on every input event if a screen references it. Call `KScreenManager.Instance.DisableInput(true)` to gate input dispatch.
+- Game font missing `\u2713`/`\u2717` (✓/✗) — use ASCII alternatives
+- PLib 4.19.0 `PComboBox` crashes on `TMPro.FaceInfo` (type moved in Unity 6 TMP) — upstream PLib bug, no mod-side fix
 
 ## Breaking Changes
 

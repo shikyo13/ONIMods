@@ -33,7 +33,9 @@ Portraits are expression-driven — dupes change facial expressions based on the
 All UI text is translated into Chinese, Korean, Russian, Japanese, German, Spanish, and French. Translations load automatically based on your game language setting.
 
 [h2]Compatibility[/h2]
-Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Display only — does not modify any game logic or save data.
+Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Compatible with both the public branch and the Unity 6 testing branch. Display only — does not modify any game logic or save data.
+
+[b]Note:[/b] On the testing branch, the PLib mod options dialog may crash when opening dropdowns (PLib bug with Unity 6 TMP). The mod itself works fine — this only affects the settings screen.
 
 [h2]Thanks to Sgt_Imalas for pioneering portrait compositing with DuperyFixed.[/h2]
 
