@@ -1,0 +1,38 @@
+## DSB Maintenance Report - 2026-03-16
+
+### Game Version
+UNCHANGED: Build ID 21518087 - same as last check
+DLL timestamp unchanged (1773620000)
+No API drift check needed - game has not updated.
+
+### GitHub Issues (0 new)
+No open issues found on shikyo13/ONIMods.
+
+### Workshop Comments (0 new, excluding ours)
+22 total comments. All non-author comments predate lastWorkshopCheck (2026-03-16T00:00:00Z).
+Most recent from others:
+- Fattox (Mar 15): Portrait reverts to initials when portrait size < 36. Wants small portraits to keep portrait mode. [feature request]
+- Laskoviu_mat (Mar 15): "thanks for ru" - thanking for Russian translation. [praise]
+
+### Build Health
+PASS - 0 warnings, 0 errors
+Build time: 0.57s
+Output: DuplicantStatusBar.dll deployed to dev mods folder.
+
+### Code Health
+TODO/FIXME/HACK/TEMP markers: 0 (false positive on TOOLTIP_BODYTEMP excluded)
+
+Empty catch blocks: 7
+- DiagnosticDump.cs:56,62 - try-load asset patterns (acceptable)
+- DSBLog.cs:33,46,60,74,95 - logging fallbacks (acceptable, can't log a log failure)
+
+Large files (>500 lines): 4
+- SortFilterPopup.cs: 849 lines
+- StatusBarScreen.cs: 748 lines
+- DupePortraitWidget.cs: 744 lines
+- DupeStatusTracker.cs: 624 lines
+
+### Action Items
+No P0 or P1 items.
+P2 - Fattox feature request: allow portrait mode at sizes below 36px (currently falls back to initials)
+P2 - Consider splitting SortFilterPopup.cs (849 lines) if adding more filter features
