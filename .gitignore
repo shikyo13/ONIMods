@@ -9,6 +9,8 @@ obj/
 
 # Claude Code / Superpowers
 .claude/
+.mcp.json
+CLAUDE.md
 .superpowers/
 docs/superpowers/
 
@@ -17,6 +19,9 @@ Screenshot *.png
 
 # Reference repos
 ONIMods - peterhaneve/
+
+# Wiki (separate git repo cloned in-tree)
+wiki/
 
 # Profiler scratch files
 OniProfiler/All
