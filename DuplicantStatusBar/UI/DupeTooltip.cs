@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +27,10 @@ namespace DuplicantStatusBar.UI
         private static float rainbowHue;
         private static float rainbowPulse;
 
+        // Reflection cache for ForceMeshUpdate (Unity 2020.3 vs Unity 6 compat)
+        private static MethodInfo _forceMeshUpdate;
+        private static bool _forceMeshSearched;
+
         public static void Init(Transform canvasRoot)
         {
             var panel = new GameObject("DSB_Tooltip");
@@ -40,7 +45,7 @@ namespace DuplicantStatusBar.UI
             bg.raycastTarget = false;
 
             var vlg = panel.AddComponent<VerticalLayoutGroup>();
-            vlg.padding = new RectOffset(8, 8, 6, 6);
+            vlg.padding = new RectOffset(10, 10, 8, 8);
             vlg.childForceExpandWidth = false;
             vlg.childForceExpandHeight = false;
 
@@ -52,7 +57,7 @@ namespace DuplicantStatusBar.UI
             var textGO = new GameObject("Text");
             textGO.transform.SetParent(panel.transform, false);
             tooltipText = textGO.AddComponent<TMPro.TextMeshProUGUI>();
-            tooltipText.fontSize = 12;
+            tooltipText.fontSize = 14;
             tooltipText.color = ColorUtil.TextPrimary;
             var gameFont = StatusBarScreen.GameFont;
             if (gameFont != null) tooltipText.font = gameFont;
@@ -70,7 +75,7 @@ namespace DuplicantStatusBar.UI
                 var alertGO = new GameObject($"AlertText{i}");
                 alertGO.transform.SetParent(panel.transform, false);
                 var tmp = alertGO.AddComponent<TMPro.TextMeshProUGUI>();
-                tmp.fontSize = 12;
+                tmp.fontSize = 14;
                 tmp.color = Color.white;
                 if (gameFont != null) tmp.font = gameFont;
                 tmp.alignment = TMPro.TextAlignmentOptions.TopLeft;
@@ -272,9 +277,33 @@ namespace DuplicantStatusBar.UI
             }
         }
 
+        private static void SafeForceMeshUpdate(TMPro.TextMeshProUGUI tmp)
+        {
+            if (!_forceMeshSearched)
+            {
+                _forceMeshSearched = true;
+                // Parameterless overload exists in Unity 2020.3 TMP package
+                _forceMeshUpdate = typeof(TMPro.TMP_Text).GetMethod("ForceMeshUpdate",
+                    System.Type.EmptyTypes);
+                if (_forceMeshUpdate == null)
+                {
+                    // Unity 6 built-in TMP may only have ForceMeshUpdate(bool)
+                    _forceMeshUpdate = typeof(TMPro.TMP_Text).GetMethod("ForceMeshUpdate",
+                        new[] { typeof(bool) });
+                }
+            }
+            if (_forceMeshUpdate != null)
+            {
+                var args = _forceMeshUpdate.GetParameters().Length == 0
+                    ? null
+                    : new object[] { false };
+                _forceMeshUpdate.Invoke(tmp, args);
+            }
+        }
+
         private static void AnimateRainbowSlot(TMPro.TextMeshProUGUI tmp)
         {
-            tmp.ForceMeshUpdate();
+            SafeForceMeshUpdate(tmp);
             var textInfo = tmp.textInfo;
             float pulseAlpha = 0.85f + 0.15f * Mathf.Sin(rainbowPulse);
             byte alphaByte = (byte)(pulseAlpha * 255f);
@@ -320,7 +349,7 @@ namespace DuplicantStatusBar.UI
             v = Mathf.Max(v, 0.85f); // floor brightness at 85%
             Color bright = Color.HSVToRGB(h, s, v);
 
-            tmp.ForceMeshUpdate();
+            SafeForceMeshUpdate(tmp);
             var textInfo = tmp.textInfo;
 
             var color32 = new Color32(

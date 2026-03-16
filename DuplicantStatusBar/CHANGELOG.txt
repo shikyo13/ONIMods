@@ -1,5 +1,12 @@
 [h1]Duplicant Status Bar — Changelog[/h1]
 
+[h2]v2.6.1 — HiDPI Fix + UI Polish[/h2]
+[list]
+[*] [b]Fixed oversized status bar on Mac Retina / high-DPI displays[/b] (GitHub issue #1) — switched from Unity's ScaleWithScreenSize to ConstantPixelSize, now reads the game's own KCanvasScaler scale factor directly. Correct on all displays and UI scale settings.
+[*] Bumped font sizes across tooltip, header, popup, and name labels to compensate for the new scaling baseline
+[*] Sort/Filter button now hides when the bar is collapsed
+[/list]
+
 [h2]v2.6.0 — Extensibility API[/h2]
 [list]
 [*] [b]Mod API[/b] — other mods can now register custom alerts, hook into tooltips, and listen to status bar events via `DuplicantStatusBar.API.Experimental.DSBApi`

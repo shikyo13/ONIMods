@@ -36,6 +36,7 @@ namespace DuplicantStatusBar.UI
         private CanvasScaler canvasScaler;
         private KCanvasScaler gameCanvasScaler;
         private float lastUIScale = 1f;
+        private GameObject filterBtnGO;
 
         // Game font (ONI-native, with fallback)
         private static TMPro.TMP_FontAsset _gameFont;
@@ -213,7 +214,8 @@ namespace DuplicantStatusBar.UI
             botSH.AddComponent<LayoutElement>().ignoreLayout = true;
 
             // Filter popup button (anchored far left, outside HLG flow)
-            var filterGO = new GameObject("FilterBtn");
+            filterBtnGO = new GameObject("FilterBtn");
+            var filterGO = filterBtnGO;
             filterGO.transform.SetParent(header.transform, false);
 
             var filterBtnImg = filterGO.AddComponent<Image>();
@@ -233,7 +235,7 @@ namespace DuplicantStatusBar.UI
             filterTextGO.transform.SetParent(filterGO.transform, false);
             var filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
             filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
-            filterTMP.fontSize = 11;
+            filterTMP.fontSize = 13;
             filterTMP.color = Color.white;
             if (GameFont != null) filterTMP.font = GameFont;
             filterTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
@@ -248,7 +250,7 @@ namespace DuplicantStatusBar.UI
             grip.transform.SetParent(header.transform, false);
             var gripTMP = grip.AddComponent<TMPro.TextMeshProUGUI>();
             gripTMP.text = DSB.UI.HEADER;
-            gripTMP.fontSize = 11;
+            gripTMP.fontSize = 13;
             gripTMP.color = Color.white;
             if (GameFont != null) gripTMP.font = GameFont;
             gripTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
@@ -269,7 +271,7 @@ namespace DuplicantStatusBar.UI
             btnTextGO.transform.SetParent(btnGO.transform, false);
             collapseLabel = btnTextGO.AddComponent<TMPro.TextMeshProUGUI>();
             collapseLabel.text = "\u2212"; // minus sign
-            collapseLabel.fontSize = 12;
+            collapseLabel.fontSize = 14;
             collapseLabel.color = Color.white;
             if (GameFont != null) collapseLabel.font = GameFont;
             collapseLabel.alignment = TMPro.TextAlignmentOptions.Center;
@@ -491,7 +493,7 @@ namespace DuplicantStatusBar.UI
             if (!System.IO.File.Exists(file)) return;
             var bytes = System.IO.File.ReadAllBytes(file);
             var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            if (!tex.LoadImage(bytes)) return;
+            if (!Core.ImageConversionHelper.LoadImage(tex, bytes)) return;
 
             // Invert: dark pixels → white opaque, light pixels → transparent
             var pixels = tex.GetPixels32();
@@ -515,6 +517,7 @@ namespace DuplicantStatusBar.UI
         {
             isCollapsed = !isCollapsed;
             scrollViewGO.SetActive(!isCollapsed);
+            if (filterBtnGO != null) filterBtnGO.SetActive(!isCollapsed);
             collapseLabel.text = isCollapsed ? "+" : "\u2212";
             SaveState();
             API.Internal.AlertRegistry.FireBarVisibilityChanged(!isCollapsed);
@@ -694,6 +697,7 @@ namespace DuplicantStatusBar.UI
             }
             isCollapsed = PlayerPrefs.GetInt(PC, 0) == 1;
             scrollViewGO.SetActive(!isCollapsed);
+            if (filterBtnGO != null) filterBtnGO.SetActive(!isCollapsed);
             if (isCollapsed && collapseLabel != null)
                 collapseLabel.text = "+";
             if (PlayerPrefs.HasKey(PS))
