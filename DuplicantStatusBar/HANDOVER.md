@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.6.0
+**Version**: v2.7.0
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -22,6 +22,7 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 | `UI/DupeTooltip.cs` | Hover tooltip: name, task, stress/health/breath/temp/calories/bladder, animated alert text |
 | `UI/SortFilterPopup.cs` | In-game sort/filter dropdown — sort modes, smart filters, role/dupe visibility |
 | `UI/ColorUtil.cs` | Centralized color palette — stat gradients, alert badges, stress tiers, UI chrome |
+| `Core/ImageConversionHelper.cs` | Reflection wrappers for LoadImage/EncodeToPNG (Unity 6 compat) |
 | `UI/DiagnosticDump.cs` | Debug-only portrait diagnostic output (disabled in production) |
 | `Localization/DSBStrings.cs` | All LocString definitions (UI, alerts, options, popup) |
 | `Patches/GamePatches.cs` | `Game.OnPrefabInit` postfix — injects `StatusBarScreen` |
@@ -276,6 +277,30 @@ Public API in `DuplicantStatusBar.API.Experimental` namespace. External mods can
 6. **Visibility events**: `StatusBarScreen.ToggleCollapse()` fires `BarVisibilityChanged`
 
 See `docs/api-guide.md` for the external mod author guide.
+
+## v2.7.0 — Unity 6 / Testing Branch Compatibility
+
+Three crash fixes + build fix for ONI testing branch (U58-717001, Unity 6000.3.5f2). Single binary, backwards compatible with public branch.
+
+### Crashes Fixed
+
+| Bug | Root Cause | Fix |
+|-|-|-|
+| Sort/Filter popup crash | Vanilla `KScreenManager.OnKeyDown` dispatches to a `KScreen` referencing `TMP_InputField.DeactivateInputField()` — removed in Unity 6 TMP. Crash triggers on any input event while popup is open. | `SetCameraControl` now calls `KScreenManager.Instance.DisableInput(true)` when popup opens, `false` on close. Gates `OnKeyDown`/`OnKeyUp` dispatch. |
+| ForceMeshUpdate crash | Parameterless `ForceMeshUpdate()` overload removed in Unity 6 built-in TMP. | `SafeForceMeshUpdate()` reflection wrapper — tries parameterless first (Unity 2020), falls back to `ForceMeshUpdate(bool)` (Unity 6). |
+| Missing checkbox glyphs | `\u2713`/`\u2717` (✓/✗) not in game font on testing branch. | Replaced with `[x]`/`[ ]` in 4 locations in `SortFilterPopup.cs`. |
+
+### Build Fix — ImageConversionModule
+
+Unity 6's `UnityEngine.ImageConversionModule.dll` references `netstandard 2.1`, which causes `CS1705` when compiling against `net471` (`netstandard 2.0`). CS1705 is a metadata-level error — `<NoWarn>` cannot suppress it. Adding the game's `netstandard.dll` resolves the version check but introduces `CS0518` for `ReadOnlySpan<T>` (type-forwards to `System.Runtime` which doesn't define it on `net471`).
+
+**Solution**: Removed `ImageConversionModule` reference entirely. `LoadImage` and `EncodeToPNG` called via reflection through `Core/ImageConversionHelper.cs`. The helper resolves `UnityEngine.ImageConversion` by type name at runtime — works on both Unity versions since the assembly and method signatures are unchanged.
+
+**Affected call sites**: 1× `LoadImage` in `StatusBarScreen.LoadFilterIcon`, 3× `EncodeToPNG` in `DiagnosticDump`.
+
+### Key Design Decision
+
+All fixes use runtime detection (reflection, null-checks) rather than compile-time branching. No `#if` directives, no separate builds. The mod auto-adapts to whichever Unity version loads it.
 
 ## Not Yet Implemented
 
