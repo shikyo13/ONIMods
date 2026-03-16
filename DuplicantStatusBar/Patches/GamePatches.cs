@@ -1,4 +1,5 @@
 using HarmonyLib;
+using DuplicantStatusBar.Core;
 
 namespace DuplicantStatusBar.Patches
 {
@@ -7,6 +8,7 @@ namespace DuplicantStatusBar.Patches
     {
         static void Postfix(Game __instance)
         {
+            DSBLog.Log("Patch", "Game.OnPrefabInit fired — adding StatusBarScreen");
             __instance.gameObject.AddOrGet<UI.StatusBarScreen>();
         }
     }

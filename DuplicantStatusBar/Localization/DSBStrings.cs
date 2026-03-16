@@ -15,6 +15,9 @@ namespace DuplicantStatusBar.Localization
                 public static LocString TOOLTIP_BODYTEMP = "Body Temp:";
                 public static LocString TOOLTIP_CALORIES = "Calories:";
                 public static LocString TOOLTIP_BLADDER = "Bladder:";
+                public static LocString TOOLTIP_BATTERY = "Battery:";
+                public static LocString TOOLTIP_GUNK = "Gunk:";
+                public static LocString TOOLTIP_GEAR_OIL = "Gear Oil:";
                 public static LocString POPUP_SORTBY = "Sort By";
                 public static LocString POPUP_FILTER = "Filter";
                 public static LocString POPUP_APPLY = "Apply";
@@ -46,6 +49,9 @@ namespace DuplicantStatusBar.Localization
                 public static LocString STUCK = "Stuck";
                 public static LocString IDLE = "Idle";
                 public static LocString INCAPACITATED = "Incapacitated";
+                public static LocString LOWBATTERY = "Low Battery";
+                public static LocString LOWGEAROIL = "Low Gear Oil";
+                public static LocString GRINDINGGEARS = "Grinding Gears";
             }
 
             public static class OPTIONS
@@ -220,6 +226,36 @@ namespace DuplicantStatusBar.Localization
                 {
                     public static LocString NAME = "Incapacitated Alert";
                     public static LocString DESC = "Show badge when dupe is incapacitated (bleeding out).";
+                }
+
+                public static class DEBUGLOGGING
+                {
+                    public static LocString NAME = "Debug Logging";
+                    public static LocString DESC = "Write detailed diagnostics to dsb_debug.log (next to Player.log). Enable when troubleshooting, disable for normal play.";
+                }
+
+                public static class ALERTLOWBATTERY
+                {
+                    public static LocString NAME = "Low Battery Alert";
+                    public static LocString DESC = "Show badge when bionic dupe has 1 or fewer charged electrobanks.";
+                }
+
+                public static class ALERTLOWGEAROIL
+                {
+                    public static LocString NAME = "Low Gear Oil Alert";
+                    public static LocString DESC = "Show badge when bionic dupe gear oil drops below 20%.";
+                }
+
+                public static class ALERTGRINDINGGEARS
+                {
+                    public static LocString NAME = "Grinding Gears Alert";
+                    public static LocString DESC = "Show badge when bionic dupe has no gear oil (actively debuffed).";
+                }
+
+                public static class RESETPOSITION
+                {
+                    public static LocString NAME = "Reset Bar Position & Filters";
+                    public static LocString DESC = "Resets the bar to top-center, un-collapses it, and clears all filters. Useful if the bar is off-screen or invisible.";
                 }
             }
         }

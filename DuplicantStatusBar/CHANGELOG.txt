@@ -1,5 +1,16 @@
 [h1]Duplicant Status Bar — Changelog[/h1]
 
+[h2]v2.8.0 — Bionic Dupe Support + Troubleshooting Tools[/h2]
+[list]
+[*] [b]Bionic dupe support[/b] — Battery, Gunk, and Gear Oil stats now shown in tooltips instead of Calories/Bladder for bionic dupes
+[*] [b]3 new bionic alerts[/b] — Low Battery (1 or fewer electrobanks), Low Gear Oil (<20%), Grinding Gears (no oil) with distinct colors, effects, and facial expressions
+[*] [b]Calories sort handles bionics[/b] — "Calories (lowest first)" sort uses battery % for bionic dupes
+[*] [b]Role filter fix[/b] — hiding a role now correctly hides all skill tiers that share the same display name
+[*] [b]Per-dupe component cache[/b] — eliminates redundant GetComponent/GetSMI calls per tick for better performance
+[*] [b]Reset Bar Position & Filters button[/b] — new button in mod options (General) resets the bar to top-center, un-collapses it, and clears all filters. Fixes invisible bar caused by off-screen position or stale filter state
+[*] [b]Improved debug logging[/b] — when Debug Logging is enabled, dsb_debug.log now captures the full lifecycle: Harmony patch firing, UI construction, canvas position/scale, filter state with dupe names, and per-dupe filter drop reasons
+[/list]
+
 [h2]v2.7.0 — Unity 6 / Testing Branch Compatibility[/h2]
 [list]
 [*] [b]Fixed crash when opening Sort/Filter popup on testing branch[/b] — vanilla KScreenManager dispatches input to a screen referencing a removed TMP method; popup now calls DisableInput while open

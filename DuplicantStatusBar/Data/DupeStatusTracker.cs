@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DuplicantStatusBar.API.Internal;
 using DuplicantStatusBar.Config;
+using DuplicantStatusBar.Core;
 using DuplicantStatusBar.UI;
 
 namespace DuplicantStatusBar.Data
@@ -30,7 +31,10 @@ namespace DuplicantStatusBar.Data
         Suffocating,
         Stuck,
         Idle,
-        Incapacitated
+        Incapacitated,
+        LowBattery,
+        LowGearOil,
+        GrindingGears
     }
 
     /// <summary>
@@ -45,7 +49,7 @@ namespace DuplicantStatusBar.Data
         public float BodyTemperature;
         public StressTier Tier;
         public AlertType HighestAlert;
-        public ushort AlertMask;
+        public uint AlertMask;
         public string ChoreDescription;
         public KSelectable Selectable;
         public MinionIdentity Identity;
@@ -65,16 +69,27 @@ namespace DuplicantStatusBar.Data
         /// <summary>Custom alert state from registered external alerts. Null if no custom alerts registered.</summary>
         public Dictionary<string, bool> CustomAlerts;
 
+        public bool IsBionic;
+        public float BatteryPercent;
+        public float GunkPercent;
+        public float GearOilPercent;
+        public bool IsLowBattery;
+        public bool IsLowGearOil;
+        public bool IsGrindingGears;
+        public int ChargedElectrobankCount;
+        public int ElectrobankCapacity;
+
         /// <summary>Tests whether a specific alert is active in this snapshot's bitmask.</summary>
-        public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (1 << (int)a)) != 0;
+        public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (uint)(1 << (int)a)) != 0;
 
         /// <summary>Priority-ordered alert types. First match in this array becomes HighestAlert.</summary>
         public static readonly AlertType[] AlertPriority = {
             AlertType.Incapacitated, AlertType.Suffocating, AlertType.LowHP,
             AlertType.Scalding, AlertType.Hypothermia, AlertType.Stuck,
-            AlertType.Irradiated, AlertType.Starving, AlertType.Overstressed,
-            AlertType.BladderUrgent, AlertType.Diseased, AlertType.Overjoyed,
-            AlertType.Idle
+            AlertType.GrindingGears, AlertType.Irradiated, AlertType.LowBattery,
+            AlertType.Starving, AlertType.Overstressed,
+            AlertType.LowGearOil, AlertType.BladderUrgent, AlertType.Diseased,
+            AlertType.Overjoyed, AlertType.Idle
         };
     }
 
@@ -85,15 +100,18 @@ namespace DuplicantStatusBar.Data
     public static class DupeStatusTracker
     {
         private static readonly List<DupeSnapshot> snapshots = new List<DupeSnapshot>(35);
-        private static readonly Dictionary<int, ushort> previousAlertMasks
-            = new Dictionary<int, ushort>();
+        private static readonly Dictionary<int, uint> previousAlertMasks
+            = new Dictionary<int, uint>();
         private static Klei.AI.Amount stressAmount;
         private static Klei.AI.Amount healthAmount;
         private static Klei.AI.Amount breathAmount;
         private static Klei.AI.Amount bladderAmount;
         private static Klei.AI.Amount caloriesAmount;
+        private static Klei.AI.Amount bionicBatteryAmount;
+        private static Klei.AI.Amount bionicOilAmount;
 
         // Stuck/Idle detection state
+        private static bool firstTick = true;
         private static readonly Dictionary<int, float> stuckTimers = new Dictionary<int, float>();
         private static readonly Dictionary<int, float> idleTimers = new Dictionary<int, float>();
         private static float stuckCheckTimer;
@@ -105,6 +123,82 @@ namespace DuplicantStatusBar.Data
         private const float STUCK_THRESHOLD = 10f;
         private const float IDLE_THRESHOLD = 30f;
         private const float POD_CACHE_INTERVAL = 30f;
+
+        // Per-dupe component cache — eliminates redundant GetComponent/GetSMI per tick
+        private sealed class DupeCache
+        {
+            public KSelectable Selectable;
+            public PrimaryElement PrimaryElement;
+            public ChoreDriver ChoreDriver;
+            public Health Health;
+            public Navigator Navigator;
+            public Klei.AI.Sicknesses Sicknesses;
+
+            public JoyBehaviourMonitor.Instance JoySMI;
+            public CalorieMonitor.Instance CalorieSMI;
+            public RadiationMonitor.Instance RadiationSMI;
+            public ScaldingMonitor.Instance ScaldingSMI;
+            public SuffocationMonitor.Instance SuffocationSMI;
+
+            public BionicBatteryMonitor.Instance BatterySMI;
+            public BionicOilMonitor.Instance OilSMI;
+
+            public Klei.AI.AmountInstance Stress;
+            public Klei.AI.AmountInstance HealthAmt;
+            public Klei.AI.AmountInstance Breath;
+            public Klei.AI.AmountInstance Bladder;
+            public Klei.AI.AmountInstance Calories;
+            public Klei.AI.AmountInstance BionicBattery;
+            public Klei.AI.AmountInstance BionicOil;
+
+            public bool IsBionic;
+        }
+
+        private static readonly Dictionary<int, DupeCache> dupeCache = new Dictionary<int, DupeCache>(35);
+
+        private static DupeCache GetOrCreateCache(int id, GameObject go)
+        {
+            if (dupeCache.TryGetValue(id, out var cache))
+                return cache;
+
+            cache = new DupeCache
+            {
+                Selectable = go.GetComponent<KSelectable>(),
+                PrimaryElement = go.GetComponent<PrimaryElement>(),
+                ChoreDriver = go.GetComponent<ChoreDriver>(),
+                Health = go.GetComponent<Health>(),
+                Navigator = go.GetComponent<Navigator>(),
+                Sicknesses = go.GetComponent<Klei.AI.Sicknesses>(),
+
+                JoySMI = go.GetSMI<JoyBehaviourMonitor.Instance>(),
+                CalorieSMI = go.GetSMI<CalorieMonitor.Instance>(),
+                RadiationSMI = go.GetSMI<RadiationMonitor.Instance>(),
+                ScaldingSMI = go.GetSMI<ScaldingMonitor.Instance>(),
+                SuffocationSMI = go.GetSMI<SuffocationMonitor.Instance>(),
+
+                BatterySMI = go.GetSMI<BionicBatteryMonitor.Instance>(),
+                OilSMI = go.GetSMI<BionicOilMonitor.Instance>(),
+            };
+
+            cache.IsBionic = cache.BatterySMI != null;
+
+            DSBLog.Log("Cache", $"Created cache for #{id} bionic={cache.IsBionic}" +
+                $" battery={cache.BatterySMI != null} oil={cache.OilSMI != null}");
+
+            cache.Stress = stressAmount?.Lookup(go);
+            cache.HealthAmt = healthAmount?.Lookup(go);
+            cache.Breath = breathAmount?.Lookup(go);
+            cache.Bladder = bladderAmount?.Lookup(go);
+            cache.Calories = caloriesAmount?.Lookup(go);
+            if (cache.IsBionic)
+            {
+                cache.BionicBattery = bionicBatteryAmount?.Lookup(go);
+                cache.BionicOil = bionicOilAmount?.Lookup(go);
+            }
+
+            dupeCache[id] = cache;
+            return cache;
+        }
 
         /// <summary>Current frame's dupe snapshots, sorted per user's SortOrder setting.</summary>
         public static IReadOnlyList<DupeSnapshot> Snapshots => snapshots;
@@ -155,13 +249,14 @@ namespace DuplicantStatusBar.Data
                 if (identity == null || identity.gameObject == null) continue;
 
                 var go = identity.gameObject;
-
                 int id = go.GetInstanceID();
+                var cache = GetOrCreateCache(id, go);
+
                 var snap = new DupeSnapshot
                 {
                     Name = go.GetProperName() ?? "???",
                     Identity = identity,
-                    Selectable = go.GetComponent<KSelectable>(),
+                    Selectable = cache.Selectable,
                     StressPercent = 0f,
                     HealthPercent = 100f,
                     BreathPercent = 100f,
@@ -170,81 +265,97 @@ namespace DuplicantStatusBar.Data
                 };
 
                 // Stress (already 0–100 percentage)
-                var stressInst = stressAmount?.Lookup(go);
-                if (stressInst != null)
-                    snap.StressPercent = stressInst.value;
+                if (cache.Stress != null)
+                    snap.StressPercent = cache.Stress.value;
 
                 // Health (raw value / max → percentage)
-                var healthInst = healthAmount?.Lookup(go);
-                if (healthInst != null)
+                if (cache.HealthAmt != null)
                 {
-                    float max = healthInst.GetMax();
-                    snap.HealthPercent = max > 0f ? healthInst.value / max * 100f : 100f;
+                    float max = cache.HealthAmt.GetMax();
+                    snap.HealthPercent = max > 0f ? cache.HealthAmt.value / max * 100f : 100f;
                 }
 
                 // Breath (raw value / max → percentage)
-                var breathInst = breathAmount?.Lookup(go);
-                if (breathInst != null)
+                if (cache.Breath != null)
                 {
-                    float max = breathInst.GetMax();
-                    snap.BreathPercent = max > 0f ? breathInst.value / max * 100f : 100f;
+                    float max = cache.Breath.GetMax();
+                    snap.BreathPercent = max > 0f ? cache.Breath.value / max * 100f : 100f;
                 }
 
                 // Body temperature
-                var pe = go.GetComponent<PrimaryElement>();
-                if (pe != null)
-                    snap.BodyTemperature = pe.Temperature;
+                if (cache.PrimaryElement != null)
+                    snap.BodyTemperature = cache.PrimaryElement.Temperature;
 
                 // Current chore
-                var choreDriver = go.GetComponent<ChoreDriver>();
-                if (choreDriver != null)
+                if (cache.ChoreDriver != null)
                 {
-                    var chore = choreDriver.GetCurrentChore();
+                    var chore = cache.ChoreDriver.GetCurrentChore();
                     if (chore?.choreType != null)
                         snap.ChoreDescription = chore.choreType.Name;
                 }
 
                 // Disease
-                var sicknesses = go.GetComponent<Klei.AI.Sicknesses>();
-                snap.IsDiseased = sicknesses != null && sicknesses.IsInfected();
+                snap.IsDiseased = cache.Sicknesses != null && cache.Sicknesses.IsInfected();
 
                 // Overjoyed (JoyBehaviourMonitor in 'overjoyed' state)
-                var joySMI = go.GetSMI<JoyBehaviourMonitor.Instance>();
-                snap.IsOverjoyed = joySMI != null && joySMI.IsInsideState(joySMI.sm.overjoyed);
+                snap.IsOverjoyed = cache.JoySMI != null && cache.JoySMI.IsInsideState(cache.JoySMI.sm.overjoyed);
 
                 // Bladder
-                var bladderInst = bladderAmount?.Lookup(go);
-                if (bladderInst != null) snap.BladderPercent = bladderInst.value;
+                if (cache.Bladder != null) snap.BladderPercent = cache.Bladder.value;
 
                 // Calories
-                var calInst = caloriesAmount?.Lookup(go);
-                if (calInst != null)
+                if (cache.Calories != null)
                 {
-                    float max = calInst.GetMax();
-                    snap.CaloriesPercent = max > 0f ? calInst.value / max * 100f : 100f;
+                    float max = cache.Calories.GetMax();
+                    snap.CaloriesPercent = max > 0f ? cache.Calories.value / max * 100f : 100f;
                 }
 
                 // Starving
-                var calSMI = go.GetSMI<CalorieMonitor.Instance>();
-                snap.IsStarving = calSMI != null && calSMI.IsStarving();
+                snap.IsStarving = cache.CalorieSMI != null && cache.CalorieSMI.IsStarving();
 
                 // Radiation sickness (DLC-safe — null in base game)
-                var radSMI = go.GetSMI<RadiationMonitor.Instance>();
-                snap.IsIrradiated = radSMI != null && radSMI.sm.isSick.Get(radSMI);
+                snap.IsIrradiated = cache.RadiationSMI != null && cache.RadiationSMI.sm.isSick.Get(cache.RadiationSMI);
 
                 // Scalding / Hypothermia (ScaldingMonitor SM state — matches vanilla status items)
-                var scaldSMI = go.GetSMI<ScaldingMonitor.Instance>();
-                snap.IsScalding = scaldSMI != null && scaldSMI.IsScalding();
-                snap.IsHypothermic = scaldSMI != null && scaldSMI.IsInsideState(scaldSMI.sm.scolding);
+                snap.IsScalding = cache.ScaldingSMI != null && cache.ScaldingSMI.IsScalding();
+                snap.IsHypothermic = cache.ScaldingSMI != null && cache.ScaldingSMI.IsInsideState(cache.ScaldingSMI.sm.scolding);
 
                 // Suffocating (SM danger state OR breath critically low)
-                var suffSMI = go.GetSMI<SuffocationMonitor.Instance>();
-                snap.IsSuffocating = (suffSMI != null && suffSMI.IsInsideState(suffSMI.sm.noOxygen.suffocating))
+                snap.IsSuffocating = (cache.SuffocationSMI != null && cache.SuffocationSMI.IsInsideState(cache.SuffocationSMI.sm.noOxygen.suffocating))
                     || snap.BreathPercent < 30f;
 
                 // Incapacitated (bleeding out — 120s to death)
-                var health = go.GetComponent<Health>();
-                snap.IsIncapacitated = health != null && health.IsIncapacitated();
+                snap.IsIncapacitated = cache.Health != null && cache.Health.IsIncapacitated();
+
+                // Bionic detection
+                snap.IsBionic = cache.IsBionic;
+                if (cache.IsBionic)
+                {
+                    if (cache.BionicBattery != null)
+                    {
+                        float max = cache.BionicBattery.GetMax();
+                        snap.BatteryPercent = max > 0f ? cache.BionicBattery.value / max * 100f : 0f;
+                    }
+                    if (cache.BatterySMI != null)
+                    {
+                        snap.ChargedElectrobankCount = cache.BatterySMI.ChargedElectrobankCount;
+                        snap.ElectrobankCapacity = cache.BatterySMI.ElectrobankCountCapacity;
+                        snap.IsLowBattery = cache.BatterySMI.ChargedElectrobankCount <= 1;
+                    }
+                    if (cache.OilSMI != null)
+                    {
+                        float oilPct = cache.OilSMI.CurrentOilPercentage;
+                        snap.GearOilPercent = oilPct * 100f;
+                        snap.GunkPercent = (1f - oilPct) * 100f;
+                        snap.IsLowGearOil = oilPct <= 0.2f;
+                        snap.IsGrindingGears = cache.OilSMI.CurrentOilMass <= 0f;
+                    }
+
+                    DSBLog.Log("Bionic", $"{snap.Name}: battery={snap.BatteryPercent:F0}%" +
+                        $" banks={snap.ChargedElectrobankCount}/{snap.ElectrobankCapacity}" +
+                        $" oil={snap.GearOilPercent:F0}% gunk={snap.GunkPercent:F0}%" +
+                        $" alerts=[bat={snap.IsLowBattery} oil={snap.IsLowGearOil} grind={snap.IsGrindingGears}]");
+                }
 
                 // Idle detection: accumulate time when chore is "Idle"
                 if (snap.ChoreDescription == "Idle")
@@ -262,10 +373,9 @@ namespace DuplicantStatusBar.Data
                 // Stuck detection: check every STUCK_CHECK_INTERVAL
                 if (doStuckCheck && cachedPodCell >= 0)
                 {
-                    var nav = go.GetComponent<Navigator>();
-                    if (nav != null)
+                    if (cache.Navigator != null)
                     {
-                        int cost = nav.GetNavigationCost(cachedPodCell);
+                        int cost = cache.Navigator.GetNavigationCost(cachedPodCell);
                         stuckTimers.TryGetValue(id, out float stuckElapsed);
                         stuckTimers[id] = cost < 0
                             ? stuckElapsed + STUCK_CHECK_INTERVAL
@@ -284,14 +394,15 @@ namespace DuplicantStatusBar.Data
                 snap.HighestAlert = highest;
 
                 // Diff built-in alerts for change events
-                previousAlertMasks.TryGetValue(id, out ushort prevMask);
-                ushort changed = (ushort)(mask ^ prevMask);
+                previousAlertMasks.TryGetValue(id, out uint prevMask);
+                uint changed = mask ^ prevMask;
                 if (changed != 0)
                 {
+                    DSBLog.Log("Alert", $"{snap.Name}: mask 0x{prevMask:X5}→0x{mask:X5} highest={snap.HighestAlert}");
                     previousAlertMasks[id] = mask;
                     foreach (var a in DupeSnapshot.AlertPriority)
                     {
-                        int bit = 1 << (int)a;
+                        uint bit = (uint)(1 << (int)a);
                         if ((changed & bit) != 0)
                             AlertRegistry.FireAlertChanged(
                                 new API.Experimental.AlertChangedEvent(
@@ -307,21 +418,41 @@ namespace DuplicantStatusBar.Data
                     new API.Experimental.SnapshotEvent(snap));
 
                 // Apply filters (per-dupe, smart filters, role filter)
+                bool filtered = false;
+                string filterReason = null;
                 if (SortFilterPopup.HiddenDupes.Count > 0 && SortFilterPopup.HiddenDupes.Contains(snap.Name))
-                    continue;
-                if (SortFilterPopup.AlertsOnly && snap.AlertMask == 0)
-                    continue;
-                if (SortFilterPopup.StressedOnly && snap.Tier < StressTier.Stressed)
-                    continue;
-                if (SortFilterPopup.HiddenRoles.Count > 0)
+                { filtered = true; filterReason = "hiddenDupe"; }
+                else if (SortFilterPopup.AlertsOnly && snap.AlertMask == 0)
+                { filtered = true; filterReason = "alertsOnly"; }
+                else if (SortFilterPopup.StressedOnly && snap.Tier < StressTier.Stressed)
+                { filtered = true; filterReason = "stressedOnly"; }
+                else if (SortFilterPopup.HiddenRoles.Count > 0)
                 {
                     var resume = go.GetComponent<MinionResume>();
                     string hat = resume?.CurrentHat ?? "";
                     if (SortFilterPopup.HiddenRoles.Contains(hat))
-                        continue;
+                    { filtered = true; filterReason = "hiddenRole:" + hat; }
                 }
 
+                if (firstTick && DSBLog.Active && filtered)
+                    DSBLog.Log("Filter", $"Dropped '{snap.Name}' — reason={filterReason}");
+
+                if (filtered) continue;
                 snapshots.Add(snap);
+            }
+
+            // First-tick diagnostic: log all dupe names vs filter state
+            if (firstTick && DSBLog.Active)
+            {
+                var allNames = new System.Text.StringBuilder();
+                foreach (var s in snapshots)
+                    allNames.Append(allNames.Length > 0 ? ", " : "").Append(s.Name);
+                int totalDupes = dupes != null ? dupes.Count : 0;
+                DSBLog.Log("Filter", $"Pre-filter={totalDupes} post-filter={snapshots.Count}" +
+                    $" showing=[{allNames}]");
+                if (SortFilterPopup.HiddenDupes.Count > 0)
+                    DSBLog.Log("Filter", $"HiddenDupes stored names: [{string.Join(", ", SortFilterPopup.HiddenDupes)}]");
+                firstTick = false;
             }
 
             // Prune stale timer entries for dead/departed dupes
@@ -331,6 +462,15 @@ namespace DuplicantStatusBar.Data
                 AlertRegistry.PruneState(liveIds);
                 if (previousAlertMasks.Count > liveIds.Count + 5)
                     RemoveStaleKeys(previousAlertMasks, liveIds);
+            }
+
+            // Periodic debug summary (every ~5s when logging enabled)
+            if (DSBLog.Active && (int)(now / 5f) != (int)((now - dt) / 5f))
+            {
+                int bionicCount = 0;
+                foreach (var s in snapshots) { if (s.IsBionic) bionicCount++; }
+                DSBLog.Log("Tick", $"dupes={snapshots.Count} bionic={bionicCount}" +
+                    $" cache={dupeCache.Count} world={worldId}");
             }
 
             SortSnapshots();
@@ -351,6 +491,8 @@ namespace DuplicantStatusBar.Data
                 RemoveStaleKeys(stuckTimers, liveIds);
             if (idleTimers.Count > liveIds.Count + 5)
                 RemoveStaleKeys(idleTimers, liveIds);
+            if (dupeCache.Count > liveIds.Count + 5)
+                RemoveStaleKeys(dupeCache, liveIds);
         }
 
         private static void RemoveStaleKeys<T>(Dictionary<int, T> dict, HashSet<int> liveIds)
@@ -375,6 +517,8 @@ namespace DuplicantStatusBar.Data
             breathAmount = db.Amounts.Breath;
             bladderAmount = db.Amounts.Bladder;
             caloriesAmount = db.Amounts.Calories;
+            bionicBatteryAmount = db.Amounts.Get("BionicInternalBattery");
+            bionicOilAmount = db.Amounts.Get("BionicOil");
         }
 
         private static StressTier ComputeTier(float stress, StatusBarOptions opts)
@@ -387,42 +531,48 @@ namespace DuplicantStatusBar.Data
         }
 
         private static void ComputeAlerts(DupeSnapshot snap, StatusBarOptions opts,
-            out ushort mask, out AlertType highest)
+            out uint mask, out AlertType highest)
         {
             mask = 0;
             highest = AlertType.None;
 
             if (opts.AlertSuffocating && snap.IsSuffocating)
-                mask |= (ushort)(1 << (int)AlertType.Suffocating);
+                mask |= (uint)(1 << (int)AlertType.Suffocating);
             if (opts.AlertLowHP && snap.HealthPercent < 30f)
-                mask |= (ushort)(1 << (int)AlertType.LowHP);
+                mask |= (uint)(1 << (int)AlertType.LowHP);
             if (opts.AlertScalding && snap.IsScalding)
-                mask |= (ushort)(1 << (int)AlertType.Scalding);
+                mask |= (uint)(1 << (int)AlertType.Scalding);
             if (opts.AlertHypothermia && snap.IsHypothermic)
-                mask |= (ushort)(1 << (int)AlertType.Hypothermia);
+                mask |= (uint)(1 << (int)AlertType.Hypothermia);
             if (opts.AlertIrradiated && snap.IsIrradiated)
-                mask |= (ushort)(1 << (int)AlertType.Irradiated);
+                mask |= (uint)(1 << (int)AlertType.Irradiated);
             if (opts.AlertStarving && snap.IsStarving)
-                mask |= (ushort)(1 << (int)AlertType.Starving);
+                mask |= (uint)(1 << (int)AlertType.Starving);
             if (opts.AlertOverstressed && snap.StressPercent >= 100f)
-                mask |= (ushort)(1 << (int)AlertType.Overstressed);
+                mask |= (uint)(1 << (int)AlertType.Overstressed);
             if (opts.AlertBladder && snap.BladderPercent >= 90f)
-                mask |= (ushort)(1 << (int)AlertType.BladderUrgent);
+                mask |= (uint)(1 << (int)AlertType.BladderUrgent);
             if (opts.AlertDiseased && snap.IsDiseased)
-                mask |= (ushort)(1 << (int)AlertType.Diseased);
+                mask |= (uint)(1 << (int)AlertType.Diseased);
             if (opts.AlertOverjoyed && snap.IsOverjoyed)
-                mask |= (ushort)(1 << (int)AlertType.Overjoyed);
+                mask |= (uint)(1 << (int)AlertType.Overjoyed);
             if (opts.AlertStuck && snap.IsStuck)
-                mask |= (ushort)(1 << (int)AlertType.Stuck);
+                mask |= (uint)(1 << (int)AlertType.Stuck);
             if (opts.AlertIdle && snap.IsIdle)
-                mask |= (ushort)(1 << (int)AlertType.Idle);
+                mask |= (uint)(1 << (int)AlertType.Idle);
             if (opts.AlertIncapacitated && snap.IsIncapacitated)
-                mask |= (ushort)(1 << (int)AlertType.Incapacitated);
+                mask |= (uint)(1 << (int)AlertType.Incapacitated);
+            if (opts.AlertLowBattery && snap.IsLowBattery)
+                mask |= (uint)(1 << (int)AlertType.LowBattery);
+            if (opts.AlertLowGearOil && snap.IsLowGearOil)
+                mask |= (uint)(1 << (int)AlertType.LowGearOil);
+            if (opts.AlertGrindingGears && snap.IsGrindingGears)
+                mask |= (uint)(1 << (int)AlertType.GrindingGears);
 
             // Highest = first set bit in priority order
             foreach (var a in DupeSnapshot.AlertPriority)
             {
-                if ((mask & (1 << (int)a)) != 0)
+                if ((mask & (uint)(1 << (int)a)) != 0)
                 {
                     highest = a;
                     break;
@@ -462,7 +612,9 @@ namespace DuplicantStatusBar.Data
                 case SortOrder.CaloriesAscending:
                     snapshots.Sort((a, b) =>
                     {
-                        int cmp = a.CaloriesPercent.CompareTo(b.CaloriesPercent);
+                        float va = a.IsBionic ? a.BatteryPercent : a.CaloriesPercent;
+                        float vb = b.IsBionic ? b.BatteryPercent : b.CaloriesPercent;
+                        int cmp = va.CompareTo(vb);
                         return cmp != 0 ? cmp : string.Compare(a.Name, b.Name, StringComparison.Ordinal);
                     });
                     break;

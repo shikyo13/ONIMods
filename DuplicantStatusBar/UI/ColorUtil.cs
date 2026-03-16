@@ -48,6 +48,9 @@ namespace DuplicantStatusBar.UI
         public const int AlertStuck         = 0x7E57C2;
         public const int AlertIdle          = 0x9CA3AF;
         public const int AlertIncapacitated = 0xFF00DD;
+        public const int AlertLowBattery    = 0x00E5FF;
+        public const int AlertLowGearOil    = 0xBCAAA4;
+        public const int AlertGrindingGears = 0xFFAB00;
 
         // ── UI Chrome ──────────────────────────────────────
 

@@ -52,9 +52,9 @@ namespace DuplicantStatusBar.UI
         private float rainbowPulse;
         private const int RAINBOW_CORNER = 8;
 
-        private ushort heldMask;
-        private ushort currentAlertMask;
-        private float[] holdTimers = new float[15]; // indexed by (int)AlertType
+        private uint heldMask;
+        private uint currentAlertMask;
+        private float[] holdTimers = new float[17]; // indexed by (int)AlertType
 
         private Color targetBorderColor;
         private Color targetFillColor;
@@ -318,7 +318,7 @@ namespace DuplicantStatusBar.UI
             nameLayout.preferredWidth = totalW;
 
             // Scale & position badges
-            int badgeCount = BitCount((ushort)(heldMask));
+            int badgeCount = BitCount(heldMask);
             float badgeFrac = badgeCount <= 1 ? 0.28f : badgeCount == 2 ? 0.24f : 0.21f;
             float badgeSize = Mathf.Max(9f, cardSz * badgeFrac);
             float gap = 1f;
@@ -440,7 +440,7 @@ namespace DuplicantStatusBar.UI
             rainbowTexSize = 0;
         }
 
-        private void UpdateBadges(ushort activeMask,
+        private void UpdateBadges(uint activeMask,
             System.Collections.Generic.Dictionary<string, bool> customAlerts)
         {
             currentAlertMask = activeMask;
@@ -451,7 +451,7 @@ namespace DuplicantStatusBar.UI
                 int bit = 1 << (int)a;
                 if ((activeMask & bit) != 0)
                 {
-                    heldMask |= (ushort)bit;
+                    heldMask |= (uint)bit;
                     holdTimers[(int)a] = HoldTime(a);
                 }
             }
@@ -547,7 +547,7 @@ namespace DuplicantStatusBar.UI
                 pulseTimer = (pulseTimer + dt * 3f) % (2f * Mathf.PI);
 
             // Per-alert hold timer decay (only for held-but-no-longer-active alerts)
-            ushort expiredBits = (ushort)(heldMask & ~currentAlertMask);
+            uint expiredBits = heldMask & ~currentAlertMask;
             if (expiredBits != 0)
             {
                 foreach (var a in DupeSnapshot.AlertPriority)
@@ -556,7 +556,7 @@ namespace DuplicantStatusBar.UI
                     if ((expiredBits & bit) == 0) continue;
                     holdTimers[(int)a] -= dt;
                     if (holdTimers[(int)a] <= 0f)
-                        heldMask &= (ushort)~bit;
+                        heldMask &= (uint)~bit;
                 }
             }
 
@@ -710,10 +710,10 @@ namespace DuplicantStatusBar.UI
 
         // ── Helpers ─────────────────────────────────────
 
-        private static int BitCount(ushort v)
+        private static int BitCount(uint v)
         {
             int c = 0;
-            while (v != 0) { c++; v &= (ushort)(v - 1); }
+            while (v != 0) { c++; v &= v - 1; }
             return c;
         }
 
