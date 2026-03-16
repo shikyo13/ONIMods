@@ -9,6 +9,8 @@ obj/
 
 # Local tooling
 .local tooling/
+.mcp.json
+local-notes.md
 .local tooling/
 docs/local tooling/
 
@@ -17,6 +19,9 @@ Screenshot *.png
 
 # Reference repos
 ONIMods - peterhaneve/
+
+# Wiki (separate git repo cloned in-tree)
+wiki/
 
 # Profiler scratch files
 OniProfiler/All
