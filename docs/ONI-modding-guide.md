@@ -7,17 +7,17 @@ Use `Read` tool with `offset` and `limit` to load specific sections only.
 |-|-|-|
 | - | Overview & prerequisites | 23-26 |
 | 1 | Development environment setup | 30-112 |
-| 2 | Mod loading & folder structure | 113-246 |
-| 3 | Harmony patching — core technique | 247-449 |
-| 4 | Gameplay tweaks with examples | 450-579 |
-| 5 | Creating new buildings from scratch | 580-772 |
-| 6 | New items, elements, creatures | 773-925 |
-| 7 | UI modding techniques | 926-1057 |
-| 8 | Mod configuration & settings (PLib) | 1058-1158 |
-| 9 | Debugging and testing | 1159-1233 |
-| 10 | Publishing to Steam Workshop | 1234-1268 |
-| 11 | Key API reference | 1269-1449 |
-| 12 | Community resources and ecosystem | 1450-1501 |
+| 2 | Mod loading & folder structure | 113-283 |
+| 3 | Harmony patching — core technique | 284-486 |
+| 4 | Gameplay tweaks with examples | 487-616 |
+| 5 | Creating new buildings from scratch | 617-809 |
+| 6 | New items, elements, creatures + kanim pipeline | 810-995 |
+| 7 | UI modding techniques | 996-1127 |
+| 8 | Mod configuration & settings (PLib) | 1128-1228 |
+| 9 | Debugging and testing | 1229-1303 |
+| 10 | Publishing to Steam Workshop | 1304-1338 |
+| 11 | Key API reference | 1339-1519 |
+| 12 | Community resources and ecosystem | 1520-1571 |
 
 ---
 
@@ -241,6 +241,43 @@ Deploy the DLL + YAML to `mods/local/HelloWorldMod/` and check `Player.log` at `
 ### Base game vs Spaced Out DLC compatibility
 
 Use `supportedContent: ALL` if your mod works with both. For runtime DLC detection, call **`DlcManager.IsExpansion1Active()`**. The `archived_versions/` system lets you ship separate builds for different game versions — the root folder holds the current version while archived subfolders serve older builds.
+
+### UserMod2 full lifecycle
+
+`UserMod2` provides two override points:
+
+**`OnLoad(Harmony harmony)`** — called when your mod DLL loads. If you override this, call `base.OnLoad(harmony)` to trigger automatic `PatchAll()`. You can run code before or after the base call:
+
+```csharp
+public override void OnLoad(Harmony harmony)
+{
+    Debug.Log("Before patches");
+    base.OnLoad(harmony);
+    Debug.Log("After patches");
+}
+```
+
+**`OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)`** — called after ALL mods finish loading. Use for mod compatibility checks:
+
+```csharp
+public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)
+{
+    foreach (var mod in mods)
+        Debug.Log("Found mod: " + mod.title);
+}
+```
+
+**Available properties:**
+- `assembly` — your mod's Assembly
+- `path` — your mod's folder path
+- `mod` — the Mod instance
+- `mod.title`, `mod.staticID`, `mod.description` — from mod.yaml
+- `mod.packageModInfo` — from mod_info.yaml
+
+**Constraints:**
+- Maximum one UserMod2 per DLL (but a Mod with multiple DLLs can have multiple UserMod2 classes)
+- Cannot be abstract
+- Access all instances via `Mod.loaded_mod_data.userMod2Instances`
 
 ---
 
@@ -920,6 +957,39 @@ Place custom kanims in `YourMod/anim/assets/subfolder/` (files must be in a subf
 - **kparser** (github.com/daviscook477/kparser) — original Java converter, established the kanim↔SCML workflow
 
 **Workflow:** Extract existing kanim → edit in Spriter (free 2D animation tool) → convert back with kanimal-SE → place output files in mod's `anim/assets/` folder.
+
+### Conversion commands
+
+**Extract game animation (kanim → Spriter):**
+```bash
+kanimal-cli.exe scml --output <folder> <texture_0.png> <build.bytes> <anim.bytes>
+```
+
+**Build mod animation (Spriter → kanim):**
+```bash
+kanimal-cli.exe kanim <file.scml> --output <folder> --interpolate
+```
+
+### Critical constraints
+1. **No bones** — kanim format does not support skeletal animation; use sprite-based animation only
+2. **No non-linear tweens** — only linear interpolation between keyframes
+3. **Never resize sprites** — do not resize or move sprite contents within their bounding box
+4. **33ms frame duration** — set frame duration to 33ms with snapping enabled in Spriter
+5. **Always include anim.bytes** — even static graphics (like building artwork) need an anim.bytes file
+
+### Mod animation folder structure
+Place animation files in your mod's anim folder:
+```
+<mod>/anim/assets/<animname>/<animname>_0.png
+<mod>/anim/assets/<animname>/<animname>_build.bytes
+<mod>/anim/assets/<animname>/<animname>_anim.bytes
+```
+
+### Animation tips
+- Use existing game kanims as reference — extract them with kanimal-SE first
+- Symbol names in the build file must match what the game code expects
+- Banks define animation sequences (e.g., "idle", "working", "off")
+- Each bank can have multiple frames with different symbol visibility
 
 ---
 
