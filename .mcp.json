@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "re-orchestrator": {
+      "command": "C:/Users/Zero/re-mcp-toolkit/venv/Scripts/python.exe",
+      "args": ["C:/Users/Zero/re-mcp-toolkit/orchestrator/run_server.py"]
+    }
+  }
+}
