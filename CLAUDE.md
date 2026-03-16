@@ -56,6 +56,7 @@ D:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Manage
 | Lag spike investigation context | `docs/tier2-lag-investigation.md` |
 | ONI API/Harmony/building questions | `docs/ONI-modding-guide.md` — use section index at top, read only relevant section |
 | Creating a new HANDOVER | `docs/HANDOVER-TEMPLATE.md` |
+| Game data lookup (amounts, skills, elements, etc.) | `docs/data/_index.md` → specific file |
 
 ## When Releasing a Version
 

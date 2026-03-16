@@ -52,6 +52,9 @@ namespace DuplicantStatusBar.UI
                 case AlertType.Stuck:         return ExpressionType.Uncomfortable;
                 case AlertType.Irradiated:    return ExpressionType.Sick;
                 case AlertType.BladderUrgent: return ExpressionType.Uncomfortable;
+                case AlertType.LowBattery:    return ExpressionType.Tired;
+                case AlertType.LowGearOil:    return ExpressionType.Uncomfortable;
+                case AlertType.GrindingGears: return ExpressionType.Angry;
                 default:
                     switch (tier)
                     {
@@ -202,6 +205,7 @@ namespace DuplicantStatusBar.UI
                     && faceFrames.TryGetValue(faces.Tired.hash, out var tiredFrames))
                     blinkEyeFrame = tiredFrames.EyeFrame;
             }
+
         }
 
         public static void ClearCache()

@@ -32,11 +32,14 @@ namespace DuplicantStatusBar.UI
         private static TextMeshProUGUI alertsOnlyLabel;
         private static TextMeshProUGUI stressedOnlyLabel;
 
-        // Role filter state (pending, rebuilt on open)
+        // Role filter state (pending, rebuilt on open) — keyed by display name
         private static readonly List<string> roleKeys = new List<string>();
         private static readonly List<string> roleDisplayNames = new List<string>();
         private static readonly List<bool> roleVisible = new List<bool>();
         private static readonly List<TextMeshProUGUI> roleLabels = new List<TextMeshProUGUI>();
+        // Maps display name → all hat IDs with that name (built by GetAllRoles)
+        private static readonly Dictionary<string, List<string>> displayToHats
+            = new Dictionary<string, List<string>>();
 
         // Per-dupe filter state
         private static readonly List<string> filterNames = new List<string>();
@@ -60,6 +63,12 @@ namespace DuplicantStatusBar.UI
         {
             LoadHiddenDupes();
             LoadSmartFilters();
+            Core.DSBLog.Log("Filter", $"Loaded state — alertsOnly={AlertsOnly}" +
+                $" stressedOnly={StressedOnly}" +
+                $" hiddenDupes={HiddenDupes.Count}" +
+                (HiddenDupes.Count > 0 ? $" [{string.Join(",", HiddenDupes)}]" : "") +
+                $" hiddenRoles={HiddenRoles.Count}" +
+                (HiddenRoles.Count > 0 ? $" [{string.Join(",", HiddenRoles)}]" : ""));
 
             // Fullscreen click-away blocker
             blockerGO = new GameObject("DSB_PopupBlocker");
@@ -265,7 +274,19 @@ namespace DuplicantStatusBar.UI
                 int idx = i;
                 string key = roles[i].Key;
                 string display = roles[i].Value;
-                bool visible = !HiddenRoles.Contains(key);
+                // Check if any of this display name's hat IDs are hidden
+                bool visible = true;
+                if (HiddenRoles.Count > 0 && displayToHats.TryGetValue(key, out var hats))
+                {
+                    for (int h = 0; h < hats.Count; h++)
+                    {
+                        if (HiddenRoles.Contains(hats[h]))
+                        {
+                            visible = false;
+                            break;
+                        }
+                    }
+                }
 
                 roleKeys.Add(key);
                 roleDisplayNames.Add(display);
@@ -296,7 +317,8 @@ namespace DuplicantStatusBar.UI
         private static List<KeyValuePair<string, string>> GetAllRoles()
         {
             var result = new List<KeyValuePair<string, string>>();
-            var seen = new HashSet<string>();
+            var seenHats = new HashSet<string>();
+            displayToHats.Clear();
 
             if (Components.LiveMinionIdentities.Count == 0) return result;
             int worldId = ClusterManager.Instance?.activeWorldId ?? -1;
@@ -305,12 +327,14 @@ namespace DuplicantStatusBar.UI
             var dupes = Components.LiveMinionIdentities.GetWorldItems(worldId);
             if (dupes == null) return result;
 
+            // Collect unique display names, mapping each to all hat IDs that share it
+            // (multiple skill tiers can share a display name but have different hat IDs)
             foreach (var identity in dupes)
             {
                 if (identity?.gameObject == null) continue;
                 var resume = identity.gameObject.GetComponent<MinionResume>();
                 string hat = resume?.CurrentHat ?? "";
-                if (!seen.Add(hat)) continue;
+                if (!seenHats.Add(hat)) continue;
 
                 string display;
                 if (string.IsNullOrEmpty(hat))
@@ -320,7 +344,6 @@ namespace DuplicantStatusBar.UI
                 else
                 {
                     display = hat;
-                    // Try to find a readable name from the skill database
                     var db = Db.Get();
                     if (db?.Skills != null)
                     {
@@ -334,8 +357,17 @@ namespace DuplicantStatusBar.UI
                         }
                     }
                 }
-                result.Add(new KeyValuePair<string, string>(hat, display));
+                if (!displayToHats.TryGetValue(display, out var hats))
+                {
+                    hats = new List<string>(2);
+                    displayToHats[display] = hats;
+                }
+                hats.Add(hat);
             }
+
+            // Key = display name (used as filter key), Value = display name (for label)
+            foreach (var kvp in displayToHats)
+                result.Add(new KeyValuePair<string, string>(kvp.Key, kvp.Key));
 
             result.Sort((a, b) => string.Compare(a.Value, b.Value, StringComparison.Ordinal));
             return result;
@@ -517,7 +549,14 @@ namespace DuplicantStatusBar.UI
             for (int i = 0; i < roleKeys.Count; i++)
             {
                 if (!roleVisible[i])
-                    HiddenRoles.Add(roleKeys[i]);
+                {
+                    // Expand display name into all hat IDs that share it
+                    if (displayToHats.TryGetValue(roleKeys[i], out var hats))
+                    {
+                        for (int h = 0; h < hats.Count; h++)
+                            HiddenRoles.Add(hats[h]);
+                    }
+                }
             }
 
             // Commit per-dupe filter
@@ -608,6 +647,14 @@ namespace DuplicantStatusBar.UI
                 foreach (var role in saved.Split(','))
                     if (role != null) HiddenRoles.Add(role);
             }
+        }
+
+        public static void ResetFilters()
+        {
+            HiddenDupes.Clear();
+            HiddenRoles.Clear();
+            AlertsOnly = false;
+            StressedOnly = false;
         }
 
         private static void LoadHiddenDupes()

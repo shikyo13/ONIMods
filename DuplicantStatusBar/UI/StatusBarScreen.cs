@@ -37,6 +37,7 @@ namespace DuplicantStatusBar.UI
         private KCanvasScaler gameCanvasScaler;
         private float lastUIScale = 1f;
         private GameObject filterBtnGO;
+        private bool firstUpdate = true;
 
         // Game font (ONI-native, with fallback)
         private static TMPro.TMP_FontAsset _gameFont;
@@ -65,8 +66,12 @@ namespace DuplicantStatusBar.UI
         private void Start()
         {
             Instance = this;
+            DSBLog.Log("Screen", "Start() — building UI");
             BuildUI();
             LoadState();
+            DSBLog.Log("Screen", $"Start() complete — canvas={canvasRT.rect.size}" +
+                $" pos={barPanel.anchoredPosition} collapsed={isCollapsed}" +
+                $" size={lastComputedSize} scale={canvasScaler.scaleFactor}");
         }
 
         private void Update()
@@ -80,6 +85,20 @@ namespace DuplicantStatusBar.UI
                 ApplyGameUIScale();
                 DupeStatusTracker.Update();
                 RefreshWidgets();
+
+                if (firstUpdate)
+                {
+                    firstUpdate = false;
+                    var snaps = DupeStatusTracker.Snapshots;
+                    DSBLog.Log("Screen", $"First tick — dupes={snaps.Count}" +
+                        $" widgets={widgets.Count} canvas={canvasRT.rect.size}" +
+                        $" pos={barPanel.anchoredPosition} scale={canvasScaler.scaleFactor}" +
+                        $" collapsed={isCollapsed}" +
+                        $" alertsOnly={SortFilterPopup.AlertsOnly}" +
+                        $" stressedOnly={SortFilterPopup.StressedOnly}" +
+                        $" hiddenDupes={SortFilterPopup.HiddenDupes.Count}" +
+                        $" hiddenRoles={SortFilterPopup.HiddenRoles.Count}");
+                }
             }
         }
 
@@ -90,6 +109,7 @@ namespace DuplicantStatusBar.UI
             SortFilterPopup.Cleanup();
             PortraitCompositor.ClearCaches();
             SaveState();
+            Core.DSBLog.Close();
         }
 
         private void ApplyGameUIScale()
@@ -377,6 +397,13 @@ namespace DuplicantStatusBar.UI
             int totalH = size + 22;
             grid.cellSize = new Vector2(totalW, totalH);
 
+            // Top padding must accommodate badge overflow above the first row.
+            // Badge anchors at card top-right, extends ~0.35 * badgeSize above the card edge.
+            int cardSz = size + 4;
+            float badgeSize = Mathf.Max(9f, cardSz * 0.28f);
+            int badgeOverflow = Mathf.CeilToInt(badgeSize * 0.35f);
+            grid.padding = new RectOffset(4, 4, Mathf.Max(4, badgeOverflow), 4);
+
             var opts = StatusBarOptions.Instance;
             float canvasW = canvasRT != null ? canvasRT.rect.width : Screen.width;
             float available = canvasW * (opts.MaxBarWidth / 100f);
@@ -661,6 +688,18 @@ namespace DuplicantStatusBar.UI
             PortraitCompositor.EvictStale(
                 System.Linq.Enumerable.Select(snaps,
                     s => s.Identity != null ? s.Identity.GetInstanceID() : 0));
+        }
+
+        internal void ResetToDefaults()
+        {
+            isCollapsed = false;
+            scrollViewGO.SetActive(true);
+            if (filterBtnGO != null) filterBtnGO.SetActive(true);
+            if (collapseLabel != null) collapseLabel.text = "\u2212";
+            if (barPanel != null)
+                barPanel.anchoredPosition = new Vector2(0, -5);
+            lastComputedSize = StatusBarOptions.Instance.PortraitSize;
+            forceRefresh = true;
         }
 
         private void ClampPanelPosition()

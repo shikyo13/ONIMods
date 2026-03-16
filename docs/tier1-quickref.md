@@ -62,6 +62,10 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 | `Patches/GameUpdatePatch.cs` | `Game.Update` postfix → `OnFrame()` | `GameUpdatePatch` |
 | `Patches/SavePausePatch.cs` | Save/pause/quit triggers + cleanup | 4 patch classes |
 
+## Game Data Maps
+
+`docs/data/_index.md` has indexed tables for amounts, skills, elements, chore types, effects, components, rooms, and status items. Use these instead of ad-hoc `disassemble_dotnet_method` lookups — saves 10-30 min per session.
+
 ## ONI Modding Gotchas
 
 - `using HarmonyLib;` — never `using Harmony;` (v1 is dead)

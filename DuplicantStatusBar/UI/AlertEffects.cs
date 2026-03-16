@@ -46,6 +46,9 @@ namespace DuplicantStatusBar.UI
             new AlertEffect(H(ColorUtil.AlertStuck),         2.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.40f, 0.55f), // 11 Stuck
             new AlertEffect(H(ColorUtil.AlertIdle),          3.0f, AlertPattern.Pulse,     GradientShape.FullWash,   0.15f, 0.35f), // 12 Idle
             new AlertEffect(H(ColorUtil.AlertIncapacitated), 0.6f, AlertPattern.Pulse,     GradientShape.Radial,     0.45f, 0.85f), // 13 Incapacitated
+            new AlertEffect(H(ColorUtil.AlertLowBattery),    1.8f, AlertPattern.Heartbeat, GradientShape.Radial,     0.30f, 0.65f), // 14 LowBattery
+            new AlertEffect(H(ColorUtil.AlertLowGearOil),    2.0f, AlertPattern.Pulse,     GradientShape.FromBottom, 0.25f, 0.55f), // 15 LowGearOil
+            new AlertEffect(H(ColorUtil.AlertGrindingGears), 0.7f, AlertPattern.Flicker,   GradientShape.FullWash,   0.40f, 0.70f), // 16 GrindingGears
         };
 
         public static AlertEffect Get(AlertType type)

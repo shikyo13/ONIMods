@@ -136,14 +136,44 @@ namespace DuplicantStatusBar.UI
                    : ColorUtil.ToHtml(ColorUtil.Red);
             sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} <color=#{tc}>{tempC:F1}\u00B0C</color>");
 
-            var cc = snap.CaloriesPercent >= 60f ? ColorUtil.ToHtml(ColorUtil.Green)
-                   : snap.CaloriesPercent >= 40f ? ColorUtil.ToHtml(ColorUtil.Gold)
-                   : snap.CaloriesPercent >= 20f ? ColorUtil.ToHtml(ColorUtil.Orange)
-                   : ColorUtil.ToHtml(ColorUtil.Red);
-            sb.AppendLine($"{DSB.UI.TOOLTIP_CALORIES} <color=#{cc}>{snap.CaloriesPercent:F0}%</color>");
+            // Calories / Battery (conditional)
+            if (snap.IsBionic)
+            {
+                var batc = snap.BatteryPercent >= 60f ? ColorUtil.ToHtml(ColorUtil.Green)
+                         : snap.BatteryPercent >= 40f ? ColorUtil.ToHtml(ColorUtil.Gold)
+                         : snap.BatteryPercent >= 20f ? ColorUtil.ToHtml(ColorUtil.Orange)
+                         : ColorUtil.ToHtml(ColorUtil.Red);
+                string batteryText = $"{snap.BatteryPercent:F0}% ({snap.ChargedElectrobankCount}/{snap.ElectrobankCapacity})";
+                sb.AppendLine($"{DSB.UI.TOOLTIP_BATTERY} <color=#{batc}>{batteryText}</color>");
+            }
+            else
+            {
+                var cc = snap.CaloriesPercent >= 60f ? ColorUtil.ToHtml(ColorUtil.Green)
+                       : snap.CaloriesPercent >= 40f ? ColorUtil.ToHtml(ColorUtil.Gold)
+                       : snap.CaloriesPercent >= 20f ? ColorUtil.ToHtml(ColorUtil.Orange)
+                       : ColorUtil.ToHtml(ColorUtil.Red);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_CALORIES} <color=#{cc}>{snap.CaloriesPercent:F0}%</color>");
+            }
 
-            var blc = snap.BladderPercent >= 70f ? ColorUtil.ToHtml(ColorUtil.Yellow) : ColorUtil.ToHtml(ColorUtil.Green);
-            sb.AppendLine($"{DSB.UI.TOOLTIP_BLADDER} <color=#{blc}>{snap.BladderPercent:F0}%</color>");
+            // Bladder / Gunk + Gear Oil (conditional)
+            if (snap.IsBionic)
+            {
+                var gc = snap.GunkPercent < 50f  ? ColorUtil.ToHtml(ColorUtil.Green)
+                       : snap.GunkPercent < 80f  ? ColorUtil.ToHtml(ColorUtil.Gold)
+                       : snap.GunkPercent < 100f ? ColorUtil.ToHtml(ColorUtil.Orange)
+                       : ColorUtil.ToHtml(ColorUtil.Red);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_GUNK} <color=#{gc}>{snap.GunkPercent:F0}%</color>");
+
+                var oc = snap.GearOilPercent > 20f ? ColorUtil.ToHtml(ColorUtil.Green)
+                       : snap.GearOilPercent > 0f  ? ColorUtil.ToHtml(ColorUtil.Yellow)
+                       : ColorUtil.ToHtml(ColorUtil.Red);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_GEAR_OIL} <color=#{oc}>{snap.GearOilPercent:F0}%</color>");
+            }
+            else
+            {
+                var blc = snap.BladderPercent >= 70f ? ColorUtil.ToHtml(ColorUtil.Yellow) : ColorUtil.ToHtml(ColorUtil.Green);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_BLADDER} <color=#{blc}>{snap.BladderPercent:F0}%</color>");
+            }
 
             // Populate animated alert text slots
             int slot = 0;
@@ -396,6 +426,9 @@ namespace DuplicantStatusBar.UI
                 case AlertType.Stuck:         return DSB.ALERTS.STUCK;
                 case AlertType.Idle:          return DSB.ALERTS.IDLE;
                 case AlertType.Incapacitated: return DSB.ALERTS.INCAPACITATED;
+                case AlertType.LowBattery:    return DSB.ALERTS.LOWBATTERY;
+                case AlertType.LowGearOil:    return DSB.ALERTS.LOWGEAROIL;
+                case AlertType.GrindingGears: return DSB.ALERTS.GRINDINGGEARS;
                 default: return "";
             }
         }

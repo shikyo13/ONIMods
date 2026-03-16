@@ -136,10 +136,54 @@ namespace DuplicantStatusBar.Config
         [JsonProperty]
         public bool AlertIncapacitated { get; set; } = true;
 
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
+        [JsonProperty]
+        public bool AlertLowBattery { get; set; } = true;
+
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
+        [JsonProperty]
+        public bool AlertLowGearOil { get; set; } = true;
+
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS")]
+        [JsonProperty]
+        public bool AlertGrindingGears { get; set; } = true;
+
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DEBUGLOGGING.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DEBUGLOGGING.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL")]
+        [JsonProperty]
+        public bool DebugLogging { get; set; } = false;
+
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.RESETPOSITION.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.RESETPOSITION.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL")]
+        public System.Action<object> ResetPosition => _ => ResetBarState();
+
         // IOptions — live update when user changes settings
         public void OnOptionsChanged()
         {
             instance = POptions.ReadSettings<StatusBarOptions>() ?? new StatusBarOptions();
+            Core.DSBLog.OnOptionsChanged();
+        }
+
+        private static void ResetBarState()
+        {
+            // Clear all DSB PlayerPrefs (position, collapse, size, filters)
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_PosX");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_PosY");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_Collapsed");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_PortSize");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_HiddenDupes");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_AlertsOnly");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_StressedOnly");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_HiddenRoles");
+            UnityEngine.PlayerPrefs.Save();
+
+            // Reset the live screen if in-game
+            var screen = UI.StatusBarScreen.Instance;
+            if (screen != null)
+                screen.ResetToDefaults();
+
+            // Reset filter state
+            UI.SortFilterPopup.ResetFilters();
+
+            Core.DSBLog.Log("Reset", "Bar position, collapse, and filters reset to defaults");
         }
 
         public IEnumerable<IOptionsEntry> CreateOptions() => null;

@@ -19,6 +19,7 @@ namespace DuplicantStatusBar.Core
             PUtil.InitLibrary();
             LocString.CreateLocStringKeys(typeof(Localization.STRINGS), "");
             new POptions().RegisterOptions(this, typeof(Config.StatusBarOptions));
+            DSBLog.Log("Init", $"DuplicantStatusBar loaded from {ModPath}");
         }
     }
 }
