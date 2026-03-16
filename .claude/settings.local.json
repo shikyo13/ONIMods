@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet *)",
+      "Bash(ilspycmd *)",
+      "Bash(git *)",
+      "Bash(cp *)",
+      "Bash(mkdir *)",
+      "Bash(ls *)",
+      "Bash(rm *)",
+      "Bash(powershell *)",
+      "Bash(find *)",
+      "mcp__re-orchestrator__*",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:forums.kleientertainment.com)"
+    ]
+  }
+}

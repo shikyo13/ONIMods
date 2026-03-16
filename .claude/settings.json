@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash D:/Dev/Projects/GameModding/ONIMods/.claude/hooks/auto-build.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash D:/Dev/Projects/GameModding/.claude/hooks/block-game-dlls.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
