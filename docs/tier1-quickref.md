@@ -1,4 +1,4 @@
-# Tier 1 — Quick Reference (read once per session)
+# Tier 1  - Quick Reference (read once per session)
 
 Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 
@@ -8,9 +8,9 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 |-|-|-|
 | ReplaceStuff | `Core/ReplaceStuffMod.cs` | v2.1, active |
 | BuildThrough | `Core/BuildThroughMod.cs` | Initial commit |
-| OniProfiler | `Core/OniProfilerMod.cs` | Active — see `OniProfiler/HANDOVER.md` for architecture |
+| OniProfiler | `Core/OniProfilerMod.cs` | Active  - see `OniProfiler/HANDOVER.md` for architecture |
 | GCBudget | `Core/GCBudgetMod.cs` | POC, alloc-gated gen0 GC collections |
-| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.7.0 — persistent dupe status HUD, Unity 6 compat, expression-driven portraits, extensibility API |
+| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.9.0 - persistent dupe status HUD, management screen awareness, bionic support, extensibility API |
 
 ## ReplaceStuff Module Map
 
@@ -18,8 +18,8 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 |-|-|-|
 | `Core/ReplaceStuffMod.cs` | Entry point, PLib init, soft modded-door patches | `ReplaceStuffMod : UserMod2` |
 | `Patches/BuildingConfigPatches.cs` | 28 postfixes injecting replacement config into 14 vanilla buildings | `InjectReplacementConfig`, `InjectReplacementTag`, 7 group tags |
-| `Patches/BuildToolPatches.cs` | `IsValidReplaceLocation` postfix — guards preview when `CanReplace` fails | Rejects wrong-group replacements |
-| `Patches/ConstructionPatches.cs` | `OnCompleteWork` postfix — multi-cell tile cleanup with refund | Destroys non-anchor tiles |
+| `Patches/BuildToolPatches.cs` | `IsValidReplaceLocation` postfix  - guards preview when `CanReplace` fails | Rejects wrong-group replacements |
+| `Patches/ConstructionPatches.cs` | `OnCompleteWork` postfix  - multi-cell tile cleanup with refund | Destroys non-anchor tiles |
 | `UI/ReplaceToolTip.cs` | "Replacing X → Y" tooltip for furniture replacements | `HoverTextDrawer` usage |
 | `Config/ReplaceStuffOptions.cs` | `EnableBuildings` toggle | `SingletonOptions<ReplaceStuffOptions>` |
 
@@ -33,7 +33,7 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 | `ConstructionPatches.cs` | Nothing (reads vanilla `Building.PlacementCells`) |
 | `ReplaceToolTip.cs` | Nothing (reads vanilla replacement state) |
 
-**Hub file:** `BuildingConfigPatches.cs` — defines all group tags and injection helpers. Adding a new replacement group starts here.
+**Hub file:** `BuildingConfigPatches.cs`  - defines all group tags and injection helpers. Adding a new replacement group starts here.
 
 ## ReplaceStuff Replacement Flow
 
@@ -64,38 +64,38 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 
 ## Game Data Maps
 
-`docs/data/_index.md` has indexed tables for amounts, skills, elements, chore types, effects, components, rooms, and status items. Use these instead of ad-hoc `disassemble_dotnet_method` lookups — saves 10-30 min per session.
+`docs/data/_index.md` indexes 28 reference tables (amounts, skills, elements, buildings, foods, techs, critters, plants, geysers, equipment, overlays, notifications, actions, UI layers, and more). Check the index before decompiling.
 
 ## ONI Modding Gotchas
 
-- `using HarmonyLib;` — never `using Harmony;` (v1 is dead)
+- `using HarmonyLib;`  - never `using Harmony;` (v1 is dead)
 - All patch methods must be `static`
 - `__result` needs `ref` keyword in postfix to modify return value
-- Prefix returning `false` skips original + all other prefixes — use sparingly
-- `base.OnLoad(harmony)` calls `PatchAll()` — don't double-patch
-- Game DLLs change every update — always decompile latest `Assembly-CSharp.dll`
+- Prefix returning `false` skips original + all other prefixes  - use sparingly
+- `base.OnLoad(harmony)` calls `PatchAll()`  - don't double-patch
+- Game DLLs change every update  - always decompile latest `Assembly-CSharp.dll`
 - `<Private>false</Private>` on ALL game refs or your mod ships 50MB of duplicates
 - KSerialization: forgetting `[Serialize]` = field silently lost on save/load
-- `OnPrefabInit` runs during prefab setup (no world yet); `OnSpawn` runs when placed — don't access `Grid` in `OnPrefabInit`
-- `Db.Initialize()` postfix is the correct hook for adding buildings to tech tree — too early and `Techs` doesn't exist
-- `___privateField` (3 underscores) to access private fields — easy to miscount
+- `OnPrefabInit` runs during prefab setup (no world yet); `OnSpawn` runs when placed  - don't access `Grid` in `OnPrefabInit`
+- `Db.Initialize()` postfix is the correct hook for adding buildings to tech tree  - too early and `Techs` doesn't exist
+- `___privateField` (3 underscores) to access private fields  - easy to miscount
 - Patching overloaded methods requires `new Type[] { ... }` in `[HarmonyPatch]` attribute
 - `AddOrGet<T>()` is idempotent; raw `AddComponent<T>()` can create duplicates silently
-- Protected methods (e.g., `OnCompleteWork`) — use string `"OnCompleteWork"` in HarmonyPatch, not `nameof()`
-- `new GameObject()` only has `Transform` — must `AddComponent<Image>()` (or any UI component) before `GetComponent<RectTransform>()` will return non-null
-- `System.Action` shadowed by `UnityEngine.PlayerLoop.Action` struct — fully qualify `System.Action` in files that use PlayerLoop types or lambda delegates in certain contexts
-- `KCanvasScaler.UIScalePrefKey` = `"UIScalePref"` — game stores UI scale as percentage float (100 = 1x). Read via `KPlayerPrefs.GetFloat()`, divide by 100
-- `KPlayerPrefs` lives in `Assembly-CSharp-firstpass.dll`, not `Assembly-CSharp.dll` — decompile from the right assembly
+- Protected methods (e.g., `OnCompleteWork`)  - use string `"OnCompleteWork"` in HarmonyPatch, not `nameof()`
+- `new GameObject()` only has `Transform`  - must `AddComponent<Image>()` (or any UI component) before `GetComponent<RectTransform>()` will return non-null
+- `System.Action` shadowed by `UnityEngine.PlayerLoop.Action` struct  - fully qualify `System.Action` in files that use PlayerLoop types or lambda delegates in certain contexts
+- `KCanvasScaler.UIScalePrefKey` = `"UIScalePref"`  - game stores UI scale as percentage float (100 = 1x). Read via `KPlayerPrefs.GetFloat()`, divide by 100
+- `KPlayerPrefs` lives in `Assembly-CSharp-firstpass.dll`, not `Assembly-CSharp.dll`  - decompile from the right assembly
 - `LocString` fields must be `public static` (not `readonly`) for ONI's string registration to find them
-- TMP and Image can't share a GameObject — TMP requires its own child GO under the Image GO
+- TMP and Image can't share a GameObject  - TMP requires its own child GO under the Image GO
 
 ## Unity 6 Testing Branch Gotchas
 
 - `ImageConversionModule.dll` references `netstandard 2.1` → CS1705 against `net471`. Use reflection for `LoadImage`/`EncodeToPNG` instead of direct reference.
-- `TMP_Text.ForceMeshUpdate()` parameterless overload removed — use reflection to probe for available signature
-- `TMP_InputField.DeactivateInputField()` removed — vanilla `KScreenManager.OnKeyDown` crashes on every input event if a screen references it. Call `KScreenManager.Instance.DisableInput(true)` to gate input dispatch.
-- Game font missing `\u2713`/`\u2717` (✓/✗) — use ASCII alternatives
-- PLib 4.19.0 `PComboBox` crashes on `TMPro.FaceInfo` (type moved in Unity 6 TMP) — upstream PLib bug, no mod-side fix
+- `TMP_Text.ForceMeshUpdate()` parameterless overload removed  - use reflection to probe for available signature
+- `TMP_InputField.DeactivateInputField()` removed  - vanilla `KScreenManager.OnKeyDown` crashes on every input event if a screen references it. Call `KScreenManager.Instance.DisableInput(true)` to gate input dispatch.
+- Game font missing `\u2713`/`\u2717` (✓/✗)  - use ASCII alternatives
+- PLib 4.19.0 `PComboBox` crashes on `TMPro.FaceInfo` (type moved in Unity 6 TMP)  - upstream PLib bug, no mod-side fix
 
 ## Breaking Changes
 
