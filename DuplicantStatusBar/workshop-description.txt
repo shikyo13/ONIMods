@@ -5,42 +5,48 @@ Vanilla gives you a global stress number in the corner and that's about it. No p
 
 Each dupe gets a widget with a stress-colored border that shifts through a 5-tier gradient: green at calm, through lime, yellow, orange, up to pulsing red at 80%+. A health fill bar drains from top to bottom as dupes take damage, with a dark overlay making injuries immediately visible. Up to 3 alert badges can appear simultaneously on each portrait for critical states like suffocation, low health, scalding, hypothermia, starvation, radiation sickness, bladder emergencies, stuck dupes, idle dupes, and disease. Alerts are priority-ordered so the most dangerous condition always shows first.
 
-Click any widget to select that dupe and snap the camera to them. Hover for a detailed tooltip showing their current task, stress, health, breath, body temperature, calories, and bladder — all with green-to-red color gradients — plus any active alerts with color-coded animated text. The tooltip stays on-screen even when hovering dupes near the edges.
+Click any widget to select that dupe and snap the camera to them. Hover for a detailed tooltip showing their current task, stress, health, breath, body temperature, calories, and bladder - all with green-to-red color gradients - plus any active alerts with color-coded animated text. The tooltip stays on-screen even when hovering dupes near the edges.
 
-Portraits are expression-driven — dupes change facial expressions based on their current alert or stress level, with periodic blinking. Overjoyed dupes get a rainbow-cycling border with sparkle effects. Displays dupe portraits by default, with a colored-initials mode available in mod settings for a lighter look or better readability in packed colonies. The bar wraps into multiple rows as your colony grows, with a scrollbar when rows exceed the configured limit. Drag the header to reposition anywhere on screen, or drag the resize grip to adjust portrait size on the fly.
+Portraits are expression-driven - dupes change facial expressions based on their current alert or stress level, with periodic blinking. Overjoyed dupes get a rainbow-cycling border with sparkle effects. Displays dupe portraits by default, with a colored-initials mode available in mod settings for a lighter look or better readability in packed colonies. The bar wraps into multiple rows as your colony grows, with a scrollbar when rows exceed the configured limit. Drag the header to reposition anywhere on screen, or drag the resize grip to adjust portrait size on the fly.
 
 [h2]Features[/h2]
 [list]
-[*] [b]Expression-driven portraits[/b] — dupes show contextual facial expressions (suffocating, angry, cold, hot, hungry, sick, sparkle, etc.) with periodic blinking
-[*] [b]Stress-colored borders[/b] — 5-tier gradient from green (calm) to pulsing red (critical), with configurable thresholds
-[*] [b]Overjoyed rainbow border[/b] — animated rainbow cycling with sparkle effects and glow
-[*] [b]Health fill bar[/b] — vertical drain with green-to-red gradient and a dark damage overlay above the portrait
-[*] [b]Alert badges[/b] — suffocating, low HP, incapacitated, scalding, hypothermia, irradiated, starving, disease, bladder urgent, stuck, idle, overstressed; up to 3 shown simultaneously with priority ordering
-[*] [b]Animated tooltip[/b] — name, current task, stress, health, breath, body temperature, calories, bladder, and all active alerts with color-coded text; stat values use green-to-red gradients; overjoyed alerts get rainbow cycling
-[*] [b]Click to select[/b] — selects the dupe and snaps the camera to them
-[*] [b]Portraits or initials[/b] — full dupe portraits by default; switch to colored initials in mod settings
-[*] [b]Sort & Filter popup[/b] — click the ► Sort/Filter button to sort by stress, calories, name, or job role; filter to show only alerted or stressed dupes; filter by job role; or hide individual dupes by name
-[*] [b]Multi-row grid layout[/b] — wraps into rows automatically, with configurable max width and max rows
-[*] [b]Scroll overflow[/b] — thin scrollbar appears when dupes exceed visible rows
-[*] [b]Draggable & collapsible[/b] — drag the header to reposition; collapse to just the header bar; position saved across sessions
-[*] [b]Resize grip[/b] — drag the bottom-right corner to adjust portrait size (16–96px), persisted between sessions
-[*] [b]Configurable[/b] — portrait size, bar opacity, max width, max rows, display mode, expression toggle, stress thresholds, and individual alert toggles via PLib mod options
-[*] [b]Respects game UI scale[/b] — matches the game's own scaling on all displays including Mac Retina / high-DPI, updates live with the UI Scale slider
-[*] [b]Mod API[/b] — other mods can register custom alerts, hook tooltips, and listen to events via `DSBApi` (see docs/api-guide.md)
+[*] [b]Expression-driven portraits[/b] - dupes show contextual facial expressions (suffocating, angry, cold, hot, hungry, sick, sparkle, etc.) with periodic blinking
+[*] [b]Stress-colored borders[/b] -5-tier gradient from green (calm) to pulsing red (critical), with configurable thresholds
+[*] [b]Overjoyed rainbow border[/b] - animated rainbow cycling with sparkle effects and glow
+[*] [b]Health fill bar[/b] - vertical drain with green-to-red gradient and a dark damage overlay above the portrait
+[*] [b]Alert badges[/b] - suffocating, low HP, incapacitated, scalding, hypothermia, irradiated, starving, disease, bladder urgent, stuck, idle, overstressed; up to 3 shown simultaneously with priority ordering
+[*] [b]Animated tooltip[/b] - name, current task, stress, health, breath, body temperature, calories, bladder, and all active alerts with color-coded text; stat values use green-to-red gradients; overjoyed alerts get rainbow cycling
+[*] [b]Click to select[/b] - selects the dupe and snaps the camera to them
+[*] [b]Portraits or initials[/b] - full dupe portraits by default; switch to colored initials in mod settings
+[*] [b]Sort & Filter popup[/b] - click the ► Sort/Filter button to sort by stress, calories, name, or job role; filter to show only alerted or stressed dupes; filter by job role; or hide individual dupes by name
+[*] [b]Multi-row grid layout[/b] - wraps into rows automatically, with configurable max width and max rows
+[*] [b]Scroll overflow[/b] - thin scrollbar appears when dupes exceed visible rows
+[*] [b]Draggable & collapsible[/b] - drag the header to reposition; collapse to just the header bar; position saved across sessions
+[*] [b]Independent axis resize[/b] - drag the bottom-right grip horizontally to change columns, vertically to change rows, or diagonally to constrain both; panel grows from top-left with screen bounds clamping
+[*] [b]Configurable[/b] - portrait size, bar opacity, display mode, expression toggle, stress thresholds, and individual alert toggles via PLib mod options
+[*] [b]Respects game UI scale[/b] - matches the game's own scaling on all displays including Mac Retina / high-DPI, updates live with the UI Scale slider
+[*] [b]Mod API[/b] - other mods can register custom alerts, hook tooltips, and listen to events via `DSBApi` (see docs/api-guide.md)
 [/list]
 
 [h2]Localization[/h2]
 All UI text is translated into Chinese, Korean, Russian, Japanese, German, Spanish, and French. Translations load automatically based on your game language setting.
 
 [h2]Compatibility[/h2]
-Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Compatible with both the public branch and the Unity 6 testing branch. Display only — does not modify any game logic or save data.
+Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Compatible with both the public branch and the Unity 6 testing branch. Display only - does not modify any game logic or save data.
 
-[b]Note:[/b] On the testing branch, the PLib mod options dialog may crash when opening dropdowns (PLib bug with Unity 6 TMP). The mod itself works fine — this only affects the settings screen.
+[b]Note:[/b] On the testing branch, the PLib mod options dialog may crash when opening dropdowns (PLib bug with Unity 6 TMP). The mod itself works fine - this only affects the settings screen.
 
 [h2]Thanks to Sgt_Imalas for pioneering portrait compositing with DuperyFixed.[/h2]
 
 If you enjoy the mod, please consider leaving a rating.
 
-Source: https://github.com/shikyo13/ONIMods
-
-Like my mods? - https://buymeacoffee.com/zerotheabsolute
+[h2]Links[/h2]
+[list]
+[*] [b]Website[/b]: https://zeronexus.net
+[*] [b]Discord[/b]: https://discord.gg/NrdXnbWzGC
+[*] [b]Source[/b]: https://github.com/shikyo13/ONIMods
+[*] [b]All my mods[/b]: https://steamcommunity.com/id/ahunt/myworkshopfiles/
+[*] [b]Buy me a coffee[/b]: https://buymeacoffee.com/zerotheabsolute
+[*] [b]Patreon[/b]: https://www.patreon.com/cw/ZeroTheAbsolute/membership
+[/list]

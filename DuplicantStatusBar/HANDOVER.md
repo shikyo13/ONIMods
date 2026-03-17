@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.8.1
+**Version**: v2.9.0
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -55,7 +55,7 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 - **Drag via header**: position saved to PlayerPrefs, survives restarts
 - **Collapse button**: minimizes to just the header bar
 - **Width-based wrapping**: `MaxBarWidth%` of canvas width determines columns per row; excess rows scroll
-- **ScrollRect overflow**: when rows exceed `MaxBarRows`, a vertical `ScrollRect` with thin rounded scrollbar activates (clamped movement, 20 scroll sensitivity)
+- **ScrollRect overflow**: when rows exceed the drag-defined bounding box height, a vertical `ScrollRect` with thin rounded scrollbar activates (clamped movement, 20 scroll sensitivity)
 - **Min card size 16px**: drag-resize and options allow down to 16px (initials at ~8px font, portraits auto-disabled below 36px)
 
 ## Stress Tiers
@@ -120,7 +120,7 @@ Adopted ONI's native color palette, rounded panels, and game fonts:
 ## v2.1 — Multi-Row Wrap + Scroll
 
 - **MaxBarWidth** option (20–100%, default 50%): replaces hard-coded `Screen.width * 0.8f` with `canvasRT.rect.width * MaxBarWidth%`
-- **MaxBarRows** option (0–10, default 3): vertical scroll threshold (0 = unlimited)
+- **MaxBarRows** option (0–10, default 3): vertical scroll threshold (0 = unlimited) — *removed in v2.8.2, replaced by drag-defined bounding box*
 - **PortraitSize** lower limit: 24 → 16px
 - **ScrollRect hierarchy**: ScrollView (ScrollRect + LayoutElement) → Viewport (Mask) → Content (grid) + VScrollbar (6px, `RoundedRect` handle at 35% opacity)
 - **LayoutElement bridge**: `UpdateGridLayout` computes `preferredWidth`/`preferredHeight` explicitly since ScrollRect absorbs child preferred-size signals
@@ -311,6 +311,80 @@ All fixes use runtime detection (reflection, null-checks) rather than compile-ti
 **Fix**: Harmony postfix on `ManagementMenu.ToggleScreen` reads the private `activeScreen` field via `___activeScreen` traversal and sets a static `IsScreenOpen` bool. `StatusBarScreen.LateUpdate()` checks this flag every frame and disables the entire canvas when any management screen is open. Canvas re-enables automatically when the screen closes.
 
 **Files**: `Patches/GamePatches.cs` (new patch class), `UI/StatusBarScreen.cs` (LateUpdate check)
+
+## v2.8.2 - Fluid Bounding-Box Resize with Auto-Fit Cards
+
+Complete resize model overhaul. The resize grip now defines a freely-sizable pixel bounding box, and cards auto-scale to fill it. All hard caps (`MaxBarWidth`, `MaxDupesPerRow`, `MaxBarRows`) removed from PLib options. Flow direction auto-switches based on box aspect ratio.
+
+### Two Modes
+
+1. **Auto mode** (no drag yet, `barWidthPx = -1`): Cards use `PortraitSize` option. Columns = as many as fit the canvas width. All rows visible, no scroll.
+2. **Box mode** (after drag, `barWidthPx > 0 && barHeightPx > 0`): Card size derived from box dimensions + dupe count. Algorithm finds the largest card size in [16, 96] where all N dupes fit.
+
+### How It Works
+
+- **X-drag**: sets `barWidthPx` (pixel width). No percentage, no caps. Min = one tiny card. Max = full canvas width.
+- **Y-drag**: sets `barHeightPx` (pixel height). No card size coupling. Min = one tiny card. Max = full canvas height.
+- Card size, column count, and flow direction are computed automatically from the box every tick via `DeriveLayout()`.
+- **Flow direction**: `cols >= rows` = horizontal-first, `rows > cols` = vertical-first (via `grid.startAxis`). Grid constraint stays `FixedColumnCount`. Scroll always vertical.
+- **Scroll**: only when even at minimum card size (16px) dupes don't fit in the box height.
+
+### DeriveLayout Algorithm
+
+```
+DeriveLayout(W, H, N):
+  for cols = 1 to N:
+    rows = ceil(N / cols)
+    sizeFromW = (W - PAD_LR + SPACING) / cols - SPACING - 10
+    sizeFromH = (H - padTop - 4 + SPACING) / rows - SPACING - 22  (with badge correction)
+    size = clamp(floor(min(sizeFromW, sizeFromH)), 16, 96)
+    track best (largest) size and its cols
+
+  if bestSize < 16: scroll mode at 16px, cols from width only
+  flowVertical = rows > cols
+```
+
+### State
+
+| Key | Type | Default | Source |
+|-|-|-|-|
+| `DSB_BoxW` | float (PlayerPrefs) | absent (-1f = auto) | ResizeHandle X-drag |
+| `DSB_BoxH` | float (PlayerPrefs) | absent (-1f = auto) | ResizeHandle Y-drag |
+
+Legacy keys (`DSB_BarWidth`, `DSB_BarHeight`, `DSB_PortSize`) auto-cleaned on first load.
+
+### What Was Removed
+
+- `MaxBarWidth` PLib option (`[Option]`/`[Limit]` removed, `[JsonProperty]` kept for backwards-compat)
+- `MaxDupesPerRow` PLib option (same treatment)
+- `MaxBarRows` PLib option (already removed in prior pass)
+- `barWidthPct` field (replaced by `barWidthPx`)
+- `lastConfiguredMaxWidth` field
+- Card size coupling in ResizeHandle Y-drag
+- `DSB_PortSize` PlayerPrefs writes from resize (card size is derived)
+- MaxBarWidth change detection in RefreshWidgets
+- `PortraitSize -> lastComputedSize` direct assignment on option change
+- `GetCurrentPanelHeight()` (replaced by `GetCurrentBoxWidth()` / `GetCurrentBoxHeight()`)
+
+### What Stays
+
+- `PortraitSize` option (controls auto-mode card size)
+- `lastComputedSize` field (now set by `UpdateGridLayout`, consumed by widget updates)
+- All card rendering (DupePortraitWidget, PortraitCompositor) unchanged
+- Sort/filter flow (DupeStatusTracker ordering) unchanged
+
+### Other Changes (from v2.8.1)
+
+- **`SortOrder` removed from PLib options** - the sort/filter popup on the bar is the canonical way to change sort order; `[JsonProperty]` retained for persistence
+- **Scrollbar visual**: 10px wide, 0.6 alpha handle (was 6px, 0.35 alpha)
+- **Reset Bar Position** button clears box dimensions and returns to auto mode
+
+### Files Changed
+
+| File | Change |
+|-|-|
+| `UI/StatusBarScreen.cs` | New `DeriveLayout()` algorithm, rewritten `UpdateGridLayout`/`ResizeHandle`/`RefreshWidgets`/`LoadState`/`ResetToDefaults`; new `GetCurrentBoxWidth()`/`GetCurrentBoxHeight()` helpers; removed `barWidthPct`, `lastConfiguredMaxWidth` |
+| `Config/StatusBarOptions.cs` | Removed `[Option]`/`[Limit]` from `MaxBarWidth` + `MaxDupesPerRow` (kept `[JsonProperty]`); updated `ResetBarState()` with new + legacy key cleanup |
 
 ## Not Yet Implemented
 

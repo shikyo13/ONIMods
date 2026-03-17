@@ -33,11 +33,17 @@ namespace DuplicantStatusBar.UI
         internal int lastComputedSize;
         internal bool forceRefresh;
         private int lastConfiguredSize;
+        internal float barWidthPx = -1f;   // -1 = auto (use PortraitSize, fit canvas width)
+        internal float barHeightPx = -1f;  // -1 = auto (show all rows, no scroll)
         private CanvasScaler canvasScaler;
         private KCanvasScaler gameCanvasScaler;
         private float lastUIScale = 1f;
         private GameObject filterBtnGO;
+        private TMPro.TextMeshProUGUI filterTMP;
+        private HorizontalLayoutGroup headerHLG;
         private bool firstUpdate = true;
+        internal bool isDraggingResize;
+        private ContentSizeFitter panelFitter;
 
         // Game font (ONI-native, with fallback)
         private static TMPro.TMP_FontAsset _gameFont;
@@ -61,7 +67,9 @@ namespace DuplicantStatusBar.UI
         private const string PX = "DSB_PosX";
         private const string PY = "DSB_PosY";
         private const string PC = "DSB_Collapsed";
-        private const string PS = "DSB_PortSize";
+        private const string PW = "DSB_BoxW";
+        private const string PH = "DSB_BoxH";
+        private const string PVER = "DSB_PosVer";
 
         private void Start()
         {
@@ -77,6 +85,14 @@ namespace DuplicantStatusBar.UI
         private void Update()
         {
             if (Game.Instance == null) return;
+
+            // During resize drag, refresh every frame for smooth card reflow
+            if (isDraggingResize)
+            {
+                UpdateGridLayout(lastDupeCount > 0 ? lastDupeCount : DupeStatusTracker.Snapshots.Count);
+                for (int i = 0; i < widgets.Count && i < DupeStatusTracker.Snapshots.Count; i++)
+                    widgets[i].SetSnapshot(DupeStatusTracker.Snapshots[i], lastComputedSize);
+            }
 
             updateTimer -= Time.unscaledDeltaTime;
             if (updateTimer <= 0f)
@@ -160,11 +176,11 @@ namespace DuplicantStatusBar.UI
             // Mask clips children (header bg) to rounded rect shape
             panelGO.AddComponent<Mask>().showMaskGraphic = true;
 
-            // Anchor top-center
-            barPanel.anchorMin = new Vector2(0.5f, 1f);
-            barPanel.anchorMax = new Vector2(0.5f, 1f);
-            barPanel.pivot = new Vector2(0.5f, 1f);
-            barPanel.anchoredPosition = new Vector2(0, -5);
+            // Anchor top-left: resize grows rightward + downward only
+            barPanel.anchorMin = new Vector2(0f, 1f);
+            barPanel.anchorMax = new Vector2(0f, 1f);
+            barPanel.pivot = new Vector2(0f, 1f);
+            barPanel.anchoredPosition = new Vector2(0f, -5f);
 
             // Vertical layout: header row + portrait row
             var vlg = panelGO.AddComponent<VerticalLayoutGroup>();
@@ -174,7 +190,7 @@ namespace DuplicantStatusBar.UI
             vlg.childForceExpandHeight = false;
             vlg.childAlignment = TextAnchor.UpperCenter;
 
-            var panelFitter = panelGO.AddComponent<ContentSizeFitter>();
+            panelFitter = panelGO.AddComponent<ContentSizeFitter>();
             panelFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
@@ -197,7 +213,8 @@ namespace DuplicantStatusBar.UI
             var dragHandler = header.AddComponent<HeaderDragHandler>();
             dragHandler.screen = this;
 
-            var hlg = header.AddComponent<HorizontalLayoutGroup>();
+            headerHLG = header.AddComponent<HorizontalLayoutGroup>();
+            var hlg = headerHLG;
             hlg.spacing = 4;
             hlg.childForceExpandWidth = false;
             hlg.childForceExpandHeight = false;
@@ -253,7 +270,7 @@ namespace DuplicantStatusBar.UI
 
             var filterTextGO = new GameObject("Label");
             filterTextGO.transform.SetParent(filterGO.transform, false);
-            var filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
+            filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
             filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
             filterTMP.fontSize = 13;
             filterTMP.color = Color.white;
@@ -354,7 +371,7 @@ namespace DuplicantStatusBar.UI
             scrollbarRT.anchorMin = new Vector2(1f, 0f);
             scrollbarRT.anchorMax = new Vector2(1f, 1f);
             scrollbarRT.pivot = new Vector2(1f, 0.5f);
-            scrollbarRT.sizeDelta = new Vector2(6f, 0f);
+            scrollbarRT.sizeDelta = new Vector2(10f, 0f);
 
             var slideArea = new GameObject("SlidingArea");
             slideArea.transform.SetParent(scrollbarGO.transform, false);
@@ -391,48 +408,216 @@ namespace DuplicantStatusBar.UI
             scrollbarGO.SetActive(false);
         }
 
-        private void UpdateGridLayout(int dupeCount, int size)
+        private void UpdateGridLayout(int dupeCount)
         {
+            if (dupeCount <= 0) return;
+            var opts = StatusBarOptions.Instance;
+            float canvasW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+
+            int size;
+            int cols;
+            bool needsScroll;
+            bool flowVertical;
+
+            bool wConstrained = barWidthPx > 0;
+            bool hConstrained = barHeightPx > 0;
+
+            if (wConstrained && hConstrained)
+            {
+                // BOX MODE: derive card size from bounding box
+                float headerH = headerRT != null ? headerRT.rect.height : 20f;
+                DeriveLayout(barWidthPx, barHeightPx - headerH, dupeCount,
+                    out size, out cols, out needsScroll, out flowVertical);
+            }
+            else if (wConstrained)
+            {
+                // WIDTH-ONLY: PortraitSize cards, derive cols from width
+                size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
+                int cellW = size + 10;
+                int fitCols = Mathf.Max(1, Mathf.FloorToInt((barWidthPx - 8 + 4) / (cellW + 4)));
+                cols = Mathf.Clamp(fitCols, 1, dupeCount);
+                needsScroll = false;
+                flowVertical = false;
+            }
+            else if (hConstrained)
+            {
+                // HEIGHT-ONLY: PortraitSize cards, derive visible rows from height
+                size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
+                int cellH = size + 22;
+                float headerH = headerRT != null ? headerRT.rect.height : 20f;
+                float contentH = barHeightPx - headerH;
+                int cardSzTmp = size + 4;
+                float badgeTmp = Mathf.Max(9f, cardSzTmp * 0.28f);
+                int padTopTmp = Mathf.Max(4, Mathf.CeilToInt(badgeTmp * 0.35f));
+                int visibleRows = Mathf.Max(1, Mathf.FloorToInt(
+                    (contentH - padTopTmp - 4 + 4) / (cellH + 4)));
+                cols = Mathf.CeilToInt((float)dupeCount / visibleRows);
+                // Cap columns by canvas width
+                int cellW = size + 10;
+                int maxFitCols = Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (cellW + 4)));
+                cols = Mathf.Clamp(cols, 1, Mathf.Min(maxFitCols, dupeCount));
+                int actualRows = Mathf.CeilToInt((float)dupeCount / cols);
+                needsScroll = actualRows > visibleRows;
+                flowVertical = false;
+            }
+            else
+            {
+                // AUTO MODE: use PortraitSize, fit canvas width, show all rows
+                size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
+                int totalW_auto = size + 10;
+                int fitCols = Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (totalW_auto + 4)));
+                cols = Mathf.Min(fitCols, dupeCount);
+                needsScroll = false;
+                flowVertical = false;
+            }
+
+            // Apply to grid
+            lastComputedSize = size;
             int totalW = size + 10;
             int totalH = size + 22;
             grid.cellSize = new Vector2(totalW, totalH);
 
-            // Top padding must accommodate badge overflow above the first row.
-            // Badge anchors at card top-right, extends ~0.35 * badgeSize above the card edge.
             int cardSz = size + 4;
             float badgeSize = Mathf.Max(9f, cardSz * 0.28f);
             int badgeOverflow = Mathf.CeilToInt(badgeSize * 0.35f);
             grid.padding = new RectOffset(4, 4, Mathf.Max(4, badgeOverflow), 4);
 
-            var opts = StatusBarOptions.Instance;
-            float canvasW = canvasRT != null ? canvasRT.rect.width : Screen.width;
-            float available = canvasW * (opts.MaxBarWidth / 100f);
-            int fitCount = Mathf.Max(1, Mathf.FloorToInt(available / (totalW + 4)));
-            int maxPerRow = opts.MaxDupesPerRow;
-            int columnCount = maxPerRow > 0
-                ? Mathf.Min(maxPerRow, fitCount)
-                : fitCount;
-            columnCount = Mathf.Min(columnCount, dupeCount);
-            grid.constraintCount = Mathf.Max(1, columnCount);
-
-            int cols = Mathf.Max(1, columnCount);
-            int spacing = (int)grid.spacing.y;
+            grid.constraintCount = Mathf.Max(1, cols);
             int rows = Mathf.CeilToInt((float)dupeCount / cols);
-            int maxRows = opts.MaxBarRows;
-            bool needsScroll = maxRows > 0 && rows > maxRows;
-            int displayRows = needsScroll ? maxRows : rows;
 
-            float viewH = Mathf.Max(0, displayRows * (totalH + spacing)
-                        - spacing + grid.padding.top + grid.padding.bottom);
-            scrollViewLayout.preferredHeight = viewH;
+            // Flow direction
+            grid.startAxis = flowVertical
+                ? GridLayoutGroup.Axis.Vertical
+                : GridLayoutGroup.Axis.Horizontal;
+
+            // Viewport dimensions
+            int spacing = (int)grid.spacing.y;
+            int hSpacing = (int)grid.spacing.x;
+
+            // In height-only mode with scroll, show visible rows, not all rows
+            int displayRows = needsScroll && hConstrained && !wConstrained
+                ? Mathf.Max(1, Mathf.FloorToInt(
+                    (barHeightPx - (headerRT != null ? headerRT.rect.height : 20f)
+                     - grid.padding.top - grid.padding.bottom + spacing) / (totalH + spacing)))
+                : rows;
+            float viewH = displayRows * (totalH + spacing) - spacing
+                         + grid.padding.top + grid.padding.bottom;
+            float viewW = cols * totalW + Mathf.Max(0, cols - 1) * hSpacing
+                        + grid.padding.left + grid.padding.right;
+            if (needsScroll) viewW += 12f;
+
+            scrollViewLayout.preferredHeight = Mathf.Max(0, viewH);
+            scrollViewLayout.preferredWidth = viewW;
             scrollRect.vertical = needsScroll;
             scrollbarGO.SetActive(needsScroll);
 
-            int hSpacing = (int)grid.spacing.x;
-            float viewW = cols * totalW + Mathf.Max(0, cols - 1) * hSpacing
-                        + grid.padding.left + grid.padding.right;
-            if (needsScroll) viewW += 8f;
-            scrollViewLayout.preferredWidth = viewW;
+            // Filter button: full text -> compact arrow -> hidden
+            if (filterBtnGO != null && !isCollapsed)
+            {
+                var fRT = filterBtnGO.GetComponent<RectTransform>();
+                if (viewW >= 200f)
+                {
+                    filterBtnGO.SetActive(true);
+                    if (filterTMP != null) filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
+                    fRT.sizeDelta = new Vector2(80f, 0f);
+                    if (headerHLG != null)
+                    {
+                        var pad = headerHLG.padding;
+                        headerHLG.padding = new RectOffset(86, pad.right, pad.top, pad.bottom);
+                    }
+                }
+                else if (viewW >= 100f)
+                {
+                    filterBtnGO.SetActive(true);
+                    if (filterTMP != null) filterTMP.text = "\u25BC";
+                    fRT.sizeDelta = new Vector2(20f, 0f);
+                    if (headerHLG != null)
+                    {
+                        var pad = headerHLG.padding;
+                        headerHLG.padding = new RectOffset(26, pad.right, pad.top, pad.bottom);
+                    }
+                }
+                else
+                {
+                    filterBtnGO.SetActive(false);
+                    if (headerHLG != null)
+                    {
+                        var pad = headerHLG.padding;
+                        headerHLG.padding = new RectOffset(6, pad.right, pad.top, pad.bottom);
+                    }
+                }
+            }
+        }
+
+        private static void DeriveLayout(float W, float H, int N,
+            out int size, out int cols, out bool needsScroll, out bool flowVertical)
+        {
+            const int PAD_LR = 8, SPACING = 4;
+            const int CARD_W_OH = 10, CARD_H_OH = 22;
+            const int MAX_BOX_SIZE = 256;
+
+            float A = W - PAD_LR + SPACING;
+            float B0 = H - 8 + SPACING;
+
+            // Quadratic: find column count where width and height constraints balance.
+            // From sizeFromW = sizeFromH => B0*c^2 - 12*N*c - A*N = 0
+            float cIdeal = 1f;
+            if (B0 > 0f)
+            {
+                float disc = 36f * N * N + A * B0 * N;
+                cIdeal = (6f * N + Mathf.Sqrt(Mathf.Max(0f, disc))) / B0;
+            }
+
+            int cLo = Mathf.Clamp(Mathf.FloorToInt(cIdeal), 1, N);
+            int cHi = Mathf.Clamp(Mathf.CeilToInt(cIdeal), 1, N);
+
+            int bestSize = -1, bestCols = 1;
+
+            // Evaluate floor/ceil of ideal + boundary guards (1 and N)
+            for (int pass = 0; pass < 4; pass++)
+            {
+                int c = pass == 0 ? 1 : pass == 1 ? cLo : pass == 2 ? cHi : N;
+                int r = Mathf.CeilToInt((float)N / c);
+
+                float sizeFromW = A / c - SPACING - CARD_W_OH;
+
+                // First pass: baseline padding
+                float cellH = B0 / r - SPACING;
+                int s = Mathf.FloorToInt(Mathf.Min(sizeFromW, cellH - CARD_H_OH));
+                s = Mathf.Clamp(s, MIN_CARD_SIZE, MAX_BOX_SIZE);
+
+                // Badge overflow correction
+                float badge = Mathf.Max(9f, (s + 4) * 0.28f);
+                int padTop = Mathf.Max(4, Mathf.CeilToInt(badge * 0.35f));
+                float B2 = H - padTop - 4 + SPACING;
+                float cellH2 = B2 / r - SPACING;
+                s = Mathf.FloorToInt(Mathf.Clamp(
+                    Mathf.Min(sizeFromW, cellH2 - CARD_H_OH), MIN_CARD_SIZE, MAX_BOX_SIZE));
+
+                if (s >= bestSize)
+                {
+                    bestSize = s;
+                    bestCols = c;
+                }
+            }
+
+            if (bestSize < MIN_CARD_SIZE)
+            {
+                bestSize = MIN_CARD_SIZE;
+                float cellW_min = MIN_CARD_SIZE + CARD_W_OH + SPACING;
+                bestCols = Mathf.Clamp(
+                    Mathf.FloorToInt((W - PAD_LR + SPACING) / cellW_min), 1, N);
+                needsScroll = true;
+            }
+            else
+            {
+                needsScroll = false;
+            }
+
+            size = bestSize;
+            cols = bestCols;
+            int rows = Mathf.CeilToInt((float)N / cols);
+            flowVertical = rows > cols;
         }
 
         private void BuildResizeHandle(GameObject canvasGO)
@@ -594,31 +779,104 @@ namespace DuplicantStatusBar.UI
         {
             internal StatusBarScreen screen;
             private float startY;
-            private int startSize;
+            private float startBarHeightPx;
+            private float startX;
+            private float startBarWidthPx;
+            private bool xActivated;
+            private bool yActivated;
+            private const float DEAD_ZONE = 5f;
 
             public void OnPointerDown(PointerEventData e)
             {
                 startY = e.position.y;
-                startSize = screen.lastComputedSize > 0
-                    ? screen.lastComputedSize
-                    : StatusBarOptions.Instance.PortraitSize;
+                startX = e.position.x;
+                startBarWidthPx = screen.barWidthPx;
+                startBarHeightPx = screen.barHeightPx;
+                xActivated = false;
+                yActivated = false;
+                screen.isDraggingResize = true;
+                if (screen.panelFitter != null)
+                {
+                    screen.panelFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                    screen.panelFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+                }
             }
 
             public void OnDrag(PointerEventData e)
             {
-                float deltaY = startY - e.position.y; // down = bigger
-                int newSize = Mathf.Clamp(
-                    startSize + Mathf.RoundToInt(deltaY * 0.5f), MIN_CARD_SIZE, 96);
-                if (newSize != screen.lastComputedSize)
+                float canvasW = screen.canvasRT != null ? screen.canvasRT.rect.width : Screen.width;
+                float canvasH = screen.canvasRT != null ? screen.canvasRT.rect.height : Screen.height;
+                float panelLeft = screen.barPanel.anchoredPosition.x;
+                float panelTop  = -screen.barPanel.anchoredPosition.y;
+
+                float deltaX = e.position.x - startX;
+                float deltaY = startY - e.position.y;
+
+                // Sticky dead zone: once activated, stays active for this drag
+                if (!xActivated && Mathf.Abs(deltaX) > DEAD_ZONE) xActivated = true;
+                if (!yActivated && Mathf.Abs(deltaY) > DEAD_ZONE) yActivated = true;
+
+                float minW = MIN_CARD_SIZE + 10 + 8;
+                float maxW = Mathf.Max(minW, canvasW - panelLeft);
+                float minH = MIN_CARD_SIZE + 22 + 8;
+                float maxH = Mathf.Max(minH, canvasH - panelTop);
+
+                // Only update activated axes; preserve current value (may be -1) otherwise
+                float newW, newH;
+                if (xActivated)
                 {
-                    screen.lastComputedSize = newSize;
+                    float baseW = startBarWidthPx > 0
+                        ? startBarWidthPx : screen.GetCurrentBoxWidth();
+                    newW = Mathf.Clamp(baseW + deltaX, minW, maxW);
+                }
+                else
+                {
+                    newW = screen.barWidthPx;
+                }
+
+                if (yActivated)
+                {
+                    float baseH = startBarHeightPx > 0
+                        ? startBarHeightPx : screen.GetCurrentBoxHeight();
+                    newH = Mathf.Clamp(baseH + deltaY, minH, maxH);
+                }
+                else
+                {
+                    newH = screen.barHeightPx;
+                }
+
+                if (!Mathf.Approximately(newW, screen.barWidthPx) ||
+                    !Mathf.Approximately(newH, screen.barHeightPx))
+                {
+                    screen.barWidthPx = newW;
+                    screen.barHeightPx = newH;
                     screen.forceRefresh = true;
+                }
+
+                // Direct panel sizing (CSF is disabled during drag)
+                if (screen.scrollViewLayout != null && screen.lastDupeCount > 0)
+                {
+                    screen.ComputeContentPreferredSizes(newW, newH,
+                        out float cW, out float cH);
+                    screen.scrollViewLayout.preferredWidth = cW;
+                    screen.scrollViewLayout.preferredHeight = Mathf.Max(0, cH);
+
+                    float headerH = screen.headerRT != null ? screen.headerRT.rect.height : 20f;
+                    screen.barPanel.sizeDelta = new Vector2(cW, cH + headerH);
                 }
             }
 
             public void OnPointerUp(PointerEventData e)
             {
-                PlayerPrefs.SetInt(PS, screen.lastComputedSize);
+                screen.isDraggingResize = false;
+                if (screen.panelFitter != null)
+                {
+                    screen.panelFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                    screen.panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                }
+                screen.ClampPanelPosition();
+                PlayerPrefs.SetFloat(PW, screen.barWidthPx);
+                PlayerPrefs.SetFloat(PH, screen.barHeightPx);
                 PlayerPrefs.Save();
             }
         }
@@ -640,26 +898,24 @@ namespace DuplicantStatusBar.UI
 
             var snaps = DupeStatusTracker.Snapshots;
 
-            // Detect option change for portrait size
+            // Detect option change for PortraitSize (auto mode only)
             int configured = opts.PortraitSize;
             if (configured != lastConfiguredSize)
             {
                 lastConfiguredSize = configured;
-                lastComputedSize = configured;
-                PlayerPrefs.DeleteKey(PS); // option change overrides drag-resize
+                forceRefresh = true;
             }
+
             if (snaps.Count != lastDupeCount)
             {
-                bool resizeDrag = lastDupeCount == -1 && lastComputedSize > 0;
                 lastDupeCount = snaps.Count;
-                if (!resizeDrag && !PlayerPrefs.HasKey(PS))
-                    lastComputedSize = Mathf.Clamp(StatusBarOptions.Instance.PortraitSize, MIN_CARD_SIZE, 96);
+                forceRefresh = true;
             }
             if (forceRefresh)
                 forceRefresh = false;
-            int size = lastComputedSize;
 
-            UpdateGridLayout(snaps.Count, size);
+            UpdateGridLayout(snaps.Count);
+            int size = lastComputedSize;
 
             // Add widgets if needed
             while (widgets.Count < snaps.Count)
@@ -702,19 +958,113 @@ namespace DuplicantStatusBar.UI
             scrollViewGO.SetActive(true);
             if (filterBtnGO != null) filterBtnGO.SetActive(true);
             if (collapseLabel != null) collapseLabel.text = "\u2212";
-            if (barPanel != null)
-                barPanel.anchoredPosition = new Vector2(0, -5);
-            lastComputedSize = StatusBarOptions.Instance.PortraitSize;
+            if (barPanel != null && canvasRT != null)
+            {
+                float cx = canvasRT.rect.width * 0.5f;
+                barPanel.anchoredPosition = new Vector2(cx, -5f);
+            }
+            barWidthPx = -1f;
+            barHeightPx = -1f;
             forceRefresh = true;
+        }
+
+        internal void ComputeContentPreferredSizes(float constraintW, float constraintH,
+            out float contentW, out float contentH)
+        {
+            int N = lastDupeCount > 0 ? lastDupeCount : 1;
+            float headerH = headerRT != null ? headerRT.rect.height : 20f;
+            var opts = StatusBarOptions.Instance;
+            float canvasW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+
+            bool wCon = constraintW > 0;
+            bool hCon = constraintH > 0;
+            int sz, c;
+            bool scroll;
+
+            if (wCon && hCon)
+            {
+                // Box mode
+                DeriveLayout(constraintW, constraintH - headerH, N,
+                    out sz, out c, out scroll, out _);
+            }
+            else if (wCon)
+            {
+                // Width-only
+                sz = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
+                int cellW = sz + 10;
+                c = Mathf.Clamp(
+                    Mathf.Max(1, Mathf.FloorToInt((constraintW - 8 + 4) / (cellW + 4))),
+                    1, N);
+                scroll = false;
+            }
+            else if (hCon)
+            {
+                // Height-only
+                sz = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
+                int cellH = sz + 22;
+                int cardSzTmp = sz + 4;
+                float badgeTmp = Mathf.Max(9f, cardSzTmp * 0.28f);
+                int padTopTmp = Mathf.Max(4, Mathf.CeilToInt(badgeTmp * 0.35f));
+                int visRows = Mathf.Max(1, Mathf.FloorToInt(
+                    (constraintH - headerH - padTopTmp - 4 + 4) / (cellH + 4)));
+                c = Mathf.CeilToInt((float)N / visRows);
+                int cellW = sz + 10;
+                int maxFit = Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (cellW + 4)));
+                c = Mathf.Clamp(c, 1, Mathf.Min(maxFit, N));
+                int actualRows = Mathf.CeilToInt((float)N / c);
+                scroll = actualRows > visRows;
+            }
+            else
+            {
+                // Auto
+                sz = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
+                int cellW = sz + 10;
+                c = Mathf.Min(
+                    Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (cellW + 4))),
+                    N);
+                scroll = false;
+            }
+
+            int tW = sz + 10, tH = sz + 22;
+            int r = Mathf.CeilToInt((float)N / c);
+            int cardSz2 = sz + 4;
+            float badge = Mathf.Max(9f, cardSz2 * 0.28f);
+            int padTop = Mathf.Max(4, Mathf.CeilToInt(badge * 0.35f));
+
+            // For height-only with scroll, use visible rows for viewport height
+            int displayR = r;
+            if (scroll && hCon && !wCon)
+            {
+                int cellH = sz + 22;
+                displayR = Mathf.Max(1, Mathf.FloorToInt(
+                    (constraintH - headerH - padTop - 4 + 4) / (cellH + 4)));
+            }
+
+            contentW = c * tW + Mathf.Max(0, c - 1) * 4 + 4 + 4;
+            if (scroll) contentW += 12f;
+            contentH = displayR * (tH + 4) - 4 + padTop + 4;
+        }
+
+        internal float GetCurrentBoxWidth()
+        {
+            return scrollViewLayout != null ? scrollViewLayout.preferredWidth : 200f;
+        }
+
+        internal float GetCurrentBoxHeight()
+        {
+            return scrollViewLayout != null
+                ? scrollViewLayout.preferredHeight + (headerRT != null ? headerRT.rect.height : 20f)
+                : 100f;
         }
 
         private void ClampPanelPosition()
         {
             if (barPanel == null || canvasRT == null) return;
-            var size = canvasRT.rect.size;
+            var cv  = canvasRT.rect;
+            var sz  = barPanel.rect.size;
             var pos = barPanel.anchoredPosition;
-            pos.x = Mathf.Clamp(pos.x, -size.x * 0.5f, size.x * 0.5f);
-            pos.y = Mathf.Clamp(pos.y, -(size.y - 20f), 0f);
+            pos.x = Mathf.Clamp(pos.x, 0f, Mathf.Max(0f, cv.width - sz.x));
+            pos.y = Mathf.Clamp(pos.y, -(cv.height - 20f), 0f);
             barPanel.anchoredPosition = pos;
         }
 
@@ -733,21 +1083,48 @@ namespace DuplicantStatusBar.UI
         {
             if (barPanel == null) return;
             lastConfiguredSize = StatusBarOptions.Instance.PortraitSize;
+            bool isLegacy = !PlayerPrefs.HasKey(PVER);
             if (PlayerPrefs.HasKey(PX))
             {
-                barPanel.anchoredPosition = new Vector2(
-                    PlayerPrefs.GetFloat(PX, 0),
-                    PlayerPrefs.GetFloat(PY, -5));
+                float x = PlayerPrefs.GetFloat(PX, 0);
+                float y = PlayerPrefs.GetFloat(PY, -5);
+                if (isLegacy)
+                {
+                    // Migrate: old x was offset from center, new x is from left edge
+                    float cvW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+                    x = cvW * 0.5f + x;
+                    PlayerPrefs.SetInt(PVER, 2);
+                    PlayerPrefs.Save();
+                }
+                barPanel.anchoredPosition = new Vector2(x, y);
                 ClampPanelPosition();
+            }
+            else
+            {
+                // No saved position: center the panel
+                float cvW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+                barPanel.anchoredPosition = new Vector2(cvW * 0.5f, -5f);
             }
             isCollapsed = PlayerPrefs.GetInt(PC, 0) == 1;
             scrollViewGO.SetActive(!isCollapsed);
             if (filterBtnGO != null) filterBtnGO.SetActive(!isCollapsed);
             if (isCollapsed && collapseLabel != null)
                 collapseLabel.text = "+";
-            if (PlayerPrefs.HasKey(PS))
+
+            // Load new box-mode keys
+            if (PlayerPrefs.HasKey(PW))
+                barWidthPx = PlayerPrefs.GetFloat(PW, -1f);
+            if (PlayerPrefs.HasKey(PH))
+                barHeightPx = PlayerPrefs.GetFloat(PH, -1f);
+
+            // Migrate legacy keys (one-time cleanup)
+            if (PlayerPrefs.HasKey("DSB_BarWidth") || PlayerPrefs.HasKey("DSB_BarHeight")
+                || PlayerPrefs.HasKey("DSB_PortSize"))
             {
-                lastComputedSize = PlayerPrefs.GetInt(PS, StatusBarOptions.Instance.PortraitSize);
+                PlayerPrefs.DeleteKey("DSB_BarWidth");
+                PlayerPrefs.DeleteKey("DSB_BarHeight");
+                PlayerPrefs.DeleteKey("DSB_PortSize");
+                PlayerPrefs.Save();
             }
         }
     }

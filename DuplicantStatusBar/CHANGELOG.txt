@@ -1,6 +1,18 @@
-[h1]Duplicant Status Bar — Changelog[/h1]
+[h1]Duplicant Status Bar - Changelog[/h1]
 
-[h2]v2.8.0 — Bionic Dupe Support + Troubleshooting Tools[/h2]
+[h2]v2.9.0 - Resize System Overhaul[/h2]
+[list]
+[*] [b]Independent axis resizing[/b] - drag the grip horizontally to change column count only (height auto-wraps), vertically to change visible rows only (width auto-wraps), or diagonally to constrain both
+[*] [b]5px dead zone with sticky activation[/b] - prevents accidental resizing from mouse jitter; once an axis activates it stays active for the rest of the drag
+[*] [b]Top-left anchored growth[/b] - resizing grows the panel rightward and downward only; left and top edges stay fixed (no more symmetric expansion pushing the bar off-screen)
+[*] [b]Screen bounds clamping[/b] - panel size is clamped to remaining screen space from its current position; cannot extend past screen edges
+[*] [b]Eliminated resize rubber-banding[/b] - ContentSizeFitter disabled during drag with direct panel sizing; grip, panel, and cards all move together on the same frame
+[*] [b]Per-frame card reflow during drag[/b] - cards resize every frame while dragging instead of at 4Hz, for smooth visual feedback
+[*] [b]Four layout modes[/b] - auto (both axes free), width-only, height-only, and box (both constrained); card size comes from PortraitSize option in single-axis modes, derived from constraints in box mode
+[*] [b]Position migration[/b] - saved positions from older versions automatically converted to new top-left anchor coordinate system
+[/list]
+
+[h2]v2.8.0 - Bionic Dupe Support + Troubleshooting Tools[/h2]
 [list]
 [*] [b]Bionic dupe support[/b] — Battery, Gunk, and Gear Oil stats now shown in tooltips instead of Calories/Bladder for bionic dupes
 [*] [b]3 new bionic alerts[/b] — Low Battery (1 or fewer electrobanks), Low Gear Oil (<20%), Grinding Gears (no oil) with distinct colors, effects, and facial expressions
