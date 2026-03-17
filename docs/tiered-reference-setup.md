@@ -38,16 +38,16 @@ Tier 3: Full API/Reference  Read specific sections on demand
 
 ### What Goes Here
 
-1. **One-line project description** — What is this?
-2. **Key directories** — 5-8 entries max, table format
-3. **Build commands** — Copy-pasteable
-4. **Coding conventions** — The 5-10 rules that prevent bugs
-5. **Documentation routing table** — The critical piece:
+1. **One-line project description**  - What is this?
+2. **Key directories**  - 5-8 entries max, table format
+3. **Build commands**  - Copy-pasteable
+4. **Coding conventions**  - The 5-10 rules that prevent bugs
+5. **Documentation routing table**  - The critical piece:
 
 ```markdown
 ## Documentation
 | When | Read |
-|------|------|
+|-|-|
 | Every session | `docs/tier1-quickref.md` (~120 lines) |
 | Editing module structure | `docs/tier2-architecture.md` |
 | Editing hero configs | `docs/tier2-patch-notes.md` |
@@ -74,10 +74,10 @@ Every extra line in CLAUDE.md is read on every single message. A 500-line CLAUDE
 
 Content that prevents **repeated mistakes across sessions**:
 
-1. **Dependency graph** (compact) — What loads what. Not every file, just the key load paths. Table format.
-2. **Language/framework gotchas** — One-liner bullet list of the 15-20 most critical pitfalls. Things the AI gets wrong repeatedly.
-3. **Breaking changes** — If you're on a new version/patch, the top 10 changes that affect the codebase.
-4. **Anti-patterns** — Lessons learned from past mistakes. "Don't do X because Y."
+1. **Dependency graph** (compact)  - What loads what. Not every file, just the key load paths. Table format.
+2. **Language/framework gotchas**  - One-liner bullet list of the 15-20 most critical pitfalls. Things the AI gets wrong repeatedly.
+3. **Breaking changes**  - If you're on a new version/patch, the top 10 changes that affect the codebase.
+4. **Anti-patterns**  - Lessons learned from past mistakes. "Don't do X because Y."
 
 ### How to Write Gotchas
 
@@ -105,7 +105,7 @@ hero-specific configuration from the BotLib directory using dofile()...
 Good (table):
 ```markdown
 | File | Requires |
-|------|----------|
+|-|-|
 | `bot_generic.lua` | utils, BotLib/hero_* (via dofile) |
 | `item_purchase_generic.lua` | jmz_func, aba_item, aba_role, utils, BotLib/hero_* |
 ```
@@ -120,18 +120,18 @@ Good (table):
 Each tier-2 file covers one **editing context**. Ask: "When I'm editing X, what do I need to know?"
 
 Examples from this project:
-- **Architecture** (tier2-architecture.md) — Module structure, require graph, file layout. Read when editing module structure or adding new modules.
-- **Patch notes** (tier2-patch-notes.md) — Hero/item changes mapped to config files. Read when editing hero configs or item builds.
+- **Architecture** (tier2-architecture.md)  - Module structure, require graph, file layout. Read when editing module structure or adding new modules.
+- **Patch notes** (tier2-patch-notes.md)  - Hero/item changes mapped to config files. Read when editing hero configs or item builds.
 
 Other projects might split differently:
-- **Database schema** — Read when editing models or migrations
-- **API contracts** — Read when editing endpoints or clients
-- **Component library** — Read when building UI
-- **Test patterns** — Read when writing tests
+- **Database schema**  - Read when editing models or migrations
+- **API contracts**  - Read when editing endpoints or clients
+- **Component library**  - Read when building UI
+- **Test patterns**  - Read when writing tests
 
 ### Key Principle: Map Changes to Files
 
-Every entry in a tier-2 doc should map to a **specific file or module** in the codebase. Don't just document what changed — document what to edit.
+Every entry in a tier-2 doc should map to a **specific file or module** in the codebase. Don't just document what changed  - document what to edit.
 
 Bad:
 ```markdown
@@ -162,7 +162,7 @@ This is what makes tier 3 work. At the top of the file, add a table mapping sect
 Use `Read` tool with `offset` and `limit` to load specific sections only.
 
 | # | Topic | Lines |
-|---|-------|-------|
+|-|-|-|
 | 1 | Environment Setup | 39-85 |
 | 2 | Architecture | 86-123 |
 | 3 | File Naming & Overrides | 124-226 |
@@ -242,7 +242,7 @@ AI assistants scan for patterns, not prose. A bullet point with a code snippet b
 "Ethereal Blade was reworked" is useless. "Ethereal Blade reworked -> update sBuyList in hero_morphling.lua" is actionable.
 
 **5. Prune aggressively.**
-If a gotcha hasn't prevented a bug in 3 sessions, demote it. If a tier-2 entry references deleted code, remove it. Dead docs are negative value — they cost tokens and mislead.
+If a gotcha hasn't prevented a bug in 3 sessions, demote it. If a tier-2 entry references deleted code, remove it. Dead docs are negative value  - they cost tokens and mislead.
 
 ## Adapting to Other Projects
 

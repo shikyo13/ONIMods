@@ -1,0 +1,1403 @@
+Mono path[0] = 'C:/Program Files (x86)/Steam/steamapps/common/OxygenNotIncluded/OxygenNotIncluded_Data/Managed'
+Mono config path = 'C:/Program Files (x86)/Steam/steamapps/common/OxygenNotIncluded/MonoBleedingEdge/etc'
+Found 1 interfaces on host : 0) 192.168.2.3
+Player connection [11184]  Target information:
+
+Player connection [11184]  * "[IP] 192.168.2.3 [Port] 55000 [Flags] 2 [Guid] 83340781 [EditorId] 2598627970 [Version] 1048832 [Id] WindowsPlayer(2,DESKTOP-5VA7ATA) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] Oxygen Not Included" 
+
+Player connection [11184] Started UDP target info broadcast (1) on [225.0.0.222:54997].
+
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.5f2 (3fa8bc678cb0)
+[Subsystems] Discovering subsystems at path C:/Program Files (x86)/Steam/steamapps/common/OxygenNotIncluded/OxygenNotIncluded_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 2060
+[D3D12 Device Filter] Driver Version: 32.0.15.6094
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 5954 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 2060 (ID=0x1f08)
+    Vendor:   NVIDIA
+    VRAM:     5954 MB
+    Driver:   32.0.15.6094
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.177 seconds
+- Finished resetting the current domain, in  0.002 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+<RI> Input initialized.
+UnloadTime: 0.489400 ms
+[23:28:48.581] [1] [INFO] Applying resolution 1920x1057 @60hz (fullscreen: Windowed)
+[23:28:48.590] [1] [INFO] Low Res Textures? No
+[23:28:48.608] [1] [INFO] Date: 03/16/2026 01:28:48
+[23:28:48.609] [1] [INFO] Build: ??-717001-? (preview)
+[23:28:48.611] [1] [INFO] Creating SteamManager.
+[23:28:48.673] [1] [INFO] DistributionPlatform initialized.
+[23:28:48.673] [1] [INFO] -----------------------------------------------------------
+[23:28:48.678] [1] [INFO] Build: U58-717001-VCRPN (preview)
+[23:28:48.678] [1] [INFO] -----------------------------------------------------------
+[23:28:48.678] [1] [INFO] DLC Information
+[23:28:48.681] [1] [INFO] - COSMETIC1_ID loaded: True
+[23:28:48.681] [1] [INFO] - DLC4_ID loaded: True
+[23:28:48.681] [1] [INFO] - DLC3_ID loaded: True
+[23:28:48.681] [1] [INFO] - DLC2_ID loaded: True
+[23:28:48.681] [1] [INFO] - EXPANSION1_ID loaded: False
+[23:28:48.681] [1] [INFO] -----------------------------------------------------------
+[23:28:50.897] [1] [INFO] Loading DLC DLC2_ID assets from bundle
+[23:28:51.718] [1] [INFO] Loading DLC DLC3_ID assets from bundle
+[23:28:52.527] [1] [INFO] Loading DLC DLC4_ID assets from bundle
+[23:28:53.213] [1] [INFO] Loading DLC COSMETIC1_ID assets from bundle
+SYSTEM INFO:
+    Platform=WindowsPlayer
+    OSname=Windows 10  (10.0.19045) 64bit
+    OSversion=10.0.19045.0
+    CPUmodel=A320M-S2H (Gigabyte Technology Co., Ltd.)
+    CPUdeviceType=Desktop
+    CPUarch=AMD64
+    ProcBits=64
+    CPUcount=12
+    CPUtype=AMD Ryzen 5 3600 6-Core Processor 
+    SystemMemoryMegs=16332
+    GPUgraphicsDeviceID=7944
+    GPUname=NVIDIA GeForce RTX 2060
+    GPUgraphicsDeviceType=Direct3D11
+    GPUgraphicsDeviceVendor=NVIDIA
+    GPUgraphicsDeviceVendorID=4318
+    GPUgraphicsDeviceVersion=Direct3D 11.0 [level 11.1]
+    GPUmemoryMegs=5954
+    GPUgraphicsMultiThreaded=False
+    GPUgraphicsShaderLevel=50
+    GPUmaxTextureSize=16384
+    GPUnpotSupport=Full
+    GPUsupportedRenderTargetCount=8
+    GPUsupports2DArrayTextures=True
+    GPUsupports3DTextures=True
+    GPUsupportsComputeShaders=True
+    GPUsupportsImageEffects=True
+    GPUsupportsInstancing=True
+    GPUsupportsRenderToCubemap=True
+    GPUsupportsShadows=True
+    GPUsupportsSparseTextures=True
+    GPUcopyTextureSupport=Basic, Copy3D, DifferentTypes, TextureToRT, RTToTexture
+    System Language=Greek
+[23:28:53.613] [1] [INFO] Initializing at 2026-03-15 23:28:53.613
+[23:28:53.613] [1] [INFO] Save path: C:\Users\Sonia K\Documents\Klei\OxygenNotIncluded
+[23:28:54.439] [1] [INFO] 	Mod Updater has a mod.yaml with a staticID `PeterHan.ModUpdateDate`, using that from now on.
+[23:28:54.456] [1] [INFO] Mod Updater: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.457] [1] [INFO] 	Old Dlc Toggle has a mod.yaml with a staticID `DlcSwapButton`, using that from now on.
+[23:28:54.458] [1] [INFO] Old Dlc Toggle: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.459] [1] [INFO] 	Moonlet <color=#ff9520ff>ALPHA</color> has a mod.yaml with a staticID `Moonlet`, using that from now on.
+[23:28:54.459] [1] [INFO] Moonlet <color=#ff9520ff>ALPHA</color>: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.459] [1] [INFO] <color=#000000>Black</color> Back (Moonlet_SampleMod): Setting up mod.
+[23:28:54.460] [1] [INFO] 	<color=#000000>Black</color> Back has a mod.yaml with a staticID `Black`, using that from now on.
+[23:28:54.460] [1] [WARNING] 	<color=#000000>Black</color> Back: mod_info.yaml in folder 'root' is using supportedContent which has been deprecated. See stickied post on the Klei forums.
+[23:28:54.460] [1] [INFO] 	<color=#000000>Black</color> Back: Found valid mod_info.yaml in folder 'root': requiredDlcIds='', forbiddenDlcIds='' at 622222
+[23:28:54.460] [1] [INFO] 	<color=#000000>Black</color> Back: No archived_versions for this mod, using root version directly.
+[23:28:54.461] [1] [INFO] <color=#000000>Black</color> Back: Successfully loaded from path 'root' with content 'LayerableFiles'.
+[23:28:54.461] [1] [INFO] 	Ronivans Legacy - Industrial Revolution has a mod.yaml with a staticID `RonivansLegacy_ChemicalProcessing`, using that from now on.
+[23:28:54.462] [1] [INFO] Ronivans Legacy - Industrial Revolution: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.462] [1] [INFO] 	Twitch Integration Timer has a mod.yaml with a staticID `TwitchEventsTimer`, using that from now on.
+[23:28:54.463] [1] [INFO] Twitch Integration Timer: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.464] [1] [INFO] 	Sandbox Tools has a mod.yaml with a staticID `PeterHan.SandboxTools`, using that from now on.
+[23:28:54.464] [1] [INFO] Sandbox Tools: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.465] [1] [INFO] 	Map Overlay has a mod.yaml with a staticID `MapOverlay`, using that from now on.
+[23:28:54.466] [1] [INFO] Map Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.466] [1] [INFO] 	Planning Tool has a mod.yaml with a staticID `artorp.planningtool`, using that from now on.
+[23:28:54.467] [1] [INFO] Planning Tool: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.468] [1] [INFO] 	Change Some Chore Group has a mod.yaml with a staticID `CalYu.ChangeChoreType`, using that from now on.
+[23:28:54.468] [1] [INFO] Change Some Chore Group: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.469] [1] [INFO] 	Wounded Go To Med Bed has a mod.yaml with a staticID `Cairath.WoundedGoToMedBed`, using that from now on.
+[23:28:54.471] [1] [INFO] Wounded Go To Med Bed: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.472] [1] [INFO] 	Sandbox: Mutant Plants has a mod.yaml with a staticID `Sanchozz.ONIMods.SandboxMutantPlant`, using that from now on.
+[23:28:54.472] [1] [WARNING] Sandbox: Mutant Plants: No archive supports this game version, skipping content.
+[23:28:54.473] [1] [INFO] 	[Vanilla + DLC] Pacu morphs has a mod.yaml with a staticID `ONIPacuMorphsELU`, using that from now on.
+[23:28:54.474] [1] [INFO] [Vanilla + DLC] Pacu morphs: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.475] [1] [INFO] 	Custom Geysers - Liquid Mercury Geyser has a mod.yaml with a staticID `geysersMercuryGeyser`, using that from now on.
+[23:28:54.476] [1] [INFO] Custom Geysers - Liquid Mercury Geyser: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.476] [1] [INFO] 	Ronivans Legacy - Industrial Revolution has a mod.yaml with a staticID `RonivansLegacy_ChemicalProcessing`, using that from now on.
+[23:28:54.477] [1] [INFO] Ronivans Legacy - Industrial Revolution: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.477] [1] [INFO] 	Infinite Gases and Liquids has a mod.yaml with a staticID `InfiniteGasesAndLiquids`, using that from now on.
+[23:28:54.478] [1] [INFO] Infinite Gases and Liquids: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.479] [1] [INFO] 	Rest for the Weary has a mod.yaml with a staticID `PeterHan.FinishTasks`, using that from now on.
+[23:28:54.479] [1] [INFO] Rest for the Weary: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.480] [1] [INFO] 	[Vanilla + DLC] Pip morphs has a mod.yaml with a staticID `ONIPipMorphsELU`, using that from now on.
+[23:28:54.481] [1] [INFO] [Vanilla + DLC] Pip morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.482] [1] [INFO] 	Chaos Reigns has a mod.yaml with a staticID `Chaos Reigns`, using that from now on.
+[23:28:54.484] [1] [WARNING] Chaos Reigns: No archive supports this game version, skipping content.
+[23:28:54.484] [1] [INFO] 	Aquatic Farm has a mod.yaml with a staticID `Sanchozz.ONIMods.AquaticFarm`, using that from now on.
+[23:28:54.485] [1] [INFO] Aquatic Farm: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.486] [1] [INFO] 	Critter Inventory has a mod.yaml with a staticID `PeterHan.CritterInventory`, using that from now on.
+[23:28:54.487] [1] [INFO] Critter Inventory: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.488] [1] [INFO] 	Utility Glass has a mod.yaml with a staticID `UtilityGlass`, using that from now on.
+[23:28:54.488] [1] [INFO] Utility Glass: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.489] [1] [INFO] 	Customize Buildings has a mod.yaml with a staticID `CustomizeBuildings`, using that from now on.
+[23:28:54.495] [1] [INFO] Customize Buildings: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.495] [1] [INFO] 	Airlock Door has a mod.yaml with a staticID `PeterHan.AirlockDoor`, using that from now on.
+[23:28:54.496] [1] [INFO] Airlock Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.498] [1] [INFO] Insulated Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.499] [1] [INFO] 	Sweep By Type has a mod.yaml with a staticID `PeterHan.SweepByType`, using that from now on.
+[23:28:54.500] [1] [INFO] Sweep By Type: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.500] [1] [INFO] 	Custom Geysers - Iridium Volcano has a mod.yaml with a staticID `geysersIridiumVolcano`, using that from now on.
+[23:28:54.501] [1] [INFO] Custom Geysers - Iridium Volcano: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.502] [1] [INFO] 	Custom Geysers - Nickel Volcano has a mod.yaml with a staticID `geysersNickelVolcano`, using that from now on.
+[23:28:54.502] [1] [INFO] Custom Geysers - Nickel Volcano: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.503] [1] [INFO] 	Always Show Capacity has a mod.yaml with a staticID `asquared31415.StorageCapacity`, using that from now on.
+[23:28:54.505] [1] [INFO] Always Show Capacity: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.505] [1] [INFO] 	Warning Notification Manager has a mod.yaml with a staticID `SGTIM_NotificationManager`, using that from now on.
+[23:28:54.506] [1] [INFO] Warning Notification Manager: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.507] [1] [INFO] 	Mod Profile Manager [MPM] has a mod.yaml with a staticID `SaveGameModLoader`, using that from now on.
+[23:28:54.508] [1] [INFO] Mod Profile Manager [MPM]: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.508] [1] [INFO] 	Clothing Locker has a mod.yaml with a staticID `asquared31415.ClothingLocker`, using that from now on.
+[23:28:54.510] [1] [INFO] Clothing Locker: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.510] [1] [INFO] 	[Vanilla + DLC] Diseases Expanded has a mod.yaml with a staticID `pether-pg.DiseasesExpanded`, using that from now on.
+[23:28:54.514] [1] [INFO] [Vanilla + DLC] Diseases Expanded: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.515] [1] [INFO] 	Decor Pack S - Winters Delight has a mod.yaml with a staticID `AkisSnowThings`, using that from now on.
+[23:28:54.516] [1] [INFO] Decor Pack S - Winters Delight: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.517] [1] [INFO] 	Chaos Events for Twitch Integration has a mod.yaml with a staticID `Imalas_TwitchChaosEvents`, using that from now on.
+[23:28:54.518] [1] [INFO] Chaos Events for Twitch Integration: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.519] [1] [INFO] 	Skill Queue has a mod.yaml with a staticID `SkillingQueue`, using that from now on.
+[23:28:54.519] [1] [INFO] Skill Queue: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.520] [1] [INFO] 	Plastic Door has a mod.yaml with a staticID `PlasticDoor`, using that from now on.
+[23:28:54.521] [1] [INFO] Plastic Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.521] [1] [INFO] 	Customize Geyser has a mod.yaml with a staticID `CustomizeGeyser`, using that from now on.
+[23:28:54.525] [1] [INFO] Customize Geyser: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.526] [1] [INFO] 	Falling Sand has a mod.yaml with a staticID `PeterHan.FallingSand`, using that from now on.
+[23:28:54.540] [1] [INFO] Falling Sand: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.541] [1] [INFO] 	Pip Plant Overlay has a mod.yaml with a staticID `PeterHan.PipPlantOverlay`, using that from now on.
+[23:28:54.542] [1] [INFO] Pip Plant Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.542] [1] [INFO] 	Steel Ladder has a mod.yaml with a staticID `Cairath.SteelLadder`, using that from now on.
+[23:28:54.543] [1] [INFO] Steel Ladder: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.544] [1] [INFO] 	Buildable POI Props has a mod.yaml with a staticID `Cairath.BuildablePOIProps`, using that from now on.
+[23:28:54.545] [1] [INFO] Buildable POI Props: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.546] [1] [INFO] 	Starmap Queue has a mod.yaml with a staticID `PeterHan.StarmapQueue`, using that from now on.
+[23:28:54.547] [1] [INFO] Starmap Queue: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.547] [1] [INFO] 	Show Building Ranges has a mod.yaml with a staticID `PeterHan.ShowRange`, using that from now on.
+[23:28:54.548] [1] [INFO] Show Building Ranges: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.548] [1] [INFO] 	Popup Control has a mod.yaml with a staticID `PeterHan.ToastControl`, using that from now on.
+[23:28:54.549] [1] [INFO] Popup Control: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.550] [1] [INFO] 	Drywall Colours has a mod.yaml with a staticID `DrywallPatternColours`, using that from now on.
+[23:28:54.551] [1] [INFO] Drywall Colours: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.551] [1] [INFO] 	[Vanilla + DLC] Configurable Build Menus has a mod.yaml with a staticID `pether-pg.ConfigurableBuildMenus`, using that from now on.
+[23:28:54.558] [1] [INFO] [Vanilla + DLC] Configurable Build Menus: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.558] [1] [INFO] 	Efficient Supply has a mod.yaml with a staticID `PeterHan.EfficientFetch`, using that from now on.
+[23:28:54.559] [1] [INFO] Efficient Supply: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.560] [1] [INFO] 	Expanded Lights has a mod.yaml with a staticID `ExpandedLights`, using that from now on.
+[23:28:54.561] [1] [INFO] Expanded Lights: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.561] [1] [INFO] 	Hydrocactus has a mod.yaml with a staticID `Sanchozz.ONIMods.Hydrocactus`, using that from now on.
+[23:28:54.562] [1] [WARNING] Hydrocactus: No archive supports this game version, skipping content.
+[23:28:54.562] [1] [INFO] 	Void World has a mod.yaml with a staticID `CycleComma`, using that from now on.
+[23:28:54.563] [1] [INFO] Void World: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.564] [1] [INFO] Skill and Stats progress: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.564] [1] [INFO] 	[Vanilla + DLC] Hatch morphs has a mod.yaml with a staticID `ONIHatchMorphsELU`, using that from now on.
+[23:28:54.566] [1] [INFO] [Vanilla + DLC] Hatch morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.567] [1] [INFO] 	Stock Bug Fix has a mod.yaml with a staticID `PeterHan.StockBugFix`, using that from now on.
+[23:28:54.567] [1] [INFO] Stock Bug Fix: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.568] [1] [INFO] 	Clean HUD has a mod.yaml with a staticID `Aze.CleanHUD`, using that from now on.
+[23:28:54.569] [1] [INFO] Clean HUD: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.569] [1] [INFO] 	Canned Food has a mod.yaml with a staticID `CannedFoods`, using that from now on.
+[23:28:54.570] [1] [INFO] Canned Food: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.571] [1] [INFO] 	Bio-Inks: Rechargeable Printing Pods has a mod.yaml with a staticID `PrintingPodRecharge`, using that from now on.
+[23:28:54.572] [1] [INFO] Bio-Inks: Rechargeable Printing Pods: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.573] [1] [INFO] 	Settings Change Tool has a mod.yaml with a staticID `PeterHan.BulkSettingsChange`, using that from now on.
+[23:28:54.573] [1] [INFO] Settings Change Tool: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.574] [1] [INFO] 	Visual Fixes and Tweaks has a mod.yaml with a staticID `VisualFixesNTweaks`, using that from now on.
+[23:28:54.575] [1] [INFO] Visual Fixes and Tweaks: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.575] [1] [INFO] 	Pedestal Filter has a mod.yaml with a staticID `PedestalFilter`, using that from now on.
+[23:28:54.576] [1] [INFO] Pedestal Filter: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.576] [1] [INFO] 	Wallpaper has a mod.yaml with a staticID `Cairath.Wallpaper`, using that from now on.
+[23:28:54.578] [1] [INFO] Wallpaper: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.578] [1] [INFO] 	Twitch Integration has a mod.yaml with a staticID `asquared31415.TwitchIntegration`, using that from now on.
+[23:28:54.579] [1] [INFO] Twitch Integration: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.579] [1] [INFO] 	[Vanilla + DLC] Drecko morphs has a mod.yaml with a staticID `ONIDreckoMorphsELU`, using that from now on.
+[23:28:54.581] [1] [INFO] [Vanilla + DLC] Drecko morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.581] [1] [INFO] 	Cluster Generation Manager [CGM] has a mod.yaml with a staticID `ClusterTraitGenerationManager`, using that from now on.
+[23:28:54.582] [1] [INFO] Cluster Generation Manager [CGM]: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.583] [1] [INFO] 	Mosaic Tile has a mod.yaml with a staticID `Cairath.MosaicTile`, using that from now on.
+[23:28:54.584] [1] [INFO] Mosaic Tile: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.584] [1] [INFO] 	[Vanilla + DLC] Signs Tags and Ribbons has a mod.yaml with a staticID `pether-pg.SignsTagsAndRibbons`, using that from now on.
+[23:28:54.587] [1] [INFO] [Vanilla + DLC] Signs Tags and Ribbons: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.588] [1] [INFO] 	[reupload] Wooden Set - Furniture by Ronivan has a mod.yaml with a staticID `Ronivan.WoodenSetFurniture`, using that from now on.
+[23:28:54.592] [1] [INFO] [reupload] Wooden Set - Furniture by Ronivan: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.592] [1] [INFO] 	Info Overlay has a mod.yaml with a staticID `Yu.InfoOverlay`, using that from now on.
+[23:28:54.593] [1] [INFO] Info Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.593] [1] [INFO] 	Momentary switch has a mod.yaml with a staticID `MomentarySwitch`, using that from now on.
+[23:28:54.594] [1] [INFO] Momentary switch: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.594] [1] [INFO] 	Waste Not, Want Not has a mod.yaml with a staticID `PeterHan.NoWasteWant`, using that from now on.
+[23:28:54.595] [1] [INFO] Waste Not, Want Not: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.596] [1] [INFO] 	Decor Pack I has a mod.yaml with a staticID `DecorPackA`, using that from now on.
+[23:28:54.597] [1] [INFO] Decor Pack I: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.597] [1] [INFO] 	Suppress Notifications has a mod.yaml with a staticID `Aze.SuppressNotifications`, using that from now on.
+[23:28:54.598] [1] [INFO] Suppress Notifications: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.599] [1] [INFO] 	Sealed Pitcher Pump has a mod.yaml with a staticID `SolidWaterPump`, using that from now on.
+[23:28:54.600] [1] [INFO] Sealed Pitcher Pump: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.600] [1] [INFO] 	Space POI Additional Info has a mod.yaml with a staticID `Digzol.SpacePOIExtraInfo`, using that from now on.
+[23:28:54.601] [1] [WARNING] Space POI Additional Info: No archive supports this game version, skipping content.
+[23:28:54.602] [1] [INFO] 	Duplicant Stat Selector [DSS] has a mod.yaml with a staticID `SetStartDupes`, using that from now on.
+[23:28:54.603] [1] [INFO] Duplicant Stat Selector [DSS]: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.603] [1] [INFO] 	Omnificia Asteroid has a mod.yaml with a staticID `omnificiaAsteroid`, using that from now on.
+[23:28:54.604] [1] [WARNING] Omnificia Asteroid: No archive supports this game version, skipping content.
+[23:28:54.604] [1] [INFO] 	Baator has a mod.yaml with a staticID `Baator_BumminsMod`, using that from now on.
+[23:28:54.605] [1] [WARNING] Baator: No archive supports this game version, skipping content.
+[23:28:54.606] [1] [INFO] 	MiniBase has a mod.yaml with a staticID `MiniBase`, using that from now on.
+[23:28:54.607] [1] [INFO] MiniBase: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.607] [1] [INFO] 	Missing Element Textures has a mod.yaml with a staticID `CompleteElementTextures`, using that from now on.
+[23:28:54.608] [1] [INFO] Missing Element Textures: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.609] [1] [INFO] 	Decor Reimagined has a mod.yaml with a staticID `PeterHan.DecorReimagined`, using that from now on.
+[23:28:54.610] [1] [INFO] Decor Reimagined: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.610] [1] [INFO] 	Research Queue has a mod.yaml with a staticID `PeterHan.ResearchQueue`, using that from now on.
+[23:28:54.611] [1] [INFO] Research Queue: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.611] [1] [INFO] 	Deconstructable Mini-Pod has a mod.yaml with a staticID `Xengulai.DeconstructableMiniPod`, using that from now on.
+[23:28:54.612] [1] [WARNING] Deconstructable Mini-Pod: No archive supports this game version, skipping content.
+[23:28:54.613] [1] [INFO] 	Plan Buildings Without Materials has a mod.yaml with a staticID `Cairath.PlanBuildingsWithoutMaterials`, using that from now on.
+[23:28:54.614] [1] [INFO] Plan Buildings Without Materials: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.615] [1] [INFO] 	LUT Not Included has a mod.yaml with a staticID `LUTNotIncluded`, using that from now on.
+[23:28:54.615] [1] [INFO] LUT Not Included: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.616] [1] [INFO] 	Better Info Cards has a mod.yaml with a staticID `Aze.BetterInfoCards`, using that from now on.
+[23:28:54.617] [1] [INFO] Better Info Cards: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.617] [1] [INFO] 	True Tiles has a mod.yaml with a staticID `TrueTiles`, using that from now on.
+[23:28:54.618] [1] [INFO] True Tiles: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.618] [1] [INFO] 	Threshold Walls has a mod.yaml with a staticID `Thresholds`, using that from now on.
+[23:28:54.619] [1] [INFO] Threshold Walls: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.619] [1] [INFO] 	Immigrants Reroll has a mod.yaml with a staticID `immigrantsReroll`, using that from now on.
+[23:28:54.620] [1] [INFO] Immigrants Reroll: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.621] [1] [INFO] 	Old Liquid Reservoir has a mod.yaml with a staticID `Sanchozz.ONIMods.OldLiquidReservoir`, using that from now on.
+[23:28:54.621] [1] [INFO] Old Liquid Reservoir: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.623] [1] [INFO] GasOverlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.623] [1] [INFO] 	Build Straight Up has a mod.yaml with a staticID `PeterHan.BuildStraightUp`, using that from now on.
+[23:28:54.624] [1] [INFO] Build Straight Up: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.625] [1] [INFO] 	Don't Idle in Doors has a mod.yaml with a staticID `Aze.NoDoorIdle`, using that from now on.
+[23:28:54.625] [1] [INFO] Don't Idle in Doors: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.626] [1] [INFO] 	Move This Here has a mod.yaml with a staticID `MoveThisHere`, using that from now on.
+[23:28:54.627] [1] [INFO] Move This Here: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.627] [1] [INFO] 	Diseases Restored has a mod.yaml with a staticID `DiseasesReimagined`, using that from now on.
+[23:28:54.628] [1] [INFO] Diseases Restored: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.628] [1] [INFO] 	Asphalt Tile has a mod.yaml with a staticID `Asphalt`, using that from now on.
+[23:28:54.630] [1] [INFO] Asphalt Tile: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.631] [1] [INFO] 	Wild Planter Box has a mod.yaml with a staticID `WildPlanterBox`, using that from now on.
+[23:28:54.631] [1] [INFO] Wild Planter Box: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.632] [1] [INFO] 	Smart Pumps has a mod.yaml with a staticID `PeterHan.SmartPumps`, using that from now on.
+[23:28:54.633] [1] [INFO] Smart Pumps: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.634] [1] [INFO] Tiny Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.635] [1] [INFO] Ceiling Lights: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.636] [1] [INFO] 	Fuleria has a mod.yaml with a staticID `AllBiomesWorld`, using that from now on.
+[23:28:54.636] [1] [INFO] Fuleria: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.637] [1] [INFO] 	Custom Geysers - Lead Volcano has a mod.yaml with a staticID `geysersLeadVolcano`, using that from now on.
+[23:28:54.638] [1] [INFO] Custom Geysers - Lead Volcano: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.638] [1] [WARNING] Recoverable parse error in C:/Users/Sonia K/Documents/Klei/OxygenNotIncluded/mods/Steam/1717999057\mod.yaml
+Found a property '﻿title' on a type 'KMod.KModHeader', but that type doesn't have that property!
+[23:28:54.639] [1] [INFO] 	Dup Stats Configurator has a mod.yaml with a staticID `Always3Interests`, using that from now on.
+[23:28:54.639] [1] [INFO] Dup Stats Configurator: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.640] [1] [INFO] 	Omni Flora - Decorative Plants has a mod.yaml with a staticID `OmniFlora`, using that from now on.
+[23:28:54.641] [1] [INFO] Omni Flora - Decorative Plants: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.641] [1] [INFO] 	Rocketry Expanded has a mod.yaml with a staticID `Rocketry Expanded`, using that from now on.
+[23:28:54.642] [1] [WARNING] Rocketry Expanded: No archive supports this game version, skipping content.
+[23:28:54.643] [1] [INFO] 	[Vanilla + DLC] Rocket Presence Port has a mod.yaml with a staticID `pether-pg.RocketPresenceAutomationPort`, using that from now on.
+[23:28:54.646] [1] [INFO] [Vanilla + DLC] Rocket Presence Port: Successfully loaded from path 'archived_versions\2021_06_24_469112' with content 'DLL'.
+[23:28:54.646] [1] [INFO] 	Bigger Building Menu has a mod.yaml with a staticID `Cairath.BiggerBuildingMenu`, using that from now on.
+[23:28:54.648] [1] [INFO] Bigger Building Menu: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.648] [1] [INFO] 	Highlight Overlay has a mod.yaml with a staticID `HighlightOverlay`, using that from now on.
+[23:28:54.649] [1] [INFO] Highlight Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.650] [1] [WARNING] Recoverable parse error in C:/Users/Sonia K/Documents/Klei/OxygenNotIncluded/mods/Steam/1801004057\mod.yaml
+Found a property '﻿title' on a type 'KMod.KModHeader', but that type doesn't have that property!
+[23:28:54.650] [1] [INFO] 	Advanced Electrolyzers has a mod.yaml with a staticID `advancedelectrolyzers`, using that from now on.
+[23:28:54.651] [1] [INFO] Advanced Electrolyzers: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.651] [1] [INFO] 	Resculpt has a mod.yaml with a staticID `PeterHan.Resculpt`, using that from now on.
+[23:28:54.653] [1] [INFO] Resculpt: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.653] [1] [INFO] 	[reupload]Wooden Set - Structures by Ronivan has a mod.yaml with a staticID `Ronivan.WoodenSetStructures`, using that from now on.
+[23:28:54.656] [1] [INFO] [reupload]Wooden Set - Structures by Ronivan: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.657] [1] [INFO] 	[DLC] Radiation Rebalanced has a mod.yaml with a staticID `pether-pg.RadiationRebalanced`, using that from now on.
+[23:28:54.657] [1] [WARNING] [DLC] Radiation Rebalanced: No archive supports this game version, skipping content.
+[23:28:54.658] [1] [INFO] 	Suit Recharger has a mod.yaml with a staticID `Sanchozz.ONIMods.SuitRecharger`, using that from now on.
+[23:28:54.659] [1] [INFO] Suit Recharger: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.660] [1] [INFO] 	Help I accidentally broke my rocket interior ports and now the save crashes on load - Fix has a mod.yaml with a staticID `BrokenRocketInteriorPortFix`, using that from now on.
+[23:28:54.660] [1] [INFO] Help I accidentally broke my rocket interior ports and now the save crashes on load - Fix: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.661] [1] [INFO] 	The Populist Challenge has a mod.yaml with a staticID `ThePopulistChallenge`, using that from now on.
+[23:28:54.662] [1] [INFO] The Populist Challenge: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.662] [1] [INFO] 	One Hundred K Challenge has a mod.yaml with a staticID `PeterHan.Challenge100K`, using that from now on.
+[23:28:54.663] [1] [INFO] One Hundred K Challenge: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.664] [1] [INFO] 	Demolior Story Trait has a mod.yaml with a staticID `DemoliorStoryTrait`, using that from now on.
+[23:28:54.665] [1] [INFO] Demolior Story Trait: Successfully loaded from path 'root' with content 'LayerableFiles, DLL'.
+[23:28:54.666] [1] [INFO] CustomTemperatureOverlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.667] [1] [WARNING] Recoverable parse error in 
+Found a property 'title' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:28:54.667] [1] [WARNING] Recoverable parse error in 
+Found a property 'staticID' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:28:54.668] [1] [WARNING] Recoverable parse error in 
+Found a property 'title' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:28:54.668] [1] [WARNING] Recoverable parse error in 
+Found a property 'staticID' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:28:54.668] [1] [INFO] [anims broken] Puft Morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.669] [1] [INFO] 	Better Automation Overlay has a mod.yaml with a staticID `Aze.BetterLogicOverlay`, using that from now on.
+[23:28:54.669] [1] [INFO] Better Automation Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.670] [1] [INFO] 	Buildable Natural Tile has a mod.yaml with a staticID `BuildableNaturalTile`, using that from now on.
+[23:28:54.671] [1] [INFO] Buildable Natural Tile: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.672] [1] [INFO] 	Frostbite Tweaks has a mod.yaml with a staticID `GoodByeFrostByte`, using that from now on.
+[23:28:54.672] [1] [INFO] Frostbite Tweaks: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.673] [1] [INFO] 	Transit Tube Overlay has a mod.yaml with a staticID `Satutu.TransitTubeOverlay`, using that from now on.
+[23:28:54.674] [1] [INFO] Transit Tube Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.674] [1] [INFO] 	Dupery Fixed has a mod.yaml with a staticID `DuperyFixed`, using that from now on.
+[23:28:54.675] [1] [INFO] Dupery Fixed: Successfully loaded from path 'root' with content 'Strings, DLL, Animation'.
+[23:28:54.676] [1] [INFO] 	POIs Now Included has a mod.yaml with a staticID `PoisNotIncluded`, using that from now on.
+[23:28:54.677] [1] [INFO] POIs Now Included: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.677] [1] [INFO] 	[Vanilla + DLC] Real Calories Info has a mod.yaml with a staticID `pether-pg.RealCaloriesInfo`, using that from now on.
+[23:28:54.679] [1] [INFO] [Vanilla + DLC] Real Calories Info: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.680] [1] [INFO] 	Fervine has a mod.yaml with a staticID `Cairath.Fervine`, using that from now on.
+[23:28:54.681] [1] [INFO] Fervine: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.682] [1] [INFO] 	Roller Snakes Reborn has a mod.yaml with a staticID `test447.RollerSnake`, using that from now on.
+[23:28:54.682] [1] [INFO] Roller Snakes Reborn: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.683] [1] [INFO] 	Giant Doors has a mod.yaml with a staticID `Zonkeeh.GiantDoors`, using that from now on.
+[23:28:54.684] [1] [INFO] Giant Doors: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.684] [1] [INFO] 	Partitioned Storage has a mod.yaml with a staticID `ImprovedFilteredStorage`, using that from now on.
+[23:28:54.685] [1] [INFO] Partitioned Storage: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.685] [1] [INFO] 	Real Time Clock has a mod.yaml with a staticID `nid-RealTimeClock`, using that from now on.
+[23:28:54.686] [1] [INFO] Real Time Clock: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.687] [1] [INFO] 	I Love Slicksters has a mod.yaml with a staticID `ILoveSlicksters`, using that from now on.
+[23:28:54.688] [1] [INFO] I Love Slicksters: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.688] [1] [INFO] 	No Long Commutes has a mod.yaml with a staticID `Cairath.NoLongCommutes`, using that from now on.
+[23:28:54.690] [1] [INFO] No Long Commutes: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.690] [1] [INFO] 	No Manual Delivery has a mod.yaml with a staticID `Sanchozz.ONIMods.NoManualDelivery`, using that from now on.
+[23:28:54.691] [1] [INFO] No Manual Delivery: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.692] [1] [INFO] 	Plastic Utilities has a mod.yaml with a staticID `PlasticUtilities`, using that from now on.
+[23:28:54.693] [1] [INFO] Plastic Utilities: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.693] [1] [INFO] 	Clean Floors has a mod.yaml with a staticID `Aze.CleanFloors`, using that from now on.
+[23:28:54.694] [1] [INFO] Clean Floors: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.694] [1] [INFO] 	Preset Manager has a mod.yaml with a staticID `DupePrioPresetManager`, using that from now on.
+[23:28:54.696] [1] [INFO] Preset Manager: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.696] [1] [INFO] 	Double Sweeper Range has a mod.yaml with a staticID `Cairath.DoubleSweeperRange`, using that from now on.
+[23:28:54.697] [1] [INFO] Double Sweeper Range: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.698] [1] [INFO] 	Backwalls has a mod.yaml with a staticID `Backwalls`, using that from now on.
+[23:28:54.699] [1] [INFO] Backwalls: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.699] [1] [INFO] 	Buildable POI Doors has a mod.yaml with a staticID `Zonkeeh.BuildablePOIDoors`, using that from now on.
+[23:28:54.700] [1] [INFO] Buildable POI Doors: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.700] [1] [INFO] 	MiniBase : Spaced Out Edition has a mod.yaml with a staticID `miniBaseSO`, using that from now on.
+[23:28:54.701] [1] [WARNING] MiniBase : Spaced Out Edition: No archive supports this game version, skipping content.
+[23:28:54.701] [1] [INFO] 	Mod Filter has a mod.yaml with a staticID `asquared31415.ModsFilter`, using that from now on.
+[23:28:54.703] [1] [INFO] Mod Filter: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.703] [1] [INFO] 	More Marble Sculptures has a mod.yaml with a staticID `MoreMarbleSculptures`, using that from now on.
+[23:28:54.704] [1] [INFO] More Marble Sculptures: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.705] [1] [INFO] 	Modify Difficulty Settings has a mod.yaml with a staticID `CustomGameSettingsModifier`, using that from now on.
+[23:28:54.706] [1] [INFO] Modify Difficulty Settings: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.706] [1] [INFO] 	Gold Hatch has a mod.yaml with a staticID `GoldHatch`, using that from now on.
+[23:28:54.707] [1] [INFO] Gold Hatch: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.708] [1] [INFO] 	More Small Sculptures has a mod.yaml with a staticID `MoreSmallSculptures`, using that from now on.
+[23:28:54.709] [1] [INFO] More Small Sculptures: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.710] [1] [INFO] 	Spooky Pumpkin has a mod.yaml with a staticID `SpookyPumpkinSO`, using that from now on.
+[23:28:54.711] [1] [INFO] Spooky Pumpkin: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.711] [1] [INFO] 	Aki's Extra Twitch Events has a mod.yaml with a staticID `Twitchery`, using that from now on.
+[23:28:54.712] [1] [INFO] Aki's Extra Twitch Events: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.713] [1] [INFO] 	Germicidal Lamps has a mod.yaml with a staticID `GermicidalLamps`, using that from now on.
+[23:28:54.713] [1] [INFO] Germicidal Lamps: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.714] [1] [INFO] 	Plastic Mesh and Airflow Tiles has a mod.yaml with a staticID `PlasticTiles`, using that from now on.
+[23:28:54.715] [1] [INFO] Plastic Mesh and Airflow Tiles: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.715] [1] [INFO] 	Empty Worlds has a mod.yaml with a staticID `EmptyWorlds`, using that from now on.
+[23:28:54.716] [1] [INFO] Empty Worlds: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:54.716] [1] [INFO] 	Pipe Flow Overlay has a mod.yaml with a staticID `sjPipeFlowOverlay`, using that from now on.
+[23:28:54.717] [1] [INFO] Pipe Flow Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.718] [1] [INFO] 	Pip Planting Notification has a mod.yaml with a staticID `PipPlantNotify`, using that from now on.
+[23:28:54.718] [1] [INFO] Pip Planting Notification: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:28:54.720] [1] [INFO] 	Duplicant Status Bar has a mod.yaml with a staticID `DuplicantStatusBar`, using that from now on.
+[23:28:54.721] [1] [INFO] Duplicant Status Bar: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.721] [1] [INFO] 	No Zone Tint has a mod.yaml with a staticID `NoZoneTint`, using that from now on.
+[23:28:54.722] [1] [INFO] No Zone Tint: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.723] [1] [INFO] 统一背景 Unified Background MOD: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:54.724] [1] [INFO] Using builtin mod system.
+[23:28:54.725] [1] [INFO] Loading mod content DLL [Duplicant Status Bar:3682732647] (provides DLL)
+[23:28:54.727] [1] [INFO] Loading MOD dll: DuplicantStatusBar.dll
+[23:28:54.728] [1] [INFO] Loading MOD dll: PLib.dll
+[23:28:54.965] [1] [INFO] [PLib] Mod DuplicantStatusBar initialized, version 2.5.0.0
+[23:28:54.975] [1] [INFO] [PLib/PLib] Registered mod options class DuplicantStatusBar.Config.StatusBarOptions for DuplicantStatusBar
+[23:28:54.993] [1] [INFO] Loading mod content DLL [No Zone Tint:2598601623] (provides DLL)
+[23:28:54.993] [1] [INFO] Loading MOD dll: NoZoneTint.dll
+[23:28:55.002] [1] [INFO] Loading mod content DLL [统一背景 Unified Background MOD:2958243747] (provides DLL)
+[23:28:55.002] [1] [INFO] Loading MOD dll: PLib.dll
+[23:28:55.002] [1] [INFO] Loading MOD dll: UnifiedBackGroundMod.dll
+[23:28:55.011] [1] [INFO] [PLib/PLib] Registered mod options class UnifiedBackGroundMod.Settings for 2958243747.Steam
+[23:28:55.116] [1] [INFO] Localization.Initialize!
+[23:28:55.125] [1] [INFO] 	Old Dlc Toggle has a mod.yaml with a staticID `DlcSwapButton`, using that from now on.
+[23:28:55.125] [1] [INFO] Old Dlc Toggle: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:55.126] [1] [INFO] Subscribe to mod Old Dlc Toggle
+[23:28:55.142] [1] [INFO] 	Moonlet <color=#ff9520ff>ALPHA</color> has a mod.yaml with a staticID `Moonlet`, using that from now on.
+[23:28:55.143] [1] [INFO] Moonlet <color=#ff9520ff>ALPHA</color>: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:55.143] [1] [INFO] Subscribe to mod Moonlet <color=#ff9520ff>ALPHA</color>
+[23:28:55.152] [1] [INFO] 	Ronivans Legacy - Industrial Revolution has a mod.yaml with a staticID `RonivansLegacy_ChemicalProcessing`, using that from now on.
+[23:28:55.153] [1] [INFO] Ronivans Legacy - Industrial Revolution: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:28:55.153] [1] [INFO] Subscribe to mod Ronivans Legacy - Industrial Revolution
+[23:28:55.160] [1] [INFO] 	Twitch Integration Timer has a mod.yaml with a staticID `TwitchEventsTimer`, using that from now on.
+[23:28:55.161] [1] [INFO] Twitch Integration Timer: Successfully loaded from path 'root' with content 'DLL'.
+[23:28:55.161] [1] [INFO] Subscribe to mod Twitch Integration Timer
+[23:28:55.168] [1] [INFO] <color=#000000>Black</color> Back (Moonlet_SampleMod): Setting up mod.
+[23:28:55.169] [1] [INFO] 	<color=#000000>Black</color> Back has a mod.yaml with a staticID `Black`, using that from now on.
+[23:28:55.169] [1] [WARNING] 	<color=#000000>Black</color> Back: mod_info.yaml in folder 'root' is using supportedContent which has been deprecated. See stickied post on the Klei forums.
+[23:28:55.169] [1] [INFO] 	<color=#000000>Black</color> Back: Found valid mod_info.yaml in folder 'root': requiredDlcIds='', forbiddenDlcIds='' at 622222
+[23:28:55.169] [1] [INFO] 	<color=#000000>Black</color> Back: No archived_versions for this mod, using root version directly.
+[23:28:55.170] [1] [INFO] <color=#000000>Black</color> Back: Successfully loaded from path 'root' with content 'LayerableFiles'.
+[23:28:55.170] [1] [INFO] Subscribe to mod <color=#000000>Black</color> Back
+[23:28:55.218] [1] [INFO] Test Data Location / docs / C:\Users\Sonia K\Documents\Klei\OxygenNotIncluded
+[23:28:55.218] [1] [INFO] Test Data Location / local / C:\Users\Sonia K\AppData\Local\Klei\OxygenNotIncluded
+[23:28:55.220] [1] [INFO] Test Data Locations / C:\Users\Sonia K\Documents\Klei\OxygenNotIncluded\test / write True / read True / removed True
+[23:28:55.220] [1] [INFO] Test Data Locations / C:\Users\Sonia K\AppData\Local\Klei\OxygenNotIncluded\test / write True / read True / removed True
+[23:28:55.222] [1] [INFO] Logged into Steam with ID:76561198191675883, NAME:sakura.sk
+[23:28:55.222] [1] [INFO] [Account] Requesting auth ticket from Steam
+[23:28:56.503] [8] [INFO] World settings reload complete!
+[23:28:57.144] [6] [INFO] [Account] Got login for user KU_V_O7loCQ
+Unloading 5 Unused Serialized files (Serialized files now loaded: 4)
+Unloading 5976 unused Assets / (112.7 MB). Loaded Objects now: 69095.
+Memory consumption went from 0.64 GB to 0.53 GB.
+Total: 66.051600 ms (FindLiveObjects: 5.057300 ms CreateObjectMapping: 3.399000 ms MarkObjects: 54.089600 ms  DeleteObjects: 3.504900 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 4)
+UnloadTime: 3.581600 ms
+Unloading 1 unused Assets / (Unknown). Loaded Objects now: 73366.
+Memory consumption went from 279.2 MB to 279.2 MB.
+Total: 62.008100 ms (FindLiveObjects: 5.293800 ms CreateObjectMapping: 2.502000 ms MarkObjects: 54.041900 ms  DeleteObjects: 0.169800 ms)
+
+[23:29:02.874] [1] [INFO] -- MAIN MENU -- 
+[23:29:03.017] [1] [INFO] Checking which steam branch we're on. Got: [public_testing]
+[23:29:03.075] [1] [INFO] Screen resolution updated, saving values to prefs: 1920x1057 @ 60, fullscreen: Windowed
+[23:29:03.523] [1] [INFO] Steam: updating info for mod 统一背景 Unified Background MOD
+[23:29:03.540] [1] [INFO] Steam: updating info for mod No Zone Tint
+[23:29:03.541] [1] [INFO] Steam: updating info for mod Duplicant Status Bar - Full Language Support (en, zh, ko, ru)
+[23:29:03.551] [1] [INFO] Steam: updating info for mod Pip Planting Notification
+[23:29:03.574] [1] [INFO] Steam: updating info for mod Falling Sand
+[23:29:03.575] [1] [INFO] Steam: updating info for mod Efficient Supply
+[23:29:03.580] [1] [INFO] Steam: updating info for mod Plan Buildings Without Materials
+[23:29:03.588] [1] [INFO] Steam: updating info for mod Move This Here
+[23:29:03.602] [1] [INFO] Steam: updating info for mod Change Some Chore Group
+[23:29:03.603] [1] [INFO] Steam: updating info for mod Suit Recharger
+[23:29:03.628] [1] [INFO] Steam: updating info for mod Transit Tube Overlay
+[23:29:03.629] [1] [INFO] Steam: updating info for mod Real Time Clock
+[23:29:03.653] [1] [INFO] Steam: updating info for mod Planning Tool
+[23:29:03.655] [1] [INFO] Steam: updating info for mod Clean HUD
+[23:29:03.655] [1] [INFO] Steam: updating info for mod Map Overlay [Prehistoric DLC]
+[23:29:03.658] [1] [INFO] Steam: updating info for mod Customize Geyser
+[23:29:03.659] [1] [INFO] Steam: updating info for mod POIs Now Included
+[23:29:03.734] [1] [INFO] Steam: updating info for mod Ronivan's Legacy - Industrial Revolution
+[23:29:04.037] [1] [INFO] Steam: updating info for mod Omnificia Asteroid
+[23:29:04.044] [1] [INFO] Steam: updating info for mod Duplicant Stat Selector
+[23:29:04.069] [1] [INFO] Steam: updating info for mod Pipe Flow Overlay
+[23:29:04.071] [1] [INFO] Steam: updating info for mod Bigger Building Menu
+[23:29:04.079] [1] [INFO] Steam: updating info for mod Sealed Pump
+[23:29:04.097] [1] [INFO] Steam: updating info for mod Spooky Pumpkin
+[23:29:04.106] [1] [INFO] Steam: updating info for mod Roller Snakes Reborn
+[23:29:04.117] [1] [INFO] Steam: updating info for mod Buildable Natural Tile
+[23:29:04.119] [1] [INFO] Steam: updating info for mod Giant Doors
+[23:29:04.189] [1] [INFO] Steam: updating info for mod Omni Flora: Decorative Plants
+[23:29:04.195] [1] [INFO] Steam: updating info for mod Starmap Queue
+[23:29:04.196] [1] [INFO] Steam: updating info for mod Clothing Locker
+[23:29:04.197] [1] [INFO] Steam: updating info for mod Always Show Capacity
+[23:29:04.197] [1] [INFO] Steam: updating info for mod Tiny Door
+[23:29:04.204] [1] [INFO] Steam: updating info for mod Buildable POI Doors
+[23:29:04.206] [1] [INFO] Steam: updating info for mod [DLC] Radiation Rebalanced
+[23:29:04.261] [1] [INFO] Steam: updating info for mod Critter Inventory
+[23:29:04.262] [1] [INFO] Steam: updating info for mod Better Info Cards
+[23:29:04.262] [1] [INFO] Steam: updating info for mod Visual Fixes N Tweaks
+[23:29:04.266] [1] [INFO] Steam: updating info for mod Highlight Overlay
+[23:29:04.280] [1] [INFO] Steam: updating info for mod [Vanilla + DLC] Signs, Tags and Ribbons
+[23:29:04.332] [1] [INFO] Steam: updating info for mod Gold Hatch [FM]
+[23:29:04.409] [1] [INFO] Steam: updating info for mod Demolior Story Trait
+[23:29:04.430] [1] [INFO] Steam: updating info for mod Liquid Mercury Geyser
+[23:29:04.439] [1] [INFO] Steam: updating info for mod Nickel Volcano
+[23:29:04.445] [1] [INFO] Steam: updating info for mod Iridium Volcano
+[23:29:04.452] [1] [INFO] Steam: updating info for mod Lead Volcano
+[23:29:04.457] [1] [INFO] Steam: updating info for mod AllBiomesWorld - Fuleria
+[23:29:04.466] [1] [INFO] Steam: updating info for mod Frostbite Tweaks
+[23:29:04.493] [1] [INFO] Steam: updating info for mod 100% Space Exposure Challenge
+[23:29:04.496] [1] [INFO] Steam: updating info for mod Chaos Reigns
+[23:29:04.640] [1] [INFO] Steam: updating info for mod Chaos Events for Twitch Integration
+[23:29:04.664] [1] [INFO] Steam: updating info for mod Steel Ladder
+[23:29:04.673] [1] [INFO] Steam: updating info for mod Mod Filter
+[23:29:04.674] [1] [INFO] Steam: updating info for mod Info Overlay fix
+[23:29:04.676] [1] [INFO] Steam: updating info for mod No Manual Delivery
+[23:29:04.678] [1] [INFO] Steam: updating info for mod Mod Updater
+[23:29:04.678] [1] [INFO] Steam: updating info for mod Dupery Fixed
+[23:29:04.693] [1] [INFO] Steam: updating info for mod EmptyWorlds (SkyBlock)
+[23:29:04.709] [1] [INFO] Steam: updating info for mod Backwalls
+[23:29:04.713] [1] [INFO] Steam: updating info for mod Pedestal Filter
+[23:29:04.735] [1] [INFO] Steam: updating info for mod Wallpaper
+[23:29:04.747] [1] [INFO] Steam: updating info for mod Aquatic Farm
+[23:29:04.750] [1] [INFO] Steam: updating info for mod Buildable POI Props
+[23:29:04.758] [1] [INFO] Steam: updating info for mod Fervine
+[23:29:04.767] [1] [INFO] Steam: updating info for mod Suppress Notifications
+[23:29:04.824] [1] [INFO] Steam: updating info for mod CustomTemperatureOverlay
+[23:29:04.829] [1] [INFO] Steam: updating info for mod Hatch Morphs
+[23:29:04.837] [1] [INFO] Steam: updating info for mod Mosaic Tile
+[23:29:04.850] [1] [INFO] Steam: updating info for mod Advanced Electrolyzers
+[23:29:04.850] [1] [INFO] Steam: updating info for mod [anims broken] Puft Morphs
+[23:29:04.857] [1] [INFO] Steam: updating info for mod I Love Slicksters - Morphs !
+[23:29:04.874] [1] [INFO] Steam: updating info for mod Pacu Morphs
+[23:29:04.882] [1] [INFO] Steam: updating info for mod Research Queue
+[23:29:04.883] [1] [INFO] Steam: updating info for mod Sandbox Tools
+[23:29:04.883] [1] [INFO] Steam: updating info for mod Expanded Lights
+[23:29:04.889] [1] [INFO] Steam: updating info for mod [anims broken] Pip Morphs
+[23:29:04.894] [1] [INFO] Steam: updating info for mod Sweep By Type
+[23:29:04.903] [1] [INFO] Steam: updating info for mod Wounded Go To Med Bed
+[23:29:04.914] [1] [INFO] Steam: updating info for mod 100K Challenge
+[23:29:04.921] [1] [INFO] Steam: updating info for mod Settings Change Tool
+[23:29:04.922] [1] [INFO] Steam: updating info for mod GasOverlay
+[23:29:04.926] [1] [INFO] Steam: updating info for mod Build Straight Up
+[23:29:04.927] [1] [INFO] Steam: updating info for mod Drecko Morphs
+[23:29:04.934] [1] [INFO] Steam: updating info for mod LUT Not Included
+[23:29:04.937] [1] [INFO] Steam: updating info for mod Clean Floors
+[23:29:04.937] [1] [INFO] Steam: updating info for mod Sandbox: Mutant Plants
+[23:29:04.938] [1] [INFO] Steam: updating info for mod Baator
+[23:29:04.953] [1] [INFO] Steam: updating info for mod [Vanilla + DLC] Rocket Presence Port
+[23:29:05.062] [1] [INFO] Steam: updating info for mod No 'Long Commutes'
+[23:29:05.069] [1] [INFO] Steam: updating info for mod Double Sweeper Range
+[23:29:05.078] [1] [INFO] Steam: updating info for mod MiniBase
+[23:29:05.086] [1] [INFO] Steam: updating info for mod Threshold Walls
+[23:29:05.095] [1] [INFO] Steam: updating info for mod Dup Stats Configurator
+[23:29:05.096] [1] [INFO] Steam: updating info for mod Momentary switch
+[23:29:05.098] [1] [INFO] Steam: updating info for mod Airlock Door
+[23:29:05.115] [1] [INFO] Steam: updating info for mod Diseases Restored
+[23:29:05.133] [1] [INFO] Steam: updating info for mod Immigrants Reroll
+[23:29:05.134] [1] [INFO] Steam: updating info for mod Better Automation Overlay
+[23:29:05.135] [1] [INFO] Steam: updating info for mod Plastic Door
+[23:29:05.142] [1] [INFO] Steam: updating info for mod Asphalt Tile
+[23:29:05.144] [1] [INFO] Steam: updating info for mod Insulated Door
+[23:29:05.160] [1] [INFO] Steam: updating info for mod Ceiling Lights
+[23:29:05.162] [1] [INFO] Steam: updating info for mod Customize Buildings (more capacity, less dupes)
+[23:29:05.163] [1] [INFO] Steam: updating info for mod Decor Pack I - Classy Glass
+[23:29:05.171] [1] [INFO] Steam: updating info for mod Rest for the Weary
+[23:29:05.172] [1] [INFO] Steam: updating info for mod Don't Idle in Doors
+[23:29:05.172] [1] [INFO] Steam: updating info for mod Show Building Ranges
+[23:29:05.172] [1] [INFO] Steam: updating info for mod [Vanilla + DLC] Configurable Build Menus
+[23:29:05.260] [1] [INFO] Steam: updating info for mod Decor Reimagined
+[23:29:05.267] [1] [INFO] Steam: updating info for mod [Abandoned] Infinite Gases & Liquids
+[23:29:05.291] [1] [INFO] Steam: updating info for mod Stock Bug Fix
+[23:29:05.301] [1] [INFO] Steam: updating info for mod Skill and Stats progress
+[23:29:05.302] [1] [INFO] Steam: updating info for mod The Populist Challenge
+[23:29:05.303] [1] [INFO] Steam: updating info for mod Partitioned Storage
+[23:29:05.304] [1] [INFO] Steam: updating info for mod Space POI Additional Info
+[23:29:05.304] [1] [INFO] Steam: updating info for mod Deconstructable Mini-Pod
+[23:29:05.331] [1] [INFO] Steam: updating info for mod More Marble Sculptures
+[23:29:05.339] [1] [INFO] Steam: updating info for mod True Tiles (texture mod)
+[23:29:05.341] [1] [INFO] Steam: updating info for mod [Vanilla + DLC] Real Calories Info
+[23:29:05.376] [1] [INFO] Steam: updating info for mod [Deprecated] Resculpt
+[23:29:05.377] [1] [INFO] Steam: updating info for mod Smart Pumps
+[23:29:05.384] [1] [INFO] Steam: updating info for mod Rocketry Expanded (DLC)
+[23:29:05.414] [1] [INFO] Steam: updating info for mod More Small Sculptures
+[23:29:05.469] [1] [INFO] Steam: updating info for mod Missing Element Textures
+[23:29:05.472] [1] [INFO] Steam: updating info for mod Bio-Inks: Rechargeable Printing Pod
+[23:29:05.475] [1] [INFO] Steam: updating info for mod Waste Not, Want Not
+[23:29:05.476] [1] [INFO] Steam: updating info for mod [reupload] Wooden Set - Structures by Ronivan
+[23:29:05.490] [1] [INFO] Steam: updating info for mod [reupload] Wooden Set - Furniture by Ronivan
+[23:29:05.508] [1] [INFO] Steam: updating info for mod Twitch Integration
+[23:29:05.513] [1] [INFO] Steam: updating info for mod [Vanilla + DLC] Diseases Expanded
+[23:29:05.597] [1] [INFO] Steam: updating info for mod Hydrocactus
+[23:29:05.599] [1] [INFO] Steam: updating info for mod Drywall Colours
+[23:29:05.624] [1] [INFO] Steam: updating info for mod Wild Planter Box
+[23:29:05.641] [1] [INFO] Steam: updating info for mod Mod Profile Manager [MPM]
+[23:29:05.663] [1] [INFO] Steam: updating info for mod Canned Food
+[23:29:05.746] [1] [INFO] Steam: updating info for mod Plastic Utilities
+[23:29:05.772] [1] [INFO] Steam: updating info for mod Plastic Mesh & Airflow Tiles
+[23:29:05.782] [1] [INFO] Steam: updating info for mod Germicidal UV Lamps
+[23:29:05.792] [1] [INFO] Steam: updating info for mod Help I accidentally broke my rocket interior ports and now the save crashes on load - Fix
+[23:29:05.805] [1] [INFO] Steam: updating info for mod MiniBase : Spaced Out Edition !
+[23:29:05.847] [1] [INFO] Steam: updating info for mod Extra Twitch Events
+[23:29:05.852] [1] [INFO] Steam: updating info for mod Cluster Generation Manager [Vanilla/DLC]
+[23:29:05.854] [1] [INFO] Steam: updating info for mod Pip Plant Overlay
+[23:29:05.855] [1] [INFO] Steam: updating info for mod Popup Control
+[23:29:05.855] [1] [INFO] Steam: updating info for mod Skill Queue
+[23:29:05.873] [1] [INFO] Steam: updating info for mod Utility Glass
+[23:29:05.900] [1] [INFO] Steam: updating info for mod Warning Notification Manager
+[23:29:05.915] [1] [INFO] Steam: updating info for mod Preset Manager
+[23:29:05.938] [1] [INFO] Steam: updating info for mod Modify Difficulty Settings
+[23:29:05.958] [1] [INFO] Steam: updating info for mod Old Liquid Reservoir [Visual]
+[23:29:05.966] [1] [INFO] Steam: updating info for mod Decor Pack S - Winters Delight
+[23:29:06.009] [1] [INFO] 统一背景 Unified Background MOD: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.009] [1] [INFO] Subscribe to mod 统一背景 Unified Background MOD
+[23:29:06.012] [1] [INFO] 	No Zone Tint has a mod.yaml with a staticID `NoZoneTint`, using that from now on.
+[23:29:06.013] [1] [INFO] No Zone Tint: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.013] [1] [INFO] Subscribe to mod No Zone Tint
+[23:29:06.023] [1] [INFO] 	Duplicant Status Bar has a mod.yaml with a staticID `DuplicantStatusBar`, using that from now on.
+[23:29:06.024] [1] [INFO] Duplicant Status Bar: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.024] [1] [INFO] Subscribe to mod Duplicant Status Bar
+[23:29:06.030] [1] [INFO] 	Pip Planting Notification has a mod.yaml with a staticID `PipPlantNotify`, using that from now on.
+[23:29:06.031] [1] [INFO] Pip Planting Notification: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.031] [1] [INFO] Subscribe to mod Pip Planting Notification
+[23:29:06.039] [1] [INFO] 	Falling Sand has a mod.yaml with a staticID `PeterHan.FallingSand`, using that from now on.
+[23:29:06.041] [1] [INFO] Falling Sand: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.041] [1] [INFO] Subscribe to mod Falling Sand
+[23:29:06.048] [1] [INFO] 	Efficient Supply has a mod.yaml with a staticID `PeterHan.EfficientFetch`, using that from now on.
+[23:29:06.050] [1] [INFO] Efficient Supply: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.050] [1] [INFO] Subscribe to mod Efficient Supply
+[23:29:06.057] [1] [INFO] 	Plan Buildings Without Materials has a mod.yaml with a staticID `Cairath.PlanBuildingsWithoutMaterials`, using that from now on.
+[23:29:06.058] [1] [INFO] Plan Buildings Without Materials: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.058] [1] [INFO] Subscribe to mod Plan Buildings Without Materials
+[23:29:06.065] [1] [INFO] 	Move This Here has a mod.yaml with a staticID `MoveThisHere`, using that from now on.
+[23:29:06.066] [1] [INFO] Move This Here: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.066] [1] [INFO] Subscribe to mod Move This Here
+[23:29:06.074] [1] [INFO] 	Change Some Chore Group has a mod.yaml with a staticID `CalYu.ChangeChoreType`, using that from now on.
+[23:29:06.074] [1] [INFO] Change Some Chore Group: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.074] [1] [INFO] Subscribe to mod Change Some Chore Group
+[23:29:06.082] [1] [INFO] 	Suit Recharger has a mod.yaml with a staticID `Sanchozz.ONIMods.SuitRecharger`, using that from now on.
+[23:29:06.084] [1] [INFO] Suit Recharger: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.084] [1] [INFO] Subscribe to mod Suit Recharger
+[23:29:06.091] [1] [INFO] 	Transit Tube Overlay has a mod.yaml with a staticID `Satutu.TransitTubeOverlay`, using that from now on.
+[23:29:06.092] [1] [INFO] Transit Tube Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.092] [1] [INFO] Subscribe to mod Transit Tube Overlay
+[23:29:06.100] [1] [INFO] 	Real Time Clock has a mod.yaml with a staticID `nid-RealTimeClock`, using that from now on.
+[23:29:06.101] [1] [INFO] Real Time Clock: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.101] [1] [INFO] Subscribe to mod Real Time Clock
+[23:29:06.108] [1] [INFO] 	Planning Tool has a mod.yaml with a staticID `artorp.planningtool`, using that from now on.
+[23:29:06.109] [1] [INFO] Planning Tool: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.109] [1] [INFO] Subscribe to mod Planning Tool
+[23:29:06.117] [1] [INFO] 	Clean HUD has a mod.yaml with a staticID `Aze.CleanHUD`, using that from now on.
+[23:29:06.118] [1] [INFO] Clean HUD: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.118] [1] [INFO] Subscribe to mod Clean HUD
+[23:29:06.125] [1] [INFO] 	Map Overlay has a mod.yaml with a staticID `MapOverlay`, using that from now on.
+[23:29:06.126] [1] [INFO] Map Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.126] [1] [INFO] Subscribe to mod Map Overlay
+[23:29:06.134] [1] [INFO] 	Customize Geyser has a mod.yaml with a staticID `CustomizeGeyser`, using that from now on.
+[23:29:06.139] [1] [INFO] Customize Geyser: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.139] [1] [INFO] Subscribe to mod Customize Geyser
+[23:29:06.143] [1] [INFO] 	POIs Now Included has a mod.yaml with a staticID `PoisNotIncluded`, using that from now on.
+[23:29:06.143] [1] [INFO] POIs Now Included: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.143] [1] [INFO] Subscribe to mod POIs Now Included
+[23:29:06.160] [1] [INFO] 	Ronivans Legacy - Industrial Revolution has a mod.yaml with a staticID `RonivansLegacy_ChemicalProcessing`, using that from now on.
+[23:29:06.165] [1] [INFO] Ronivans Legacy - Industrial Revolution: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.165] [1] [INFO] Subscribe to mod Ronivans Legacy - Industrial Revolution
+[23:29:06.170] [1] [INFO] 	Omnificia Asteroid has a mod.yaml with a staticID `omnificiaAsteroid`, using that from now on.
+[23:29:06.170] [1] [WARNING] Omnificia Asteroid: No archive supports this game version, skipping content.
+[23:29:06.170] [1] [INFO] Subscribe to mod Omnificia Asteroid
+[23:29:06.178] [1] [INFO] 	Duplicant Stat Selector [DSS] has a mod.yaml with a staticID `SetStartDupes`, using that from now on.
+[23:29:06.180] [1] [INFO] Duplicant Stat Selector [DSS]: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.180] [1] [INFO] Subscribe to mod Duplicant Stat Selector [DSS]
+[23:29:06.187] [1] [INFO] 	Pipe Flow Overlay has a mod.yaml with a staticID `sjPipeFlowOverlay`, using that from now on.
+[23:29:06.188] [1] [INFO] Pipe Flow Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.188] [1] [INFO] Subscribe to mod Pipe Flow Overlay
+[23:29:06.196] [1] [INFO] 	Bigger Building Menu has a mod.yaml with a staticID `Cairath.BiggerBuildingMenu`, using that from now on.
+[23:29:06.197] [1] [INFO] Bigger Building Menu: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.197] [1] [INFO] Subscribe to mod Bigger Building Menu
+[23:29:06.206] [1] [INFO] 	Sealed Pitcher Pump has a mod.yaml with a staticID `SolidWaterPump`, using that from now on.
+[23:29:06.207] [1] [INFO] Sealed Pitcher Pump: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.207] [1] [INFO] Subscribe to mod Sealed Pitcher Pump
+[23:29:06.216] [1] [INFO] 	Spooky Pumpkin has a mod.yaml with a staticID `SpookyPumpkinSO`, using that from now on.
+[23:29:06.219] [1] [INFO] Spooky Pumpkin: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.219] [1] [INFO] Subscribe to mod Spooky Pumpkin
+[23:29:06.224] [1] [INFO] 	Roller Snakes Reborn has a mod.yaml with a staticID `test447.RollerSnake`, using that from now on.
+[23:29:06.225] [1] [INFO] Roller Snakes Reborn: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.225] [1] [INFO] Subscribe to mod Roller Snakes Reborn
+[23:29:06.232] [1] [INFO] 	Buildable Natural Tile has a mod.yaml with a staticID `BuildableNaturalTile`, using that from now on.
+[23:29:06.233] [1] [INFO] Buildable Natural Tile: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.233] [1] [INFO] Subscribe to mod Buildable Natural Tile
+[23:29:06.241] [1] [INFO] 	Giant Doors has a mod.yaml with a staticID `Zonkeeh.GiantDoors`, using that from now on.
+[23:29:06.241] [1] [INFO] Giant Doors: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.241] [1] [INFO] Subscribe to mod Giant Doors
+[23:29:06.249] [1] [INFO] 	Omni Flora - Decorative Plants has a mod.yaml with a staticID `OmniFlora`, using that from now on.
+[23:29:06.250] [1] [INFO] Omni Flora - Decorative Plants: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.251] [1] [INFO] Subscribe to mod Omni Flora - Decorative Plants
+[23:29:06.309] [1] [INFO] 	Starmap Queue has a mod.yaml with a staticID `PeterHan.StarmapQueue`, using that from now on.
+[23:29:06.311] [1] [INFO] Starmap Queue: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.311] [1] [INFO] Subscribe to mod Starmap Queue
+[23:29:06.319] [1] [INFO] 	Clothing Locker has a mod.yaml with a staticID `asquared31415.ClothingLocker`, using that from now on.
+[23:29:06.320] [1] [INFO] Clothing Locker: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.320] [1] [INFO] Subscribe to mod Clothing Locker
+[23:29:06.328] [1] [INFO] 	Always Show Capacity has a mod.yaml with a staticID `asquared31415.StorageCapacity`, using that from now on.
+[23:29:06.330] [1] [INFO] Always Show Capacity: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.330] [1] [INFO] Subscribe to mod Always Show Capacity
+[23:29:06.337] [1] [INFO] Tiny Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.337] [1] [INFO] Subscribe to mod Tiny Door
+[23:29:06.344] [1] [INFO] 	Buildable POI Doors has a mod.yaml with a staticID `Zonkeeh.BuildablePOIDoors`, using that from now on.
+[23:29:06.345] [1] [INFO] Buildable POI Doors: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.345] [1] [INFO] Subscribe to mod Buildable POI Doors
+[23:29:06.353] [1] [INFO] 	[DLC] Radiation Rebalanced has a mod.yaml with a staticID `pether-pg.RadiationRebalanced`, using that from now on.
+[23:29:06.353] [1] [WARNING] [DLC] Radiation Rebalanced: No archive supports this game version, skipping content.
+[23:29:06.353] [1] [INFO] Subscribe to mod [DLC] Radiation Rebalanced
+[23:29:06.361] [1] [INFO] 	Critter Inventory has a mod.yaml with a staticID `PeterHan.CritterInventory`, using that from now on.
+[23:29:06.363] [1] [INFO] Critter Inventory: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.363] [1] [INFO] Subscribe to mod Critter Inventory
+[23:29:06.370] [1] [INFO] 	Better Info Cards has a mod.yaml with a staticID `Aze.BetterInfoCards`, using that from now on.
+[23:29:06.371] [1] [INFO] Better Info Cards: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.371] [1] [INFO] Subscribe to mod Better Info Cards
+[23:29:06.381] [1] [INFO] 	Visual Fixes and Tweaks has a mod.yaml with a staticID `VisualFixesNTweaks`, using that from now on.
+[23:29:06.383] [1] [INFO] Visual Fixes and Tweaks: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.383] [1] [INFO] Subscribe to mod Visual Fixes and Tweaks
+[23:29:06.387] [1] [INFO] 	Highlight Overlay has a mod.yaml with a staticID `HighlightOverlay`, using that from now on.
+[23:29:06.389] [1] [INFO] Highlight Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.389] [1] [INFO] Subscribe to mod Highlight Overlay
+[23:29:06.398] [1] [INFO] 	[Vanilla + DLC] Signs Tags and Ribbons has a mod.yaml with a staticID `pether-pg.SignsTagsAndRibbons`, using that from now on.
+[23:29:06.405] [1] [INFO] [Vanilla + DLC] Signs Tags and Ribbons: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.405] [1] [INFO] Subscribe to mod [Vanilla + DLC] Signs Tags and Ribbons
+[23:29:06.409] [1] [INFO] 	Gold Hatch has a mod.yaml with a staticID `GoldHatch`, using that from now on.
+[23:29:06.410] [1] [INFO] Gold Hatch: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.411] [1] [INFO] Subscribe to mod Gold Hatch
+[23:29:06.418] [1] [INFO] 	Demolior Story Trait has a mod.yaml with a staticID `DemoliorStoryTrait`, using that from now on.
+[23:29:06.419] [1] [INFO] Demolior Story Trait: Successfully loaded from path 'root' with content 'LayerableFiles, DLL'.
+[23:29:06.419] [1] [INFO] Subscribe to mod Demolior Story Trait
+[23:29:06.427] [1] [INFO] 	Custom Geysers - Liquid Mercury Geyser has a mod.yaml with a staticID `geysersMercuryGeyser`, using that from now on.
+[23:29:06.428] [1] [INFO] Custom Geysers - Liquid Mercury Geyser: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.428] [1] [INFO] Subscribe to mod Custom Geysers - Liquid Mercury Geyser
+[23:29:06.435] [1] [INFO] 	Custom Geysers - Nickel Volcano has a mod.yaml with a staticID `geysersNickelVolcano`, using that from now on.
+[23:29:06.436] [1] [INFO] Custom Geysers - Nickel Volcano: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.436] [1] [INFO] Subscribe to mod Custom Geysers - Nickel Volcano
+[23:29:06.445] [1] [INFO] 	Custom Geysers - Iridium Volcano has a mod.yaml with a staticID `geysersIridiumVolcano`, using that from now on.
+[23:29:06.445] [1] [INFO] Custom Geysers - Iridium Volcano: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.445] [1] [INFO] Subscribe to mod Custom Geysers - Iridium Volcano
+[23:29:06.454] [1] [INFO] 	Custom Geysers - Lead Volcano has a mod.yaml with a staticID `geysersLeadVolcano`, using that from now on.
+[23:29:06.454] [1] [INFO] Custom Geysers - Lead Volcano: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.454] [1] [INFO] Subscribe to mod Custom Geysers - Lead Volcano
+[23:29:06.462] [1] [INFO] 	Fuleria has a mod.yaml with a staticID `AllBiomesWorld`, using that from now on.
+[23:29:06.463] [1] [INFO] Fuleria: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.463] [1] [INFO] Subscribe to mod Fuleria
+[23:29:06.471] [1] [INFO] 	Frostbite Tweaks has a mod.yaml with a staticID `GoodByeFrostByte`, using that from now on.
+[23:29:06.472] [1] [INFO] Frostbite Tweaks: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.472] [1] [INFO] Subscribe to mod Frostbite Tweaks
+[23:29:06.479] [1] [INFO] 	Void World has a mod.yaml with a staticID `CycleComma`, using that from now on.
+[23:29:06.480] [1] [INFO] Void World: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.480] [1] [INFO] Subscribe to mod Void World
+[23:29:06.488] [1] [INFO] 	Chaos Reigns has a mod.yaml with a staticID `Chaos Reigns`, using that from now on.
+[23:29:06.489] [1] [WARNING] Chaos Reigns: No archive supports this game version, skipping content.
+[23:29:06.489] [1] [INFO] Subscribe to mod Chaos Reigns
+[23:29:06.497] [1] [INFO] 	Chaos Events for Twitch Integration has a mod.yaml with a staticID `Imalas_TwitchChaosEvents`, using that from now on.
+[23:29:06.499] [1] [INFO] Chaos Events for Twitch Integration: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.499] [1] [INFO] Subscribe to mod Chaos Events for Twitch Integration
+[23:29:06.505] [1] [INFO] 	Steel Ladder has a mod.yaml with a staticID `Cairath.SteelLadder`, using that from now on.
+[23:29:06.506] [1] [INFO] Steel Ladder: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.506] [1] [INFO] Subscribe to mod Steel Ladder
+[23:29:06.513] [1] [INFO] 	Mod Filter has a mod.yaml with a staticID `asquared31415.ModsFilter`, using that from now on.
+[23:29:06.515] [1] [INFO] Mod Filter: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.515] [1] [INFO] Subscribe to mod Mod Filter
+[23:29:06.522] [1] [INFO] 	Info Overlay has a mod.yaml with a staticID `Yu.InfoOverlay`, using that from now on.
+[23:29:06.523] [1] [INFO] Info Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.523] [1] [INFO] Subscribe to mod Info Overlay
+[23:29:06.531] [1] [INFO] 	No Manual Delivery has a mod.yaml with a staticID `Sanchozz.ONIMods.NoManualDelivery`, using that from now on.
+[23:29:06.532] [1] [INFO] No Manual Delivery: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.532] [1] [INFO] Subscribe to mod No Manual Delivery
+[23:29:06.539] [1] [INFO] 	Mod Updater has a mod.yaml with a staticID `PeterHan.ModUpdateDate`, using that from now on.
+[23:29:06.540] [1] [INFO] Mod Updater: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.540] [1] [INFO] Subscribe to mod Mod Updater
+[23:29:06.548] [1] [INFO] 	Dupery Fixed has a mod.yaml with a staticID `DuperyFixed`, using that from now on.
+[23:29:06.549] [1] [INFO] Dupery Fixed: Successfully loaded from path 'root' with content 'Strings, DLL, Animation'.
+[23:29:06.549] [1] [INFO] Subscribe to mod Dupery Fixed
+[23:29:06.557] [1] [INFO] 	Empty Worlds has a mod.yaml with a staticID `EmptyWorlds`, using that from now on.
+[23:29:06.559] [1] [INFO] Empty Worlds: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.559] [1] [INFO] Subscribe to mod Empty Worlds
+[23:29:06.566] [1] [INFO] 	Backwalls has a mod.yaml with a staticID `Backwalls`, using that from now on.
+[23:29:06.568] [1] [INFO] Backwalls: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.568] [1] [INFO] Subscribe to mod Backwalls
+[23:29:06.574] [1] [INFO] 	Pedestal Filter has a mod.yaml with a staticID `PedestalFilter`, using that from now on.
+[23:29:06.575] [1] [INFO] Pedestal Filter: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.575] [1] [INFO] Subscribe to mod Pedestal Filter
+[23:29:06.584] [1] [INFO] 	Wallpaper has a mod.yaml with a staticID `Cairath.Wallpaper`, using that from now on.
+[23:29:06.586] [1] [INFO] Wallpaper: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.586] [1] [INFO] Subscribe to mod Wallpaper
+[23:29:06.592] [1] [INFO] 	Aquatic Farm has a mod.yaml with a staticID `Sanchozz.ONIMods.AquaticFarm`, using that from now on.
+[23:29:06.594] [1] [INFO] Aquatic Farm: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.594] [1] [INFO] Subscribe to mod Aquatic Farm
+[23:29:06.600] [1] [INFO] 	Buildable POI Props has a mod.yaml with a staticID `Cairath.BuildablePOIProps`, using that from now on.
+[23:29:06.601] [1] [INFO] Buildable POI Props: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.601] [1] [INFO] Subscribe to mod Buildable POI Props
+[23:29:06.609] [1] [INFO] 	Fervine has a mod.yaml with a staticID `Cairath.Fervine`, using that from now on.
+[23:29:06.610] [1] [INFO] Fervine: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.610] [1] [INFO] Subscribe to mod Fervine
+[23:29:06.618] [1] [INFO] 	Suppress Notifications has a mod.yaml with a staticID `Aze.SuppressNotifications`, using that from now on.
+[23:29:06.619] [1] [INFO] Suppress Notifications: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.619] [1] [INFO] Subscribe to mod Suppress Notifications
+[23:29:06.627] [1] [INFO] CustomTemperatureOverlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.627] [1] [INFO] Subscribe to mod CustomTemperatureOverlay
+[23:29:06.636] [1] [INFO] 	[Vanilla + DLC] Hatch morphs has a mod.yaml with a staticID `ONIHatchMorphsELU`, using that from now on.
+[23:29:06.640] [1] [INFO] [Vanilla + DLC] Hatch morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.640] [1] [INFO] Subscribe to mod [Vanilla + DLC] Hatch morphs
+[23:29:06.644] [1] [INFO] 	Mosaic Tile has a mod.yaml with a staticID `Cairath.MosaicTile`, using that from now on.
+[23:29:06.645] [1] [INFO] Mosaic Tile: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.645] [1] [INFO] Subscribe to mod Mosaic Tile
+[23:29:06.652] [1] [WARNING] Recoverable parse error in C:\Program Files (x86)\Steam\steamapps\workshop\content\457140\1801004057\1617345381347708248_legacy.bin\mod.yaml
+Found a property '﻿title' on a type 'KMod.KModHeader', but that type doesn't have that property!
+[23:29:06.653] [1] [WARNING] Recoverable parse error in C:\Program Files (x86)\Steam\steamapps\workshop\content\457140\1801004057\1617345381347708248_legacy.bin\mod.yaml
+Found a property '﻿title' on a type 'KMod.KModHeader', but that type doesn't have that property!
+[23:29:06.653] [1] [INFO] 	Advanced Electrolyzers has a mod.yaml with a staticID `advancedelectrolyzers`, using that from now on.
+[23:29:06.654] [1] [INFO] Advanced Electrolyzers: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.654] [1] [INFO] Subscribe to mod Advanced Electrolyzers
+[23:29:06.662] [1] [WARNING] Recoverable parse error in 
+Found a property 'title' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:29:06.662] [1] [WARNING] Recoverable parse error in 
+Found a property 'staticID' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:29:06.664] [1] [WARNING] Recoverable parse error in 
+Found a property 'title' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:29:06.664] [1] [WARNING] Recoverable parse error in 
+Found a property 'staticID' on a type 'KMod.Mod+PackagedModInfo', but that type doesn't have that property!
+[23:29:06.665] [1] [INFO] [anims broken] Puft Morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.665] [1] [INFO] Subscribe to mod [anims broken] Puft Morphs
+[23:29:06.670] [1] [INFO] 	I Love Slicksters has a mod.yaml with a staticID `ILoveSlicksters`, using that from now on.
+[23:29:06.671] [1] [INFO] I Love Slicksters: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.671] [1] [INFO] Subscribe to mod I Love Slicksters
+[23:29:06.679] [1] [INFO] 	[Vanilla + DLC] Pacu morphs has a mod.yaml with a staticID `ONIPacuMorphsELU`, using that from now on.
+[23:29:06.681] [1] [INFO] [Vanilla + DLC] Pacu morphs: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.682] [1] [INFO] Subscribe to mod [Vanilla + DLC] Pacu morphs
+[23:29:06.687] [1] [INFO] 	Research Queue has a mod.yaml with a staticID `PeterHan.ResearchQueue`, using that from now on.
+[23:29:06.688] [1] [INFO] Research Queue: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.688] [1] [INFO] Subscribe to mod Research Queue
+[23:29:06.695] [1] [INFO] 	Sandbox Tools has a mod.yaml with a staticID `PeterHan.SandboxTools`, using that from now on.
+[23:29:06.696] [1] [INFO] Sandbox Tools: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.696] [1] [INFO] Subscribe to mod Sandbox Tools
+[23:29:06.704] [1] [INFO] 	Expanded Lights has a mod.yaml with a staticID `ExpandedLights`, using that from now on.
+[23:29:06.705] [1] [INFO] Expanded Lights: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.705] [1] [INFO] Subscribe to mod Expanded Lights
+[23:29:06.713] [1] [INFO] 	[Vanilla + DLC] Pip morphs has a mod.yaml with a staticID `ONIPipMorphsELU`, using that from now on.
+[23:29:06.715] [1] [INFO] [Vanilla + DLC] Pip morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.715] [1] [INFO] Subscribe to mod [Vanilla + DLC] Pip morphs
+[23:29:06.721] [1] [INFO] 	Sweep By Type has a mod.yaml with a staticID `PeterHan.SweepByType`, using that from now on.
+[23:29:06.722] [1] [INFO] Sweep By Type: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.722] [1] [INFO] Subscribe to mod Sweep By Type
+[23:29:06.729] [1] [INFO] 	Wounded Go To Med Bed has a mod.yaml with a staticID `Cairath.WoundedGoToMedBed`, using that from now on.
+[23:29:06.731] [1] [INFO] Wounded Go To Med Bed: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.731] [1] [INFO] Subscribe to mod Wounded Go To Med Bed
+[23:29:06.738] [1] [INFO] 	One Hundred K Challenge has a mod.yaml with a staticID `PeterHan.Challenge100K`, using that from now on.
+[23:29:06.740] [1] [INFO] One Hundred K Challenge: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.740] [1] [INFO] Subscribe to mod One Hundred K Challenge
+[23:29:06.748] [1] [INFO] 	Settings Change Tool has a mod.yaml with a staticID `PeterHan.BulkSettingsChange`, using that from now on.
+[23:29:06.748] [1] [INFO] Settings Change Tool: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.748] [1] [INFO] Subscribe to mod Settings Change Tool
+[23:29:06.759] [1] [INFO] GasOverlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.759] [1] [INFO] Subscribe to mod GasOverlay
+[23:29:06.766] [1] [INFO] 	Build Straight Up has a mod.yaml with a staticID `PeterHan.BuildStraightUp`, using that from now on.
+[23:29:06.767] [1] [INFO] Build Straight Up: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.767] [1] [INFO] Subscribe to mod Build Straight Up
+[23:29:06.775] [1] [INFO] 	[Vanilla + DLC] Drecko morphs has a mod.yaml with a staticID `ONIDreckoMorphsELU`, using that from now on.
+[23:29:06.778] [1] [INFO] [Vanilla + DLC] Drecko morphs: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.778] [1] [INFO] Subscribe to mod [Vanilla + DLC] Drecko morphs
+[23:29:06.783] [1] [INFO] 	LUT Not Included has a mod.yaml with a staticID `LUTNotIncluded`, using that from now on.
+[23:29:06.784] [1] [INFO] LUT Not Included: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.784] [1] [INFO] Subscribe to mod LUT Not Included
+[23:29:06.792] [1] [INFO] 	Clean Floors has a mod.yaml with a staticID `Aze.CleanFloors`, using that from now on.
+[23:29:06.792] [1] [INFO] Clean Floors: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.792] [1] [INFO] Subscribe to mod Clean Floors
+[23:29:06.801] [1] [INFO] 	Sandbox: Mutant Plants has a mod.yaml with a staticID `Sanchozz.ONIMods.SandboxMutantPlant`, using that from now on.
+[23:29:06.801] [1] [WARNING] Sandbox: Mutant Plants: No archive supports this game version, skipping content.
+[23:29:06.801] [1] [INFO] Subscribe to mod Sandbox: Mutant Plants
+[23:29:06.810] [1] [INFO] 	Baator has a mod.yaml with a staticID `Baator_BumminsMod`, using that from now on.
+[23:29:06.811] [1] [WARNING] Baator: No archive supports this game version, skipping content.
+[23:29:06.811] [1] [INFO] Subscribe to mod Baator
+[23:29:06.818] [1] [INFO] 	[Vanilla + DLC] Rocket Presence Port has a mod.yaml with a staticID `pether-pg.RocketPresenceAutomationPort`, using that from now on.
+[23:29:06.823] [1] [INFO] [Vanilla + DLC] Rocket Presence Port: Successfully loaded from path 'archived_versions\2021_06_24_469112' with content 'DLL'.
+[23:29:06.823] [1] [INFO] Subscribe to mod [Vanilla + DLC] Rocket Presence Port
+[23:29:06.826] [1] [INFO] 	No Long Commutes has a mod.yaml with a staticID `Cairath.NoLongCommutes`, using that from now on.
+[23:29:06.828] [1] [INFO] No Long Commutes: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.828] [1] [INFO] Subscribe to mod No Long Commutes
+[23:29:06.835] [1] [INFO] 	Double Sweeper Range has a mod.yaml with a staticID `Cairath.DoubleSweeperRange`, using that from now on.
+[23:29:06.836] [1] [INFO] Double Sweeper Range: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.836] [1] [INFO] Subscribe to mod Double Sweeper Range
+[23:29:06.843] [1] [INFO] 	MiniBase has a mod.yaml with a staticID `MiniBase`, using that from now on.
+[23:29:06.844] [1] [INFO] MiniBase: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:06.844] [1] [INFO] Subscribe to mod MiniBase
+[23:29:06.852] [1] [INFO] 	Threshold Walls has a mod.yaml with a staticID `Thresholds`, using that from now on.
+[23:29:06.853] [1] [INFO] Threshold Walls: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.853] [1] [INFO] Subscribe to mod Threshold Walls
+[23:29:06.860] [1] [WARNING] Recoverable parse error in C:\Program Files (x86)\Steam\steamapps\workshop\content\457140\1717999057\46830098144042921_legacy.bin\mod.yaml
+Found a property '﻿title' on a type 'KMod.KModHeader', but that type doesn't have that property!
+[23:29:06.860] [1] [WARNING] Recoverable parse error in C:\Program Files (x86)\Steam\steamapps\workshop\content\457140\1717999057\46830098144042921_legacy.bin\mod.yaml
+Found a property '﻿title' on a type 'KMod.KModHeader', but that type doesn't have that property!
+[23:29:06.860] [1] [INFO] 	Dup Stats Configurator has a mod.yaml with a staticID `Always3Interests`, using that from now on.
+[23:29:06.861] [1] [INFO] Dup Stats Configurator: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.861] [1] [INFO] Subscribe to mod Dup Stats Configurator
+[23:29:06.869] [1] [INFO] 	Momentary switch has a mod.yaml with a staticID `MomentarySwitch`, using that from now on.
+[23:29:06.870] [1] [INFO] Momentary switch: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.870] [1] [INFO] Subscribe to mod Momentary switch
+[23:29:06.878] [1] [INFO] 	Airlock Door has a mod.yaml with a staticID `PeterHan.AirlockDoor`, using that from now on.
+[23:29:06.879] [1] [INFO] Airlock Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.879] [1] [INFO] Subscribe to mod Airlock Door
+[23:29:06.937] [1] [INFO] 	Diseases Restored has a mod.yaml with a staticID `DiseasesReimagined`, using that from now on.
+[23:29:06.938] [1] [INFO] Diseases Restored: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.938] [1] [INFO] Subscribe to mod Diseases Restored
+[23:29:06.947] [1] [INFO] 	Immigrants Reroll has a mod.yaml with a staticID `immigrantsReroll`, using that from now on.
+[23:29:06.947] [1] [INFO] Immigrants Reroll: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.947] [1] [INFO] Subscribe to mod Immigrants Reroll
+[23:29:06.955] [1] [INFO] 	Better Automation Overlay has a mod.yaml with a staticID `Aze.BetterLogicOverlay`, using that from now on.
+[23:29:06.956] [1] [INFO] Better Automation Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.956] [1] [INFO] Subscribe to mod Better Automation Overlay
+[23:29:06.964] [1] [INFO] 	Plastic Door has a mod.yaml with a staticID `PlasticDoor`, using that from now on.
+[23:29:06.965] [1] [INFO] Plastic Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.965] [1] [INFO] Subscribe to mod Plastic Door
+[23:29:06.973] [1] [INFO] 	Asphalt Tile has a mod.yaml with a staticID `Asphalt`, using that from now on.
+[23:29:06.976] [1] [INFO] Asphalt Tile: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.976] [1] [INFO] Subscribe to mod Asphalt Tile
+[23:29:06.983] [1] [INFO] Insulated Door: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:06.983] [1] [INFO] Subscribe to mod Insulated Door
+[23:29:06.991] [1] [INFO] Ceiling Lights: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:06.991] [1] [INFO] Subscribe to mod Ceiling Lights
+[23:29:06.999] [1] [INFO] 	Customize Buildings has a mod.yaml with a staticID `CustomizeBuildings`, using that from now on.
+[23:29:07.007] [1] [INFO] Customize Buildings: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.007] [1] [INFO] Subscribe to mod Customize Buildings
+[23:29:07.019] [1] [INFO] 	Decor Pack I has a mod.yaml with a staticID `DecorPackA`, using that from now on.
+[23:29:07.028] [1] [INFO] Decor Pack I: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.028] [1] [INFO] Subscribe to mod Decor Pack I
+[23:29:07.031] [1] [INFO] 	Rest for the Weary has a mod.yaml with a staticID `PeterHan.FinishTasks`, using that from now on.
+[23:29:07.032] [1] [INFO] Rest for the Weary: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.032] [1] [INFO] Subscribe to mod Rest for the Weary
+[23:29:07.040] [1] [INFO] 	Don't Idle in Doors has a mod.yaml with a staticID `Aze.NoDoorIdle`, using that from now on.
+[23:29:07.041] [1] [INFO] Don't Idle in Doors: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.041] [1] [INFO] Subscribe to mod Don't Idle in Doors
+[23:29:07.049] [1] [INFO] 	Show Building Ranges has a mod.yaml with a staticID `PeterHan.ShowRange`, using that from now on.
+[23:29:07.050] [1] [INFO] Show Building Ranges: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.050] [1] [INFO] Subscribe to mod Show Building Ranges
+[23:29:07.058] [1] [INFO] 	[Vanilla + DLC] Configurable Build Menus has a mod.yaml with a staticID `pether-pg.ConfigurableBuildMenus`, using that from now on.
+[23:29:07.069] [1] [INFO] [Vanilla + DLC] Configurable Build Menus: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.069] [1] [INFO] Subscribe to mod [Vanilla + DLC] Configurable Build Menus
+[23:29:07.072] [1] [INFO] 	Decor Reimagined has a mod.yaml with a staticID `PeterHan.DecorReimagined`, using that from now on.
+[23:29:07.073] [1] [INFO] Decor Reimagined: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.073] [1] [INFO] Subscribe to mod Decor Reimagined
+[23:29:07.081] [1] [INFO] 	Infinite Gases and Liquids has a mod.yaml with a staticID `InfiniteGasesAndLiquids`, using that from now on.
+[23:29:07.082] [1] [INFO] Infinite Gases and Liquids: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.082] [1] [INFO] Subscribe to mod Infinite Gases and Liquids
+[23:29:07.089] [1] [INFO] 	Stock Bug Fix has a mod.yaml with a staticID `PeterHan.StockBugFix`, using that from now on.
+[23:29:07.090] [1] [INFO] Stock Bug Fix: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.090] [1] [INFO] Subscribe to mod Stock Bug Fix
+[23:29:07.098] [1] [INFO] Skill and Stats progress: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.098] [1] [INFO] Subscribe to mod Skill and Stats progress
+[23:29:07.106] [1] [INFO] 	The Populist Challenge has a mod.yaml with a staticID `ThePopulistChallenge`, using that from now on.
+[23:29:07.107] [1] [INFO] The Populist Challenge: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.107] [1] [INFO] Subscribe to mod The Populist Challenge
+[23:29:07.115] [1] [INFO] 	Partitioned Storage has a mod.yaml with a staticID `ImprovedFilteredStorage`, using that from now on.
+[23:29:07.116] [1] [INFO] Partitioned Storage: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.116] [1] [INFO] Subscribe to mod Partitioned Storage
+[23:29:07.123] [1] [INFO] 	Space POI Additional Info has a mod.yaml with a staticID `Digzol.SpacePOIExtraInfo`, using that from now on.
+[23:29:07.124] [1] [WARNING] Space POI Additional Info: No archive supports this game version, skipping content.
+[23:29:07.124] [1] [INFO] Subscribe to mod Space POI Additional Info
+[23:29:07.132] [1] [INFO] 	Deconstructable Mini-Pod has a mod.yaml with a staticID `Xengulai.DeconstructableMiniPod`, using that from now on.
+[23:29:07.133] [1] [WARNING] Deconstructable Mini-Pod: No archive supports this game version, skipping content.
+[23:29:07.133] [1] [INFO] Subscribe to mod Deconstructable Mini-Pod
+[23:29:07.141] [1] [INFO] 	More Marble Sculptures has a mod.yaml with a staticID `MoreMarbleSculptures`, using that from now on.
+[23:29:07.144] [1] [INFO] More Marble Sculptures: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.144] [1] [INFO] Subscribe to mod More Marble Sculptures
+[23:29:07.149] [1] [INFO] 	True Tiles has a mod.yaml with a staticID `TrueTiles`, using that from now on.
+[23:29:07.150] [1] [INFO] True Tiles: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.150] [1] [INFO] Subscribe to mod True Tiles
+[23:29:07.158] [1] [INFO] 	[Vanilla + DLC] Real Calories Info has a mod.yaml with a staticID `pether-pg.RealCaloriesInfo`, using that from now on.
+[23:29:07.161] [1] [INFO] [Vanilla + DLC] Real Calories Info: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.161] [1] [INFO] Subscribe to mod [Vanilla + DLC] Real Calories Info
+[23:29:07.167] [1] [INFO] 	Resculpt has a mod.yaml with a staticID `PeterHan.Resculpt`, using that from now on.
+[23:29:07.169] [1] [INFO] Resculpt: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.169] [1] [INFO] Subscribe to mod Resculpt
+[23:29:07.176] [1] [INFO] 	Smart Pumps has a mod.yaml with a staticID `PeterHan.SmartPumps`, using that from now on.
+[23:29:07.177] [1] [INFO] Smart Pumps: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.177] [1] [INFO] Subscribe to mod Smart Pumps
+[23:29:07.192] [1] [INFO] 	Rocketry Expanded has a mod.yaml with a staticID `Rocketry Expanded`, using that from now on.
+[23:29:07.197] [1] [WARNING] Rocketry Expanded: No archive supports this game version, skipping content.
+[23:29:07.197] [1] [INFO] Subscribe to mod Rocketry Expanded
+[23:29:07.202] [1] [INFO] 	More Small Sculptures has a mod.yaml with a staticID `MoreSmallSculptures`, using that from now on.
+[23:29:07.204] [1] [INFO] More Small Sculptures: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.205] [1] [INFO] Subscribe to mod More Small Sculptures
+[23:29:07.211] [1] [INFO] 	Missing Element Textures has a mod.yaml with a staticID `CompleteElementTextures`, using that from now on.
+[23:29:07.213] [1] [INFO] Missing Element Textures: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.213] [1] [INFO] Subscribe to mod Missing Element Textures
+[23:29:07.221] [1] [INFO] 	Bio-Inks: Rechargeable Printing Pods has a mod.yaml with a staticID `PrintingPodRecharge`, using that from now on.
+[23:29:07.225] [1] [INFO] Bio-Inks: Rechargeable Printing Pods: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.225] [1] [INFO] Subscribe to mod Bio-Inks: Rechargeable Printing Pods
+[23:29:07.228] [1] [INFO] 	Waste Not, Want Not has a mod.yaml with a staticID `PeterHan.NoWasteWant`, using that from now on.
+[23:29:07.229] [1] [INFO] Waste Not, Want Not: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.229] [1] [INFO] Subscribe to mod Waste Not, Want Not
+[23:29:07.239] [1] [INFO] 	[reupload]Wooden Set - Structures by Ronivan has a mod.yaml with a staticID `Ronivan.WoodenSetStructures`, using that from now on.
+[23:29:07.244] [1] [INFO] [reupload]Wooden Set - Structures by Ronivan: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.244] [1] [INFO] Subscribe to mod [reupload]Wooden Set - Structures by Ronivan
+[23:29:07.252] [1] [INFO] 	[reupload] Wooden Set - Furniture by Ronivan has a mod.yaml with a staticID `Ronivan.WoodenSetFurniture`, using that from now on.
+[23:29:07.266] [1] [INFO] [reupload] Wooden Set - Furniture by Ronivan: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.266] [1] [INFO] Subscribe to mod [reupload] Wooden Set - Furniture by Ronivan
+[23:29:07.270] [1] [INFO] 	Twitch Integration has a mod.yaml with a staticID `asquared31415.TwitchIntegration`, using that from now on.
+[23:29:07.271] [1] [INFO] Twitch Integration: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:07.271] [1] [INFO] Subscribe to mod Twitch Integration
+[23:29:07.286] [1] [INFO] 	[Vanilla + DLC] Diseases Expanded has a mod.yaml with a staticID `pether-pg.DiseasesExpanded`, using that from now on.
+[23:29:07.308] [1] [INFO] [Vanilla + DLC] Diseases Expanded: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.308] [1] [INFO] Subscribe to mod [Vanilla + DLC] Diseases Expanded
+[23:29:07.311] [1] [INFO] 	Hydrocactus has a mod.yaml with a staticID `Sanchozz.ONIMods.Hydrocactus`, using that from now on.
+[23:29:07.312] [1] [WARNING] Hydrocactus: No archive supports this game version, skipping content.
+[23:29:07.312] [1] [INFO] Subscribe to mod Hydrocactus
+[23:29:07.321] [1] [INFO] 	Drywall Colours has a mod.yaml with a staticID `DrywallPatternColours`, using that from now on.
+[23:29:07.323] [1] [INFO] Drywall Colours: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.323] [1] [INFO] Subscribe to mod Drywall Colours
+[23:29:07.329] [1] [INFO] 	Wild Planter Box has a mod.yaml with a staticID `WildPlanterBox`, using that from now on.
+[23:29:07.330] [1] [INFO] Wild Planter Box: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.330] [1] [INFO] Subscribe to mod Wild Planter Box
+[23:29:07.338] [1] [INFO] 	Mod Profile Manager [MPM] has a mod.yaml with a staticID `SaveGameModLoader`, using that from now on.
+[23:29:07.339] [1] [INFO] Mod Profile Manager [MPM]: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.339] [1] [INFO] Subscribe to mod Mod Profile Manager [MPM]
+[23:29:07.347] [1] [INFO] 	Canned Food has a mod.yaml with a staticID `CannedFoods`, using that from now on.
+[23:29:07.349] [1] [INFO] Canned Food: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.349] [1] [INFO] Subscribe to mod Canned Food
+[23:29:07.356] [1] [INFO] 	Plastic Utilities has a mod.yaml with a staticID `PlasticUtilities`, using that from now on.
+[23:29:07.357] [1] [INFO] Plastic Utilities: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.357] [1] [INFO] Subscribe to mod Plastic Utilities
+[23:29:07.416] [1] [INFO] 	Plastic Mesh and Airflow Tiles has a mod.yaml with a staticID `PlasticTiles`, using that from now on.
+[23:29:07.417] [1] [INFO] Plastic Mesh and Airflow Tiles: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.417] [1] [INFO] Subscribe to mod Plastic Mesh and Airflow Tiles
+[23:29:07.420] [1] [INFO] 	Germicidal Lamps has a mod.yaml with a staticID `GermicidalLamps`, using that from now on.
+[23:29:07.421] [1] [INFO] Germicidal Lamps: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.421] [1] [INFO] Subscribe to mod Germicidal Lamps
+[23:29:07.430] [1] [INFO] 	Help I accidentally broke my rocket interior ports and now the save crashes on load - Fix has a mod.yaml with a staticID `BrokenRocketInteriorPortFix`, using that from now on.
+[23:29:07.431] [1] [INFO] Help I accidentally broke my rocket interior ports and now the save crashes on load - Fix: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.431] [1] [INFO] Subscribe to mod Help I accidentally broke my rocket interior ports and now the save crashes on load - Fix
+[23:29:07.439] [1] [INFO] 	MiniBase : Spaced Out Edition has a mod.yaml with a staticID `miniBaseSO`, using that from now on.
+[23:29:07.439] [1] [WARNING] MiniBase : Spaced Out Edition: No archive supports this game version, skipping content.
+[23:29:07.439] [1] [INFO] Subscribe to mod MiniBase : Spaced Out Edition
+[23:29:07.449] [1] [INFO] 	Aki's Extra Twitch Events has a mod.yaml with a staticID `Twitchery`, using that from now on.
+[23:29:07.451] [1] [INFO] Aki's Extra Twitch Events: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:07.451] [1] [INFO] Subscribe to mod Aki's Extra Twitch Events
+[23:29:07.456] [1] [INFO] 	Cluster Generation Manager [CGM] has a mod.yaml with a staticID `ClusterTraitGenerationManager`, using that from now on.
+[23:29:07.458] [1] [INFO] Cluster Generation Manager [CGM]: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.458] [1] [INFO] Subscribe to mod Cluster Generation Manager [CGM]
+[23:29:07.465] [1] [INFO] 	Pip Plant Overlay has a mod.yaml with a staticID `PeterHan.PipPlantOverlay`, using that from now on.
+[23:29:07.466] [1] [INFO] Pip Plant Overlay: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.466] [1] [INFO] Subscribe to mod Pip Plant Overlay
+[23:29:07.474] [1] [INFO] 	Popup Control has a mod.yaml with a staticID `PeterHan.ToastControl`, using that from now on.
+[23:29:07.475] [1] [INFO] Popup Control: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.475] [1] [INFO] Subscribe to mod Popup Control
+[23:29:07.483] [1] [INFO] 	Skill Queue has a mod.yaml with a staticID `SkillingQueue`, using that from now on.
+[23:29:07.483] [1] [INFO] Skill Queue: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.483] [1] [INFO] Subscribe to mod Skill Queue
+[23:29:07.492] [1] [INFO] 	Utility Glass has a mod.yaml with a staticID `UtilityGlass`, using that from now on.
+[23:29:07.493] [1] [INFO] Utility Glass: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.493] [1] [INFO] Subscribe to mod Utility Glass
+[23:29:07.500] [1] [INFO] 	Warning Notification Manager has a mod.yaml with a staticID `SGTIM_NotificationManager`, using that from now on.
+[23:29:07.502] [1] [INFO] Warning Notification Manager: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.502] [1] [INFO] Subscribe to mod Warning Notification Manager
+[23:29:07.509] [1] [INFO] 	Preset Manager has a mod.yaml with a staticID `DupePrioPresetManager`, using that from now on.
+[23:29:07.511] [1] [INFO] Preset Manager: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.511] [1] [INFO] Subscribe to mod Preset Manager
+[23:29:07.518] [1] [INFO] 	Modify Difficulty Settings has a mod.yaml with a staticID `CustomGameSettingsModifier`, using that from now on.
+[23:29:07.519] [1] [INFO] Modify Difficulty Settings: Successfully loaded from path 'root' with content 'DLL'.
+[23:29:07.519] [1] [INFO] Subscribe to mod Modify Difficulty Settings
+[23:29:07.526] [1] [INFO] 	Old Liquid Reservoir has a mod.yaml with a staticID `Sanchozz.ONIMods.OldLiquidReservoir`, using that from now on.
+[23:29:07.527] [1] [INFO] Old Liquid Reservoir: Successfully loaded from path 'root' with content 'DLL, Animation'.
+[23:29:07.527] [1] [INFO] Subscribe to mod Old Liquid Reservoir
+[23:29:07.536] [1] [INFO] 	Decor Pack S - Winters Delight has a mod.yaml with a staticID `AkisSnowThings`, using that from now on.
+[23:29:07.539] [1] [INFO] Decor Pack S - Winters Delight: Successfully loaded from path 'root' with content 'LayerableFiles, DLL, Animation'.
+[23:29:07.539] [1] [INFO] Subscribe to mod Decor Pack S - Winters Delight
+Unloading 1 Unused Serialized files (Serialized files now loaded: 4)
+Unloading 0 unused Assets / (0 B). Loaded Objects now: 73506.
+Memory consumption went from 0.75 GB to 0.75 GB.
+Total: 65.030300 ms (FindLiveObjects: 5.835800 ms CreateObjectMapping: 2.677100 ms MarkObjects: 56.364600 ms  DeleteObjects: 0.152000 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 4)
+UnloadTime: 3.302400 ms
+Unloading 109 unused Assets / (69.6 KB). Loaded Objects now: 97198.
+Memory consumption went from 0.82 GB to 0.82 GB.
+Total: 70.086200 ms (FindLiveObjects: 6.427500 ms CreateObjectMapping: 4.942200 ms MarkObjects: 58.413800 ms  DeleteObjects: 0.302100 ms)
+
+[23:29:16.250] [1] [INFO] Loading save file: C:\Users\Sonia K\Documents\Klei\OxygenNotIncluded\save_files\Testing U57-U58\Rodriguez.sav
+ headerVersion:1, buildVersion:717001, headerSize:329, IsCompressed:True
+[23:29:16.250] [1] [INFO] GameInfo loaded from save header:
+  numberOfCycles:5,
+  numberOfDuplicants:1,
+  baseName:Testing U57-U58,
+  isAutoSave:False,
+  originalSaveName:Rodriguez.sav,
+  clusterId:clusters/SandstoneDefault,
+  worldTraits:<i>none</i>,
+  colonyGuid:caf1d78a-c74a-4ab0-912b-0b5b270288fe,
+  saveVersion:7.37
+[23:29:16.472] [1] [INFO] Mod Footprint (3):
+  - Duplicant Status Bar
+  - No Zone Tint
+  - 统一背景 Unified Background MOD
+[23:29:16.473] [1] [INFO] Active Mods (3):
+  - Duplicant Status Bar
+  - No Zone Tint
+  - 统一背景 Unified Background MOD
+[23:29:16.525] [1] [INFO] 31.19016 Level Loaded.... backend
+Shader warmup: 79 shaders 327 combinations 0.028s
+[23:29:20.004] [1] [INFO] SAVEINFO
+[23:29:20.004] [1] [INFO]  - Generated: Sunday, 08 March 2026 08:05:48
+[23:29:20.004] [1] [INFO]  - Played on: 707956, 716486, 717001
+[23:29:20.004] [1] [INFO]  - Debug was used: True
+[23:29:20.005] [1] [INFO] Custom Settings: ClusterLayout=clusters/SandstoneDefault,WorldgenSeed=1493206969,ImmuneSystem=Default,CalorieBurn=Default,Morale=Default,Durability=Indestructible,MeteorShowers=Default,Radiation=Default,Stress=Default,StressBreaks=Default,CarePackages=Enabled,SandboxMode=Enabled,FastWorkersMode=Disabled,SaveToCloud=Disabled,Teleporters=Enabled,BionicWattage=Default,DemoliorDifficulty=Default,
+[23:29:20.005] [1] [INFO] Story Settings: MegaBrainTank=Disabled,CreatureManipulator=Disabled,LonelyMinion=Disabled,FossilHunt=Disabled,MorbRoverMaker=Disabled,HijackHeadquarters=Disabled,
+[23:29:20.005] [1] [INFO] Mixing Settings: DLC2_ID=Disabled,IceCavesMixing=Disabled,CarrotQuarryMixing=Disabled,SugarWoodsMixing=Disabled,CeresAsteroidMixing=Disabled,DLC3_ID=Disabled,DLC4_ID=Disabled,GardenMixing=Disabled,RaptorMixing=Disabled,WetlandsMixing=Disabled,PrehistoricAsteroidMixing=Disabled,
+[23:29:20.160] [1] [INFO] Loaded [C:\Users\Sonia K\Documents\Klei\OxygenNotIncluded\save_files\Testing U57-U58\Rodriguez.sav]
+[23:29:20.160] [1] [INFO] World Seeds [1493206969/1493206969/1493206969/1493206969]
+[23:29:20.407] [1] [INFO] -- GAME --
+[23:29:20.408] [1] [INFO] [InterfaceTool] Initializing configs with values of DefaultKey: Invalid Configs: 3
+[23:29:20.411] [1] [INFO] [InterfaceTool] Pushing config with key: Invalid
+Unloading 1 Unused Serialized files (Serialized files now loaded: 4)
+[23:29:20.872] [1] [WARNING] asteroid_flame_outer_kanim ui placeSymbol [ ui ] is missing
+[23:29:20.888] [1] [WARNING] asteroid_flame_outer_kanim ui placeSymbol [ ui ] is missing
+[23:29:21.498] [1] [WARNING] Codex SubEntry  cannot find parent codex entry with id Railgun
+[23:29:21.536] [1] [INFO] Checking which steam branch we're on. Got: [public_testing]
+[23:29:25.732] [1] [INFO] Screen resolution updated, saving values to prefs: 1920x1057 @ 60, fullscreen: Windowed
+Unloading 7 unused Assets / (7.6 KB). Loaded Objects now: 331108.
+Memory consumption went from 1.05 GB to 1.05 GB.
+Total: 256.788500 ms (FindLiveObjects: 40.492200 ms CreateObjectMapping: 14.128900 ms MarkObjects: 200.662500 ms  DeleteObjects: 1.503600 ms)
+
+The character with Unicode value \u2717 was not found in the [GRAYSTROKE REGULAR SDF] font asset or any potential fallbacks. It was replaced by Unicode character \u25A1 in text object [Label].
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+LogCatcher:UnityEngine.ILogHandler.LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:51)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:LogWarning (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:216)
+TMPro.TextMeshProUGUI:SetArraySizes (TMPro.TMP_Text/TextProcessingElement[]) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2012)
+TMPro.TMP_Text:ParseInputText () (at ./Packages/com.unity.ugui/Runtime/TMP/TMP_Text.cs:2047)
+TMPro.TextMeshProUGUI:OnPreRenderCanvas () (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2502)
+TMPro.TextMeshProUGUI:Rebuild (UnityEngine.UI.CanvasUpdate) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:229)
+UnityEngine.UI.CanvasUpdateRegistry:PerformUpdate () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/CanvasUpdateRegistry.cs:215)
+UnityEngine.Canvas:SendWillRenderCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:121)
+UnityEngine.Canvas:ForceUpdateCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:109)
+DuplicantStatusBar.UI.SortFilterPopup:Toggle (UnityEngine.RectTransform)
+DuplicantStatusBar.UI.StatusBarScreen:<BuildHeader>b__43_0 ()
+UnityEngine.Events.InvokableCall:Invoke () (at C:/build/output/unity/unity/Runtime/Export/UnityEvent/UnityEvent.cs:178)
+UnityEngine.Events.UnityEvent:Invoke () (at C:/build/output/unity/unity/artifacts/generated/UnityEvent/UnityEvent_0.cs:57)
+UnityEngine.UI.Button:Press () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:70)
+UnityEngine.UI.Button:OnPointerClick (UnityEngine.EventSystems.PointerEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:114)
+UnityEngine.EventSystems.ExecuteEvents:Execute (UnityEngine.EventSystems.IPointerClickHandler,UnityEngine.EventSystems.BaseEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:57)
+UnityEngine.EventSystems.ExecuteEvents:Execute<UnityEngine.EventSystems.IPointerClickHandler> (UnityEngine.GameObject,UnityEngine.EventSystems.BaseEventData,UnityEngine.EventSystems.ExecuteEvents/EventFunction`1<UnityEngine.EventSystems.IPointerClickHandler>) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:272)
+UnityEngine.EventSystems.StandaloneInputModule:ReleaseMouse (UnityEngine.EventSystems.PointerEventData,UnityEngine.GameObject) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:215)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMousePress (UnityEngine.EventSystems.PointerInputModule/MouseButtonEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:677)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent (int) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:577)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:557)
+UnityEngine.EventSystems.StandaloneInputModule:Process () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:305)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs:514)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 216)
+
+The character with Unicode value \u2717 was not found in the [GRAYSTROKE REGULAR SDF] font asset or any potential fallbacks. It was replaced by Unicode character \u25A1 in text object [Label].
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+LogCatcher:UnityEngine.ILogHandler.LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:51)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:LogWarning (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:216)
+TMPro.TextMeshProUGUI:SetArraySizes (TMPro.TMP_Text/TextProcessingElement[]) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2012)
+TMPro.TMP_Text:ParseInputText () (at ./Packages/com.unity.ugui/Runtime/TMP/TMP_Text.cs:2047)
+TMPro.TextMeshProUGUI:OnPreRenderCanvas () (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2502)
+TMPro.TextMeshProUGUI:Rebuild (UnityEngine.UI.CanvasUpdate) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:229)
+UnityEngine.UI.CanvasUpdateRegistry:PerformUpdate () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/CanvasUpdateRegistry.cs:215)
+UnityEngine.Canvas:SendWillRenderCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:121)
+UnityEngine.Canvas:ForceUpdateCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:109)
+DuplicantStatusBar.UI.SortFilterPopup:Toggle (UnityEngine.RectTransform)
+DuplicantStatusBar.UI.StatusBarScreen:<BuildHeader>b__43_0 ()
+UnityEngine.Events.InvokableCall:Invoke () (at C:/build/output/unity/unity/Runtime/Export/UnityEvent/UnityEvent.cs:178)
+UnityEngine.Events.UnityEvent:Invoke () (at C:/build/output/unity/unity/artifacts/generated/UnityEvent/UnityEvent_0.cs:57)
+UnityEngine.UI.Button:Press () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:70)
+UnityEngine.UI.Button:OnPointerClick (UnityEngine.EventSystems.PointerEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:114)
+UnityEngine.EventSystems.ExecuteEvents:Execute (UnityEngine.EventSystems.IPointerClickHandler,UnityEngine.EventSystems.BaseEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:57)
+UnityEngine.EventSystems.ExecuteEvents:Execute<UnityEngine.EventSystems.IPointerClickHandler> (UnityEngine.GameObject,UnityEngine.EventSystems.BaseEventData,UnityEngine.EventSystems.ExecuteEvents/EventFunction`1<UnityEngine.EventSystems.IPointerClickHandler>) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:272)
+UnityEngine.EventSystems.StandaloneInputModule:ReleaseMouse (UnityEngine.EventSystems.PointerEventData,UnityEngine.GameObject) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:215)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMousePress (UnityEngine.EventSystems.PointerInputModule/MouseButtonEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:677)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent (int) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:577)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:557)
+UnityEngine.EventSystems.StandaloneInputModule:Process () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:305)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs:514)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 216)
+
+The character with Unicode value \u2717 was not found in the [GRAYSTROKE REGULAR SDF] font asset or any potential fallbacks. It was replaced by Unicode character \u25A1 in text object [Label].
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+LogCatcher:UnityEngine.ILogHandler.LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:51)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:LogWarning (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:216)
+TMPro.TextMeshProUGUI:SetArraySizes (TMPro.TMP_Text/TextProcessingElement[]) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2012)
+TMPro.TMP_Text:ParseInputText () (at ./Packages/com.unity.ugui/Runtime/TMP/TMP_Text.cs:2047)
+TMPro.TextMeshProUGUI:OnPreRenderCanvas () (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2502)
+TMPro.TextMeshProUGUI:Rebuild (UnityEngine.UI.CanvasUpdate) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:229)
+UnityEngine.UI.CanvasUpdateRegistry:PerformUpdate () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/CanvasUpdateRegistry.cs:215)
+UnityEngine.Canvas:SendWillRenderCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:121)
+UnityEngine.Canvas:ForceUpdateCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:109)
+DuplicantStatusBar.UI.SortFilterPopup:Toggle (UnityEngine.RectTransform)
+DuplicantStatusBar.UI.StatusBarScreen:<BuildHeader>b__43_0 ()
+UnityEngine.Events.InvokableCall:Invoke () (at C:/build/output/unity/unity/Runtime/Export/UnityEvent/UnityEvent.cs:178)
+UnityEngine.Events.UnityEvent:Invoke () (at C:/build/output/unity/unity/artifacts/generated/UnityEvent/UnityEvent_0.cs:57)
+UnityEngine.UI.Button:Press () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:70)
+UnityEngine.UI.Button:OnPointerClick (UnityEngine.EventSystems.PointerEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:114)
+UnityEngine.EventSystems.ExecuteEvents:Execute (UnityEngine.EventSystems.IPointerClickHandler,UnityEngine.EventSystems.BaseEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:57)
+UnityEngine.EventSystems.ExecuteEvents:Execute<UnityEngine.EventSystems.IPointerClickHandler> (UnityEngine.GameObject,UnityEngine.EventSystems.BaseEventData,UnityEngine.EventSystems.ExecuteEvents/EventFunction`1<UnityEngine.EventSystems.IPointerClickHandler>) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:272)
+UnityEngine.EventSystems.StandaloneInputModule:ReleaseMouse (UnityEngine.EventSystems.PointerEventData,UnityEngine.GameObject) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:215)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMousePress (UnityEngine.EventSystems.PointerInputModule/MouseButtonEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:677)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent (int) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:577)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:557)
+UnityEngine.EventSystems.StandaloneInputModule:Process () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:305)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs:514)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 216)
+
+The character with Unicode value \u2717 was not found in the [GRAYSTROKE REGULAR SDF] font asset or any potential fallbacks. It was replaced by Unicode character \u25A1 in text object [Label].
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+LogCatcher:UnityEngine.ILogHandler.LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:51)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:LogWarning (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:216)
+TMPro.TextMeshProUGUI:SetArraySizes (TMPro.TMP_Text/TextProcessingElement[]) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2012)
+TMPro.TMP_Text:ParseInputText () (at ./Packages/com.unity.ugui/Runtime/TMP/TMP_Text.cs:2047)
+TMPro.TextMeshProUGUI:OnPreRenderCanvas () (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2502)
+TMPro.TextMeshProUGUI:Rebuild (UnityEngine.UI.CanvasUpdate) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:229)
+UnityEngine.UI.CanvasUpdateRegistry:PerformUpdate () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/CanvasUpdateRegistry.cs:215)
+UnityEngine.Canvas:SendWillRenderCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:121)
+UnityEngine.Canvas:ForceUpdateCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:109)
+DuplicantStatusBar.UI.SortFilterPopup:Toggle (UnityEngine.RectTransform)
+DuplicantStatusBar.UI.StatusBarScreen:<BuildHeader>b__43_0 ()
+UnityEngine.Events.InvokableCall:Invoke () (at C:/build/output/unity/unity/Runtime/Export/UnityEvent/UnityEvent.cs:178)
+UnityEngine.Events.UnityEvent:Invoke () (at C:/build/output/unity/unity/artifacts/generated/UnityEvent/UnityEvent_0.cs:57)
+UnityEngine.UI.Button:Press () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:70)
+UnityEngine.UI.Button:OnPointerClick (UnityEngine.EventSystems.PointerEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:114)
+UnityEngine.EventSystems.ExecuteEvents:Execute (UnityEngine.EventSystems.IPointerClickHandler,UnityEngine.EventSystems.BaseEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:57)
+UnityEngine.EventSystems.ExecuteEvents:Execute<UnityEngine.EventSystems.IPointerClickHandler> (UnityEngine.GameObject,UnityEngine.EventSystems.BaseEventData,UnityEngine.EventSystems.ExecuteEvents/EventFunction`1<UnityEngine.EventSystems.IPointerClickHandler>) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:272)
+UnityEngine.EventSystems.StandaloneInputModule:ReleaseMouse (UnityEngine.EventSystems.PointerEventData,UnityEngine.GameObject) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:215)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMousePress (UnityEngine.EventSystems.PointerInputModule/MouseButtonEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:677)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent (int) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:577)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:557)
+UnityEngine.EventSystems.StandaloneInputModule:Process () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:305)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs:514)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 216)
+
+The character with Unicode value \u2717 was not found in the [GRAYSTROKE REGULAR SDF] font asset or any potential fallbacks. It was replaced by Unicode character \u25A1 in text object [Label].
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+LogCatcher:UnityEngine.ILogHandler.LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:51)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:LogWarning (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:216)
+TMPro.TextMeshProUGUI:SetArraySizes (TMPro.TMP_Text/TextProcessingElement[]) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2012)
+TMPro.TMP_Text:ParseInputText () (at ./Packages/com.unity.ugui/Runtime/TMP/TMP_Text.cs:2047)
+TMPro.TextMeshProUGUI:OnPreRenderCanvas () (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2502)
+TMPro.TextMeshProUGUI:Rebuild (UnityEngine.UI.CanvasUpdate) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:229)
+UnityEngine.UI.CanvasUpdateRegistry:PerformUpdate () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/CanvasUpdateRegistry.cs:215)
+UnityEngine.Canvas:SendWillRenderCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:121)
+UnityEngine.Canvas:ForceUpdateCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:109)
+DuplicantStatusBar.UI.SortFilterPopup:Toggle (UnityEngine.RectTransform)
+DuplicantStatusBar.UI.StatusBarScreen:<BuildHeader>b__43_0 ()
+UnityEngine.Events.InvokableCall:Invoke () (at C:/build/output/unity/unity/Runtime/Export/UnityEvent/UnityEvent.cs:178)
+UnityEngine.Events.UnityEvent:Invoke () (at C:/build/output/unity/unity/artifacts/generated/UnityEvent/UnityEvent_0.cs:57)
+UnityEngine.UI.Button:Press () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:70)
+UnityEngine.UI.Button:OnPointerClick (UnityEngine.EventSystems.PointerEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:114)
+UnityEngine.EventSystems.ExecuteEvents:Execute (UnityEngine.EventSystems.IPointerClickHandler,UnityEngine.EventSystems.BaseEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:57)
+UnityEngine.EventSystems.ExecuteEvents:Execute<UnityEngine.EventSystems.IPointerClickHandler> (UnityEngine.GameObject,UnityEngine.EventSystems.BaseEventData,UnityEngine.EventSystems.ExecuteEvents/EventFunction`1<UnityEngine.EventSystems.IPointerClickHandler>) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:272)
+UnityEngine.EventSystems.StandaloneInputModule:ReleaseMouse (UnityEngine.EventSystems.PointerEventData,UnityEngine.GameObject) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:215)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMousePress (UnityEngine.EventSystems.PointerInputModule/MouseButtonEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:677)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent (int) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:577)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:557)
+UnityEngine.EventSystems.StandaloneInputModule:Process () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:305)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs:514)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 216)
+
+The character with Unicode value \u2717 was not found in the [GRAYSTROKE REGULAR SDF] font asset or any potential fallbacks. It was replaced by Unicode character \u25A1 in text object [Label].
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at C:/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:35)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at C:/build/output/unity/unity/Runtime/Export/Logging/DebugLogHandler.cs:9)
+LogCatcher:UnityEngine.ILogHandler.LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[]) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:51)
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Logging/Logger.cs:66)
+UnityEngine.Debug:LogWarning (object,UnityEngine.Object) (at C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs:216)
+TMPro.TextMeshProUGUI:SetArraySizes (TMPro.TMP_Text/TextProcessingElement[]) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2012)
+TMPro.TMP_Text:ParseInputText () (at ./Packages/com.unity.ugui/Runtime/TMP/TMP_Text.cs:2047)
+TMPro.TextMeshProUGUI:OnPreRenderCanvas () (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:2502)
+TMPro.TextMeshProUGUI:Rebuild (UnityEngine.UI.CanvasUpdate) (at ./Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs:229)
+UnityEngine.UI.CanvasUpdateRegistry:PerformUpdate () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/CanvasUpdateRegistry.cs:215)
+UnityEngine.Canvas:SendWillRenderCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:121)
+UnityEngine.Canvas:ForceUpdateCanvases () (at C:/build/output/unity/unity/Modules/UI/ScriptBindings/UICanvas.bindings.cs:109)
+DuplicantStatusBar.UI.SortFilterPopup:Toggle (UnityEngine.RectTransform)
+DuplicantStatusBar.UI.StatusBarScreen:<BuildHeader>b__43_0 ()
+UnityEngine.Events.InvokableCall:Invoke () (at C:/build/output/unity/unity/Runtime/Export/UnityEvent/UnityEvent.cs:178)
+UnityEngine.Events.UnityEvent:Invoke () (at C:/build/output/unity/unity/artifacts/generated/UnityEvent/UnityEvent_0.cs:57)
+UnityEngine.UI.Button:Press () (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:70)
+UnityEngine.UI.Button:OnPointerClick (UnityEngine.EventSystems.PointerEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs:114)
+UnityEngine.EventSystems.ExecuteEvents:Execute (UnityEngine.EventSystems.IPointerClickHandler,UnityEngine.EventSystems.BaseEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:57)
+UnityEngine.EventSystems.ExecuteEvents:Execute<UnityEngine.EventSystems.IPointerClickHandler> (UnityEngine.GameObject,UnityEngine.EventSystems.BaseEventData,UnityEngine.EventSystems.ExecuteEvents/EventFunction`1<UnityEngine.EventSystems.IPointerClickHandler>) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/ExecuteEvents.cs:272)
+UnityEngine.EventSystems.StandaloneInputModule:ReleaseMouse (UnityEngine.EventSystems.PointerEventData,UnityEngine.GameObject) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:215)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMousePress (UnityEngine.EventSystems.PointerInputModule/MouseButtonEventData) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:677)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent (int) (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:577)
+UnityEngine.EventSystems.StandaloneInputModule:ProcessMouseEvent () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:557)
+UnityEngine.EventSystems.StandaloneInputModule:Process () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/InputModules/StandaloneInputModule.cs:305)
+UnityEngine.EventSystems.EventSystem:Update () (at ./Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs:514)
+
+(Filename: C:/build/output/unity/unity/Runtime/Export/Debug/Debug.bindings.cs Line: 216)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 4)
+Unloading 42 unused Assets / (15.7 KB). Loaded Objects now: 210024.
+Memory consumption went from 1.08 GB to 1.08 GB.
+Total: 227.329100 ms (FindLiveObjects: 19.155400 ms CreateObjectMapping: 7.171900 ms MarkObjects: 200.418600 ms  DeleteObjects: 0.582500 ms)
+
+Unloading 0 Unused Serialized files (Serialized files now loaded: 4)
+Unloading 0 unused Assets / (19.0 KB). Loaded Objects now: 210024.
+Memory consumption went from 1.08 GB to 1.08 GB.
+Total: 225.670300 ms (FindLiveObjects: 18.417300 ms CreateObjectMapping: 7.268800 ms MarkObjects: 199.592800 ms  DeleteObjects: 0.390600 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 4)
+UnloadTime: 249.708800 ms
+Unloading 527 unused Assets / (10.4 MB). Loaded Objects now: 100279.
+Memory consumption went from 0.94 GB to 0.93 GB.
+Total: 103.833200 ms (FindLiveObjects: 8.001700 ms CreateObjectMapping: 5.684000 ms MarkObjects: 88.458100 ms  DeleteObjects: 1.688800 ms)
+
+[23:30:26.380] [1] [INFO] Loading save file: C:\Users\Sonia K\Documents\Klei\OxygenNotIncluded\save_files\Outpost\Outpost 93.sav
+ headerVersion:1, buildVersion:717001, headerSize:354, IsCompressed:True
+[23:30:26.380] [1] [INFO] GameInfo loaded from save header:
+  numberOfCycles:92,
+  numberOfDuplicants:10,
+  baseName:Outpost,
+  isAutoSave:False,
+  originalSaveName:Outpost 80.sav,
+  clusterId:clusters/SandstoneFrozen,
+  worldTraits:<i>none</i>,
+  colonyGuid:31a3cded-42c0-477a-af04-d0263c386828,
+  saveVersion:7.37
+[23:30:26.586] [1] [WARNING] Mod footprint of save file doesn't match current mod configuration
+[23:30:26.586] [1] [INFO] Mod Footprint (1):
+  - Duplicant Status Bar
+[23:30:26.586] [1] [INFO] Active Mods (3):
+  - Duplicant Status Bar
+  - No Zone Tint
+  - 统一背景 Unified Background MOD
+[23:30:26.614] [1] [INFO] 101.2801 Level Loaded.... backend
+Shader warmup: 80 shaders 328 combinations 0.002s
+[23:30:28.925] [1] [INFO] SAVEINFO
+[23:30:28.925] [1] [INFO]  - Generated: Sunday, 01 March 2026 09:17:50
+[23:30:28.925] [1] [INFO]  - Played on: 707956, 716486, 717001
+[23:30:28.925] [1] [INFO]  - Debug was used: False
+[23:30:28.925] [1] [INFO] Custom Settings: ClusterLayout=clusters/SandstoneFrozen,WorldgenSeed=1769353870,ImmuneSystem=Default,CalorieBurn=Default,Morale=Default,Durability=Indestructible,MeteorShowers=Default,Radiation=Default,Stress=Default,StressBreaks=Default,CarePackages=Enabled,SandboxMode=Disabled,FastWorkersMode=Disabled,SaveToCloud=Disabled,Teleporters=Enabled,BionicWattage=Default,DemoliorDifficulty=Default,
+[23:30:28.925] [1] [INFO] Story Settings: MegaBrainTank=Guaranteed,CreatureManipulator=Guaranteed,LonelyMinion=Guaranteed,FossilHunt=Disabled,MorbRoverMaker=Guaranteed,HijackHeadquarters=Guaranteed,
+[23:30:28.925] [1] [INFO] Mixing Settings: DLC2_ID=Enabled,IceCavesMixing=Disabled,CarrotQuarryMixing=Disabled,SugarWoodsMixing=Disabled,CeresAsteroidMixing=Disabled,DLC3_ID=Enabled,DLC4_ID=Enabled,GardenMixing=Disabled,RaptorMixing=Disabled,WetlandsMixing=Disabled,PrehistoricAsteroidMixing=Disabled,
+[23:30:28.951] [1] [INFO] Loaded [C:\Users\Sonia K\Documents\Klei\OxygenNotIncluded\save_files\Outpost\Outpost 93.sav]
+[23:30:28.951] [1] [INFO] World Seeds [1769353870/1769353870/1769353870/1769353870]
+[23:30:29.122] [1] [INFO] -- GAME --
+[23:30:29.122] [1] [INFO] [InterfaceTool] Initializing configs with values of DefaultKey: Invalid Configs: 3
+[23:30:29.122] [1] [INFO] [InterfaceTool] Pushing config with key: Invalid
+Unloading 1 Unused Serialized files (Serialized files now loaded: 4)
+[23:30:29.302] [1] [WARNING] asteroid_flame_outer_kanim ui placeSymbol [ ui ] is missing
+[23:30:29.315] [1] [WARNING] asteroid_flame_outer_kanim ui placeSymbol [ ui ] is missing
+[23:30:29.890] [1] [WARNING] Codex SubEntry  cannot find parent codex entry with id Railgun
+[23:30:30.070] [1] [INFO] Checking which steam branch we're on. Got: [public_testing]
+[23:30:32.551] [1] [WARNING] asteroid_flame_outer_kanim ui placeSymbol [ ui ] is missing
+[23:30:32.887] [1] [INFO] Screen resolution updated, saving values to prefs: 1920x1057 @ 60, fullscreen: Windowed
+Unloading 152 unused Assets / (57.9 KB). Loaded Objects now: 308065.
+Memory consumption went from 1.04 GB to 1.04 GB.
+Total: 214.115600 ms (FindLiveObjects: 33.023000 ms CreateObjectMapping: 8.100800 ms MarkObjects: 171.997700 ms  DeleteObjects: 0.993000 ms)
+
+MissingMethodException: Method not found: void TMPro.TMP_Text.ForceMeshUpdate()
+  at DuplicantStatusBar.UI.DupeTooltip.AnimateTexts () [0x00080] in <cb573dfe5cdb4dfbaa6f099fe74a8041>:0 
+  at DuplicantStatusBar.UI.TooltipAnimationDriver.Update () [0x00001] in <cb573dfe5cdb4dfbaa6f099fe74a8041>:0 
+UnityEngine.DebugLogHandler:Internal_LogException_Injected(Exception, IntPtr)
+UnityEngine.DebugLogHandler:Internal_LogException(Exception, Object)
+UnityEngine.DebugLogHandler:LogException(Exception, Object)
+LogCatcher:UnityEngine.ILogHandler.LogException(Exception, Object) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:42)
+LogCatcher:UnityEngine.ILogHandler.LogException(Exception, Object) (at /home/build/workspace/game/Assets/scripts/game/Game.cs:42)
+UnityEngine.Logger:LogException(Exception, Object)
+UnityEngine.Debug:CallOverridenDebugHandler(Exception, Object)
+
+(Filename: /home/build/workspace/game/Assets/scripts/game/Game.cs Line: 42)
+
+[23:30:55.500] [1] [INFO] Checking which steam branch we're on. Got: [public_testing]
+Game.OnApplicationQuit()
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+PlayerConnection::Cleanup##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1773617467699,"processId":17856,"allocatedMemory":15450387,"memoryLabels":[{"Default":136},{"NewDelete":240},{"Thread":2048},{"Manager":8287},{"GfxDevice":72},{"GfxThread":6144},{"Audio":752},{"FontEngine":15365940},{"Serialization":520},{"JobScheduler":32768},{"String":619},{"HashMap":26624},{"PoolAlloc":96},{"CloudService":144},{"VR":1872},{"Video":144},{"Secure":352},{"Subsystems":96},{"Accessibility":80},{"CoreBusinessMetrics":120},{"TLS":3437}]}

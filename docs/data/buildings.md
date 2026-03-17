@@ -1,9 +1,34 @@
-# Buildings — ONI Data Map
+# Buildings  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
+
+## Section Index
+Use `Read` tool with `offset` and `limit` to load specific sections only.
+
+| # | Topic | Lines |
+|-|-|-|
+| 1 | Power - Generators | 31-45 |
+| 2 | Power - Infrastructure | 46-59 |
+| 3 | Oxygen | 60-70 |
+| 4 | Plumbing | 71-87 |
+| 5 | HVAC (Gas) | 88-100 |
+| 6 | Conveyor (Solid) | 101-109 |
+| 7 | Storage | 110-118 |
+| 8 | Food & Farming | 119-131 |
+| 9 | Research | 132-146 |
+| 10 | Automation | 147-159 |
+| 11 | Medical | 160-171 |
+| 12 | Rocketry - Engines | 172-183 |
+| 13 | Rocketry - Modules | 184-200 |
+| 14 | Refinement & Industry | 201-213 |
+| 15 | Radiation / HEP | 214-222 |
+| 16 | Stations & Furniture | 223-235 |
+| 17 | Decor | 236-253 |
+| 18 | Tiles & Structure | 254-264 |
+| 19 | Critter Management | 265-276 |
 
 Source: `Assembly-CSharp.dll` IBuildingConfig implementors. Building ID = config class name minus "Config" suffix.
 
-## Power — Generators
+## Power  - Generators
 
 | Config Class | Building ID | Display Name | Tech | Category |
 |-|-|-|-|-|
@@ -18,7 +43,7 @@ Source: `Assembly-CSharp.dll` IBuildingConfig implementors. Building ID = config
 | SolarPanelConfig | SolarPanel | Solar Panel | RenewableEnergy | Power |
 | NuclearReactorConfig | NuclearReactor | Research Reactor | NuclearRefinement | Power |
 
-## Power — Infrastructure
+## Power  - Infrastructure
 
 | Config Class | Building ID | Display Name | Tech | Category |
 |-|-|-|-|-|
@@ -144,7 +169,7 @@ Source: `Assembly-CSharp.dll` IBuildingConfig implementors. Building ID = config
 | DecontaminationShowerConfig | DecontaminationShower | Decontamination Shower | MedicineIV | Medical |
 | CheckpointConfig | Checkpoint | Duplicant Checkpoint | SanitationSciences | Medical |
 
-## Rocketry — Engines
+## Rocketry  - Engines
 
 | Config Class | Building ID | Display Name | Tech | Category |
 |-|-|-|-|-|
@@ -156,7 +181,7 @@ Source: `Assembly-CSharp.dll` IBuildingConfig implementors. Building ID = config
 | SugarEngineConfig | SugarEngine | Sugar Engine | EnginesI | Rocketry |
 | HEPEngineConfig | HEPEngine | Radbolt Engine | NuclearPropulsion | Rocketry |
 
-## Rocketry — Modules
+## Rocketry  - Modules
 
 | Config Class | Building ID | Display Name | Tech | Category |
 |-|-|-|-|-|
@@ -247,4 +272,4 @@ Source: `Assembly-CSharp.dll` IBuildingConfig implementors. Building ID = config
 | CritterCondoConfig | CritterCondo | Critter Condo | AnimalComfort | Ranching |
 | AirBorneCritterCondoConfig | AirBorneCritterCondo | Airborne Critter Condo | AnimalComfort | Ranching |
 
-<!-- Conduit sensors: Gas/LiquidConduit{Temperature,Element,Disease}SensorConfig — 6 types, all in HVAC/LiquidFiltering tech -->
+<!-- Conduit sensors: Gas/LiquidConduit{Temperature,Element,Disease}SensorConfig  - 6 types, all in HVAC/LiquidFiltering tech -->

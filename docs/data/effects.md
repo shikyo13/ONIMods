@@ -1,4 +1,4 @@
-# Effects — ONI Data Map
+# Effects  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 ## Room Bonuses

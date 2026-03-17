@@ -1,7 +1,7 @@
-# Components — ONI Data Map
+# Components  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
-## Duplicant — Identity & Stats
+## Duplicant  - Identity & Stats
 
 | Component | Purpose | Key Methods | Common Access Pattern |
 |-|-|-|-|
@@ -13,11 +13,11 @@ Game build: U58-717001 | Generated: 2026-03-16
 | `Klei.AI.Modifiers` | Attribute modifier aggregator | `GetPreModifiedAttributeValue()`, `GetPreModifiers()` | `go.GetComponent<Modifiers>()` |
 | `Klei.AI.AttributeLevels` | Attribute XP and leveling | `GetLevel()`, `GetAttributeLevel()`, `AddExperience()`, `SetLevel()`, `GetPercentComplete()` | `go.GetComponent<AttributeLevels>()` |
 | `ChoreConsumer` | Chore selection and priority | `FindNextChore()`, `SetPermittedByUser()`, `GetPersonalPriority()`, `SetPersonalPriority()`, `CanReach()` | `go.GetComponent<ChoreConsumer>()` |
-| `ChoreDriver` | Active chore execution | (StateMachine — use `.sm` fields) | `go.GetComponent<ChoreDriver>()` |
+| `ChoreDriver` | Active chore execution | (StateMachine  - use `.sm` fields) | `go.GetComponent<ChoreDriver>()` |
 | `Schedulable` | Schedule block assignment | `GetSchedule()`, `IsAllowed()`, `OnScheduleChanged()` | `go.GetComponent<Schedulable>()` |
 | `Navigator` | Pathfinding and movement | `GoTo()`, `CanReach()`, `GetNavigationCost()`, `IsMoving()`, `Stop()` | `go.GetComponent<Navigator>()` |
 
-## Duplicant — Monitors (StateMachine instances via `.smi`)
+## Duplicant  - Monitors (StateMachine instances via `.smi`)
 
 | Component | Purpose | Key Access Pattern |
 |-|-|-|
@@ -76,7 +76,7 @@ Game build: U58-717001 | Generated: 2026-03-16
 | `ReactionMonitor` | Emote/reaction triggers | `go.GetSMI<ReactionMonitor.Instance>()` | StateMachine instance |
 | `MingleMonitor` | Social mingling triggers | `go.GetSMI<MingleMonitor.Instance>()` | StateMachine instance |
 
-## Critter — Monitors
+## Critter  - Monitors
 
 | Component | Purpose | Key Access Pattern |
 |-|-|-|

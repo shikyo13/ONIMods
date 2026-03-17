@@ -1,5 +1,32 @@
-# Misc Status Items — ONI Data Map
+# Misc Status Items  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
+
+## Section Index
+Use `Read` tool with `offset` and `limit` to load specific sections only.
+
+| # | Topic | Lines |
+|-|-|-|
+| 1 | Misc (Database.MiscStatusItems) | 33-36 |
+| 2 | Alerts & Orders | 37-50 |
+| 3 | Dig & Mop | 52-59 |
+| 4 | Element Info | 61-71 |
+| 5 | Geysers & Vents | 73-84 |
+| 6 | Sublimation | 86-92 |
+| 7 | Food & Items | 94-103 |
+| 8 | Harvest & Plants | 105-113 |
+| 9 | Interaction | 115-123 |
+| 10 | Space & DLC | 125-138 |
+| 11 | Bionic | 140-148 |
+| 12 | Robot / Bionic (Database.RobotStatusItems) | 150-166 |
+| 13 | Creature (Database.CreatureStatusItems) | 168-170 |
+| 14 | Health & Temperature | 172-187 |
+| 15 | Breathing & Water | 189-198 |
+| 16 | Plant Growth | 200-211 |
+| 17 | Plant Environment | 213-226 |
+| 18 | Plant Resources | 228-235 |
+| 19 | Food Freshness | 237-248 |
+| 20 | Critter Behavior | 250-265 |
+| 21 | Mutations & Special | 267-278 |
 
 63 misc + 11 robot + 89 creature = 163 total fields. Curated to ~140 most useful below.
 

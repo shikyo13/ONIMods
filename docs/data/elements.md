@@ -1,5 +1,15 @@
-# Elements — ONI Data Map
+# Elements  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
+
+## Section Index
+Use `Read` tool with `offset` and `limit` to load specific sections only.
+
+| # | Topic | Lines |
+|-|-|-|
+| 1 | Gas | 14-49 |
+| 2 | Liquid | 50-100 |
+| 3 | Solid | 101-216 |
+| 4 | Vacuum / Special | 217-224 |
 
 ## Gas
 

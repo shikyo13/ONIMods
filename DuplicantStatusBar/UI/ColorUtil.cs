@@ -61,7 +61,7 @@ namespace DuplicantStatusBar.UI
         public static readonly Color TextMuted   = new Color(0.9f, 0.9f, 0.9f);
         public static readonly Color DarkBase    = new Color(0.08f, 0.10f, 0.14f);
         public static readonly Color DamageBase  = new Color(0.15f, 0f, 0f);
-        public static readonly Color ScrollHandle = new Color(0.5f, 0.5f, 0.5f, 0.35f);
+        public static readonly Color ScrollHandle = new Color(0.6f, 0.6f, 0.6f, 0.6f);
         public static readonly Color BevelLight  = new Color(1f, 1f, 1f, 0.15f);
         public static readonly Color BevelShadow = new Color(0f, 0f, 0f, 0.25f);
 

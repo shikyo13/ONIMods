@@ -1,0 +1,4 @@
+{
+  "dotnet.defaultSolution": "ReplaceStuff/ReplaceStuff.sln",
+  "omnisharp.defaultLaunchSolution": "ReplaceStuff/ReplaceStuff.sln"
+}

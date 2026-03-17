@@ -1,4 +1,4 @@
-# Duplicant Status Items — ONI Data Map
+# Duplicant Status Items  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 151 status items from `Database.DuplicantStatusItems` (+ 1 internal const).
@@ -52,19 +52,19 @@ EarlyMorning, NightTime
 ## Movement / Suit (3)
 MoveToSuitNotRequired, DroppingUnusedInventory, MovingToSafeArea
 
-## Work — Construction / Operations (12)
+## Work  - Construction / Operations (12)
 Digging, Building, Deconstructing, Cleaning, Mopping, PickingUp, Storing, Emptying, Toggling, Disinfecting, Relocating, Upgrading
 
-## Work — Science / Research (5)
+## Work  - Science / Research (5)
 Researching, ResearchingFromPOI, Studying, AnalyzingGenes, AnalyzingArtifact
 
-## Work — Production (5)
+## Work  - Production (5)
 Fabricating, Processing, Arting, Clearing, Equipping
 
-## Work — Ranching / Farming (3)
+## Work  - Ranching / Farming (3)
 Ranching, Harvesting, Uprooting
 
-## Work — Power / Machines (3)
+## Work  - Power / Machines (3)
 GeneratingPower, Tinkering, MissionControlling
 
 ## Combat / Danger (2)
@@ -106,14 +106,14 @@ DataRainerPlanning, DataRainerRaining
 ## RoboDancer (3)
 RoboDancerPlanning, RoboDancerDancing, WatchRoboDancerWorkable
 
-## Bionic — General (6)
+## Bionic  - General (6)
 BionicOfflineIncapacitated, BionicWaitingForReboot, BionicBeingRebooted, BionicRequiresSkillPerk, BionicWantsOilChange, BionicCriticalBattery
 
-## Bionic — Microchip / Power (3)
+## Bionic  - Microchip / Power (3)
 BionicMicrochipGeneration, InstallingElectrobank, BionicExplorerBooster
 
 ## Remote Worker (13)
 EnteringDock, UnreachableDock, NoHomeDock, RemoteWorkerCapacitorStatus, RemoteWorkerLowPower, RemoteWorkerOutOfPower, RemoteWorkerHighGunkLevel, RemoteWorkerFullGunkLevel, RemoteWorkerLowOil, RemoteWorkerOutOfOil, RemoteWorkerRecharging, RemoteWorkerOiling, RemoteWorkerDraining
 
 ---
-*Internal field: `NONE_OVERLAY` (private static const int = 0) — not a status item.*
+*Internal field: `NONE_OVERLAY` (private static const int = 0)  - not a status item.*

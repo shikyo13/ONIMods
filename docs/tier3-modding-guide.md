@@ -8,7 +8,7 @@ Use `Read` tool with `offset` and `limit` to load specific sections only.
 | - | Overview & prerequisites | 23-26 |
 | 1 | Development environment setup | 30-112 |
 | 2 | Mod loading & folder structure | 113-283 |
-| 3 | Harmony patching — core technique | 284-486 |
+| 3 | Harmony patching - core technique | 284-486 |
 | 4 | Gameplay tweaks with examples | 487-616 |
 | 5 | Creating new buildings from scratch | 617-809 |
 | 6 | New items, elements, creatures + kanim pipeline | 810-995 |
@@ -21,7 +21,7 @@ Use `Read` tool with `offset` and `limit` to load specific sections only.
 
 ---
 
-**ONI mods are C# class libraries that use Harmony 2.0 to patch the game's methods at runtime.** There is no official modding API — you decompile `Assembly-CSharp.dll`, find methods to intercept, and write Harmony patches that alter game behavior. The game ships Harmony built-in and provides a mod loading pipeline that scans your mod folder, reads `mod_info.yaml`, loads your DLL, and applies patches. This guide covers everything from environment setup through publishing, with production-ready code templates throughout.
+**ONI mods are C# class libraries that use Harmony 2.0 to patch the game's methods at runtime.** There is no official modding API - you decompile `Assembly-CSharp.dll`, find methods to intercept, and write Harmony patches that alter game behavior. The game ships Harmony built-in and provides a mod loading pipeline that scans your mod folder, reads `mod_info.yaml`, loads your DLL, and applies patches. This guide covers everything from environment setup through publishing, with production-ready code templates throughout.
 
 ONI targets **.NET Framework 4.7.1** and **Harmony 2.0** since the 2021 "Mergedown" update that unified the base game and Spaced Out DLC codebases. Any tutorial referencing .NET 3.5 or `using Harmony;` (v1 namespace) is outdated. Current mods must use `using HarmonyLib;` and set `APIVersion: 2` in `mod_info.yaml`.
 
@@ -33,7 +33,7 @@ ONI targets **.NET Framework 4.7.1** and **Harmony 2.0** since the 2021 "Mergedo
 
 **IDE**: Visual Studio Community 2022+ (Windows, recommended), JetBrains Rider, or VS Code with C# extensions. For Visual Studio, install the `.NET desktop development` workload and the `.NET Framework 4.7.1 SDK` + targeting pack as individual components. For VS Code on Linux/Mac, install `dotnetcore` and grab the reference assemblies via NuGet: `Microsoft.NETFramework.ReferenceAssemblies.net471`.
 
-**Decompiler** (essential — this is how you read the game's source): Use **ILSpy** (github.com/icsharpcode/ILSpy), **dnSpy** (best for viewing IL alongside C#), or **dotPeek** (JetBrains, free). Open `Assembly-CSharp.dll` to browse every game class and method.
+**Decompiler** (essential - this is how you read the game's source): Use **ILSpy** (github.com/icsharpcode/ILSpy), **dnSpy** (best for viewing IL alongside C#), or **dotPeek** (JetBrains, free). Open `Assembly-CSharp.dll` to browse every game class and method.
 
 ### Required DLL references
 
@@ -45,8 +45,8 @@ All DLLs live in your game installation at:
 Copy these to a `lib/` folder next to your solution:
 
 | DLL | Purpose |
-|-----|---------|
-| `Assembly-CSharp.dll` | All game logic — buildings, creatures, UI, simulation |
+|-|-|
+| `Assembly-CSharp.dll` | All game logic - buildings, creatures, UI, simulation |
 | `Assembly-CSharp-firstpass.dll` | First-pass compiled game code |
 | `0Harmony.dll` | Harmony 2.0 patching library (bundled with game) |
 | `UnityEngine.dll` | Unity engine core |
@@ -90,7 +90,7 @@ Create a **Class Library** project targeting **.NET Framework 4.7.1**:
 </Project>
 ```
 
-Set **`<Private>false</Private>`** (Copy Local = false) on every game DLL — they already exist in the game directory and must not be bundled with your mod.
+Set **`<Private>false</Private>`** (Copy Local = false) on every game DLL - they already exist in the game directory and must not be bundled with your mod.
 
 ### Build output and deployment
 
@@ -104,9 +104,9 @@ copy "$(ProjectDir)mod_info.yaml" "%HOMEPATH%\Documents\Klei\OxygenNotIncluded\m
 
 ### Community templates
 
-- **Cairath's ONI Mod template**: Download from github.com/Cairath/Oxygen-Not-Included-Modding — place the ZIP in `%USERPROFILE%\Documents\Visual Studio 2022\Templates\ProjectTemplates\`
-- **O-n-y's template**: github.com/O-n-y/OxygenNotIncludedModTemplate — includes step-by-step guide
-- **PLib** (Peter Han): NuGet package `PLib` — modular library for mod options, UI helpers, building registration. Must be ILMerged into your output DLL
+- **Cairath's ONI Mod template**: Download from github.com/Cairath/Oxygen-Not-Included-Modding - place the ZIP in `%USERPROFILE%\Documents\Visual Studio 2022\Templates\ProjectTemplates\`
+- **O-n-y's template**: github.com/O-n-y/OxygenNotIncludedModTemplate - includes step-by-step guide
+- **PLib** (Peter Han): NuGet package `PLib` - modular library for mod options, UI helpers, building registration. Must be ILMerged into your output DLL
 
 ---
 
@@ -143,7 +143,7 @@ MyMod/
         └── MyMod.dll
 ```
 
-### mod_info.yaml — required for all mods
+### mod_info.yaml - required for all mods
 
 ```yaml
 supportedContent: ALL          # VANILLA_ID, EXPANSION1_ID, or ALL
@@ -153,13 +153,13 @@ APIVersion: 2                  # REQUIRED for DLL mods (Harmony 2.0)
 ```
 
 | Field | Required | Values |
-|-------|----------|--------|
+|-|-|-|
 | `supportedContent` | Yes | `VANILLA_ID`, `EXPANSION1_ID`, `ALL`, or comma-separated |
 | `minimumSupportedBuild` | Yes | Game build number from main menu |
 | `version` | Recommended | Displayed in mod list |
-| `APIVersion` | Yes (DLL mods) | Must be `2` — without this, DLL mods are silently disabled |
+| `APIVersion` | Yes (DLL mods) | Must be `2` - without this, DLL mods are silently disabled |
 
-### mod.yaml — display metadata
+### mod.yaml - display metadata
 
 ```yaml
 title: "My Cool Mod"
@@ -178,12 +178,12 @@ The game follows this sequence on startup:
 3. If the root mod doesn't match, scans `archived_versions/` subfolders for a compatible version
 4. Loads `.dll` files from the matched mod folder
 5. Scans each DLL for classes extending **`KMod.UserMod2`**
-6. If found, calls **`OnLoad(Harmony harmony)`** — you control patching
+6. If found, calls **`OnLoad(Harmony harmony)`** - you control patching
 7. If no `UserMod2` subclass exists, automatically calls `harmony.PatchAll()` on the assembly
 
 ### Entry points
 
-**Option A — UserMod2 (recommended for control):**
+**Option A - UserMod2 (recommended for control):**
 
 ```csharp
 using KMod;
@@ -205,11 +205,11 @@ namespace MyMod
 
 Rules: at most **one** `UserMod2` per DLL, must not be abstract. Calling `base.OnLoad(harmony)` invokes `harmony.PatchAll()`.
 
-**Option B — Auto-patching (simplest):**
+**Option B - Auto-patching (simplest):**
 
-Just annotate patch classes with `[HarmonyPatch]` — no entry point class needed. The game discovers and applies all patches automatically.
+Just annotate patch classes with `[HarmonyPatch]` - no entry point class needed. The game discovers and applies all patches automatically.
 
-### Hello world mod — complete example
+### Hello world mod - complete example
 
 **Patches.cs:**
 ```csharp
@@ -240,13 +240,13 @@ Deploy the DLL + YAML to `mods/local/HelloWorldMod/` and check `Player.log` at `
 
 ### Base game vs Spaced Out DLC compatibility
 
-Use `supportedContent: ALL` if your mod works with both. For runtime DLC detection, call **`DlcManager.IsExpansion1Active()`**. The `archived_versions/` system lets you ship separate builds for different game versions — the root folder holds the current version while archived subfolders serve older builds.
+Use `supportedContent: ALL` if your mod works with both. For runtime DLC detection, call **`DlcManager.IsExpansion1Active()`**. The `archived_versions/` system lets you ship separate builds for different game versions - the root folder holds the current version while archived subfolders serve older builds.
 
 ### UserMod2 full lifecycle
 
 `UserMod2` provides two override points:
 
-**`OnLoad(Harmony harmony)`** — called when your mod DLL loads. If you override this, call `base.OnLoad(harmony)` to trigger automatic `PatchAll()`. You can run code before or after the base call:
+**`OnLoad(Harmony harmony)`** - called when your mod DLL loads. If you override this, call `base.OnLoad(harmony)` to trigger automatic `PatchAll()`. You can run code before or after the base call:
 
 ```csharp
 public override void OnLoad(Harmony harmony)
@@ -257,7 +257,7 @@ public override void OnLoad(Harmony harmony)
 }
 ```
 
-**`OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)`** — called after ALL mods finish loading. Use for mod compatibility checks:
+**`OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)`** - called after ALL mods finish loading. Use for mod compatibility checks:
 
 ```csharp
 public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)
@@ -268,11 +268,11 @@ public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)
 ```
 
 **Available properties:**
-- `assembly` — your mod's Assembly
-- `path` — your mod's folder path
-- `mod` — the Mod instance
-- `mod.title`, `mod.staticID`, `mod.description` — from mod.yaml
-- `mod.packageModInfo` — from mod_info.yaml
+- `assembly` - your mod's Assembly
+- `path` - your mod's folder path
+- `mod` - the Mod instance
+- `mod.title`, `mod.staticID`, `mod.description` - from mod.yaml
+- `mod.packageModInfo` - from mod_info.yaml
 
 **Constraints:**
 - Maximum one UserMod2 per DLL (but a Mod with multiple DLLs can have multiple UserMod2 classes)
@@ -281,11 +281,11 @@ public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)
 
 ---
 
-## 3. Harmony patching — the core modding technique
+## 3. Harmony patching - the core modding technique
 
 ### Fundamentals
 
-ONI ships **Harmony 2.0.4.0**. Import with `using HarmonyLib;` (never the old `using Harmony;`). Mods do not bundle their own `0Harmony.dll` — the game provides it.
+ONI ships **Harmony 2.0.4.0**. Import with `using HarmonyLib;` (never the old `using Harmony;`). Mods do not bundle their own `0Harmony.dll` - the game provides it.
 
 **Attribute-based patching** (most common):
 ```csharp
@@ -303,18 +303,18 @@ var postfix = typeof(MyPatch).GetMethod("Postfix");
 harmony.Patch(original, postfix: new HarmonyMethod(postfix));
 ```
 
-### Prefix patches — run before the original method
+### Prefix patches - run before the original method
 
 Prefixes can inspect/modify arguments, skip the original entirely (return `false`), or set the return value early. All patch methods must be `static`.
 
 **Injected parameters:**
-- `__instance` — the object instance (`this`) for instance methods
-- `__result` — the return value (use `ref` to set it)
-- `__state` — data passed from prefix to postfix
+- `__instance` - the object instance (`this`) for instance methods
+- `__result` - the return value (use `ref` to set it)
+- `__state` - data passed from prefix to postfix
 - Named parameters matching original method parameters (use `ref` to modify)
-- `___privateFieldName` — access private fields (three underscores + field name)
+- `___privateFieldName` - access private fields (three underscores + field name)
 
-**Example — modifying a return value and skipping the original:**
+**Example - modifying a return value and skipping the original:**
 ```csharp
 [HarmonyPatch(typeof(SomeClass), "GetValue")]
 public static class SomeClass_GetValue_Patch
@@ -327,7 +327,7 @@ public static class SomeClass_GetValue_Patch
 }
 ```
 
-**Real ONI example — suppressing camera setup:**
+**Real ONI example - suppressing camera setup:**
 ```csharp
 [HarmonyPatch(typeof(CameraController), "OnPrefabInit")]
 public static class CameraController_OnPrefabInit_Patch
@@ -339,11 +339,11 @@ public static class CameraController_OnPrefabInit_Patch
 }
 ```
 
-### Postfix patches — run after the original method
+### Postfix patches - run after the original method
 
 Postfixes always run (even if a prefix skipped the original) and are the **preferred patch type** for mod compatibility.
 
-**Real ONI example — changing Manual Generator wattage from 400W to 600W:**
+**Real ONI example - changing Manual Generator wattage from 400W to 600W:**
 ```csharp
 [HarmonyPatch(typeof(ManualGeneratorConfig), "CreateBuildingDef")]
 public static class ManualGeneratorConfig_CreateBuildingDef_Patch
@@ -355,7 +355,7 @@ public static class ManualGeneratorConfig_CreateBuildingDef_Patch
 }
 ```
 
-**Real ONI example — enriching geyser tooltips with average output:**
+**Real ONI example - enriching geyser tooltips with average output:**
 ```csharp
 [HarmonyPatch(typeof(Geyser), nameof(Geyser.GetDescriptors))]
 public static class Geyser_GetDescriptors_Patch
@@ -377,7 +377,7 @@ public static class Geyser_GetDescriptors_Patch
 }
 ```
 
-### Transpiler patches — IL code manipulation
+### Transpiler patches - IL code manipulation
 
 Transpilers rewrite the method's CIL bytecode at patch time. They run **once**, add no runtime overhead, and compose with other transpilers. Use them when you need to change logic **in the middle** of a method.
 
@@ -404,7 +404,7 @@ public static class ClusterMapScreen_OnKeyDown_Patch
         }
 
         if (!patched)
-            Debug.LogWarning("[MyMod] Transpiler failed — game version may have changed.");
+            Debug.LogWarning("[MyMod] Transpiler failed - game version may have changed.");
 
         return codes;
     }
@@ -423,16 +423,16 @@ public static class ClusterMapScreen_OnKeyDown_Patch
 
 Open `Assembly-CSharp.dll` in ILSpy or dnSpy and use these strategies:
 
-1. **Search by keyword** — search for "calories", "stress", "wattage" to find relevant code
-2. **Follow UI strings** — search for in-game text like "Wheezewort" to find the code name ("Coldbreather")
-3. **Look at `*Config` classes** — every building has a `[BuildingName]Config.cs` with `CreateBuildingDef()`
-4. **Browse TUNING namespace** — all balance constants are organized here
-5. **Check existing mods on GitHub** — search for similar functionality
+1. **Search by keyword** - search for "calories", "stress", "wattage" to find relevant code
+2. **Follow UI strings** - search for in-game text like "Wheezewort" to find the code name ("Coldbreather")
+3. **Look at `*Config` classes** - every building has a `[BuildingName]Config.cs` with `CreateBuildingDef()`
+4. **Browse TUNING namespace** - all balance constants are organized here
+5. **Check existing mods on GitHub** - search for similar functionality
 
 **Commonly patched methods:**
 
 | Class.Method | Purpose |
-|-------------|---------|
+|-|-|
 | `Db.Initialize()` | Register buildings, techs, traits, strings |
 | `GeneratedBuildings.LoadGeneratedBuildings()` | Add buildings to build menus |
 | `*Config.CreateBuildingDef()` | Modify building stats |
@@ -443,11 +443,11 @@ Open `Assembly-CSharp.dll` in ILSpy or dnSpy and use these strategies:
 
 ### Harmony best practices
 
-**Prefer Postfix over destructive Prefix** — postfixes compose naturally across mods. Returning `false` from a prefix blocks all subsequent prefixes and the original method.
+**Prefer Postfix over destructive Prefix** - postfixes compose naturally across mods. Returning `false` from a prefix blocks all subsequent prefixes and the original method.
 
 **Use unique Harmony IDs** following reverse domain notation: `"com.myname.mymod"`. In ONI's built-in system, the ID defaults from `staticID` in `mod.yaml`.
 
-**Always wrap patch logic in try/catch** — uncaught exceptions in patches crash the game:
+**Always wrap patch logic in try/catch** - uncaught exceptions in patches crash the game:
 ```csharp
 [HarmonyPatch(typeof(SomeClass), "SomeMethod")]
 public static class SafePatch
@@ -743,7 +743,7 @@ MELTING_POINT:      TIER0=800 TIER1=1600 TIER2=2400 TIER3=9999
 
 **BuildLocationRule values:** `OnFloor`, `OnCeiling`, `OnWall`, `Anywhere`, `Tile`, `Conduit`, `NotInTiles`, `Behind`, `BuildingAttachPoint`
 
-### Registering the building — strings, build menu, and tech tree
+### Registering the building - strings, build menu, and tech tree
 
 ```csharp
 [HarmonyPatch(typeof(GeneratedBuildings), "LoadGeneratedBuildings")]
@@ -762,7 +762,7 @@ public static class RegisterBuilding_Patch
             $"STRINGS.BUILDINGS.PREFABS.{MyCustomBuildingConfig.ID.ToUpperInvariant()}.EFFECT",
             "Converts Water into Oxygen and Hydrogen.");
 
-        // Add to build menu — categories: "Base", "Oxygen", "Power", "Food",
+        // Add to build menu - categories: "Base", "Oxygen", "Power", "Food",
         // "Plumbing", "HVAC", "Refining", "Medical", "Furniture", "Equipment",
         // "Utilities", "Automation", "Shipping", "Rocketry"
         ModUtil.AddBuildingToPlanScreen("Oxygen", MyCustomBuildingConfig.ID);
@@ -815,7 +815,7 @@ ONI's element system is built on the **`SimHashes`** enum (every element has a u
 
 **Modifying existing elements** is straightforward via an `ElementLoader.Load` postfix (shown in Section 4). **Adding entirely new elements** is substantially harder because you must extend the `SimHashes` enum, register with the native C++ simulation, and provide a `Substance` with rendering data. Most mods modify existing elements rather than adding new ones.
 
-**Critical pitfall:** `ElementLoader` is not available during early initialization. Never call `ElementLoader.FindElementByHash()` in static field initializers — use `SimHashes.Water.CreateTag()` instead.
+**Critical pitfall:** `ElementLoader` is not available during early initialization. Never call `ElementLoader.FindElementByHash()` in static field initializers - use `SimHashes.Water.CreateTag()` instead.
 
 ### New food items
 
@@ -938,23 +938,23 @@ public class MyCreatureConfig : IEntityConfig
 
 ### Kanim animations
 
-ONI uses **Klei Animation (kanim)** — a proprietary cut-out animation format consisting of three files per animation:
+ONI uses **Klei Animation (kanim)** - a proprietary cut-out animation format consisting of three files per animation:
 
 | File | Content |
-|------|---------|
+|-|-|
 | `name_0.png` | Texture atlas with all sprite pieces packed together |
 | `name_build.bytes` | Build data mapping sprite names to atlas regions |
 | `name_anim.bytes` | Animation banks with frame-by-frame transforms |
 
-Place custom kanims in `YourMod/anim/assets/subfolder/` (files must be in a subfolder, not directly in `anim/`). Reference in code as `Assets.GetAnim("name_kanim")` — note the `_kanim` suffix.
+Place custom kanims in `YourMod/anim/assets/subfolder/` (files must be in a subfolder, not directly in `anim/`). Reference in code as `Assets.GetAnim("name_kanim")` - note the `_kanim` suffix.
 
 **Common animation bank names for buildings:** `"idle"`, `"off"`, `"on"`, `"working_pre"`, `"working_loop"`, `"working_pst"`, `"broken"`. **For creatures:** `"idle_loop"`, `"walk_pre"`, `"walk_loop"`, `"eat_pre"`, `"eat_loop"`. **For items:** `"object"` (single static frame).
 
 **Tools for creating kanims:**
 
-- **Kanim Explorer** (github.com/romen-h/kanim-explorer) — best current GUI tool for viewing, editing, and creating kanim files. Supports SCML import/export
-- **kanimal-SE** (github.com/skairunner/kanimal-SE) — CLI converter between kanim and Spriter SCML format
-- **kparser** (github.com/daviscook477/kparser) — original Java converter, established the kanim↔SCML workflow
+- **Kanim Explorer** (github.com/romen-h/kanim-explorer) - best current GUI tool for viewing, editing, and creating kanim files. Supports SCML import/export
+- **kanimal-SE** (github.com/skairunner/kanimal-SE) - CLI converter between kanim and Spriter SCML format
+- **kparser** (github.com/daviscook477/kparser) - original Java converter, established the kanim↔SCML workflow
 
 **Workflow:** Extract existing kanim → edit in Spriter (free 2D animation tool) → convert back with kanimal-SE → place output files in mod's `anim/assets/` folder.
 
@@ -962,20 +962,20 @@ Place custom kanims in `YourMod/anim/assets/subfolder/` (files must be in a subf
 
 **Extract game animation (kanim → Spriter):**
 ```bash
-kanimal-cli.exe scml --output <folder> <texture_0.png> <build.bytes> <anim.bytes>
+kanimal-cli.exe scml - -output <folder> <texture_0.png> <build.bytes> <anim.bytes>
 ```
 
 **Build mod animation (Spriter → kanim):**
 ```bash
-kanimal-cli.exe kanim <file.scml> --output <folder> --interpolate
+kanimal-cli.exe kanim <file.scml> - -output <folder> - -interpolate
 ```
 
 ### Critical constraints
-1. **No bones** — kanim format does not support skeletal animation; use sprite-based animation only
-2. **No non-linear tweens** — only linear interpolation between keyframes
-3. **Never resize sprites** — do not resize or move sprite contents within their bounding box
-4. **33ms frame duration** — set frame duration to 33ms with snapping enabled in Spriter
-5. **Always include anim.bytes** — even static graphics (like building artwork) need an anim.bytes file
+1. **No bones** - kanim format does not support skeletal animation; use sprite-based animation only
+2. **No non-linear tweens** - only linear interpolation between keyframes
+3. **Never resize sprites** - do not resize or move sprite contents within their bounding box
+4. **33ms frame duration** - set frame duration to 33ms with snapping enabled in Spriter
+5. **Always include anim.bytes** - even static graphics (like building artwork) need an anim.bytes file
 
 ### Mod animation folder structure
 Place animation files in your mod's anim folder:
@@ -986,7 +986,7 @@ Place animation files in your mod's anim folder:
 ```
 
 ### Animation tips
-- Use existing game kanims as reference — extract them with kanimal-SE first
+- Use existing game kanims as reference - extract them with kanimal-SE first
 - Symbol names in the build file must match what the game code expects
 - Banks define animation sequences (e.g., "idle", "working", "off")
 - Each bank can have multiple frames with different symbol visibility
@@ -999,12 +999,12 @@ Place animation files in your mod's anim folder:
 
 ONI wraps Unity's UGUI system in Klei-specific classes. The key base classes are:
 
-- **`KScreen`** — base class for all screens, with lifecycle methods `OnPrefabInit`, `OnActivate`, `OnDeactivate`, `OnKeyDown`
-- **`KModal`** — modal dialog that blocks input to screens beneath it
-- **`KButton`**, **`KScrollRect`**, **`LocText`** — Klei wrappers for buttons, scrolling, and localized text
-- **`DetailsScreen`** — the right-side panel showing selected entity details, hosts side screens
-- **`OverlayScreen`** — manages overlay modes (temperature, power, plumbing)
-- **`ScreenManager`** — manages the active screen stack
+- **`KScreen`** - base class for all screens, with lifecycle methods `OnPrefabInit`, `OnActivate`, `OnDeactivate`, `OnKeyDown`
+- **`KModal`** - modal dialog that blocks input to screens beneath it
+- **`KButton`**, **`KScrollRect`**, **`LocText`** - Klei wrappers for buttons, scrolling, and localized text
+- **`DetailsScreen`** - the right-side panel showing selected entity details, hosts side screens
+- **`OverlayScreen`** - manages overlay modes (temperature, power, plumbing)
+- **`ScreenManager`** - manages the active screen stack
 
 ### Modifying existing UI
 
@@ -1061,7 +1061,7 @@ public class MyCustomSideScreen : SideScreenContent
 }
 ```
 
-**Note:** `SetTarget` is called on the very first selection *before* `OnPrefabInit` runs — handle null cases in your code.
+**Note:** `SetTarget` is called on the very first selection *before* `OnPrefabInit` runs - handle null cases in your code.
 
 ### Adding custom overlays
 
@@ -1102,8 +1102,8 @@ canvasGO.AddComponent<GraphicRaycaster>();
 ```
 
 **Key gotchas:**
-- `new GameObject()` only has `Transform`. You must `AddComponent<Image>()` (or any UI component) before `GetComponent<RectTransform>()` returns non-null — `Image` auto-adds a `RectTransform`.
-- `TextMeshProUGUI` and `Image` cannot share the same GameObject — TMP needs its own child GO.
+- `new GameObject()` only has `Transform`. You must `AddComponent<Image>()` (or any UI component) before `GetComponent<RectTransform>()` returns non-null - `Image` auto-adds a `RectTransform`.
+- `TextMeshProUGUI` and `Image` cannot share the same GameObject - TMP needs its own child GO.
 - To respect the game's UI Scale slider: read `KPlayerPrefs.GetFloat(KCanvasScaler.UIScalePrefKey)` (stored as percentage, 100 = 1x), divide by 100, then adjust your `CanvasScaler.referenceResolution` by dividing the base resolution by that scale factor.
 - `KCanvasScaler` uses `ConstantPixelSize` mode with a stepped resolution scale. If you use `ScaleWithScreenSize`, you handle resolution adaptation automatically but need to incorporate `userScale` manually via the reference resolution trick.
 
@@ -1127,7 +1127,7 @@ Load translations from `.po` files using `Localization.RegisterForTranslation(ty
 
 ## 8. Mod configuration and settings
 
-### PLib Options — the standard approach
+### PLib Options - the standard approach
 
 PLib is the de facto standard for mod settings. Initialize in `OnLoad`, then define a settings class with attributes:
 
@@ -1216,13 +1216,13 @@ public static class ConfigManager
 
 PLib 4.0+ is modular and must be ILMerged into your mod DLL:
 
-- **PLib.Core** — initialization, logging, utilities
-- **PLib.Options** — mod settings UI (shown above)
-- **PLib.UI** — builder-pattern UI components
-- **PLib.Actions** — custom keybindings rebindable in game options
-- **PLib.Buildings** — simplified building registration
-- **PLib.Database** — localization (`PLocalization.Register()`), codex entries
-- **PLib.Lighting** — custom light shapes
+- **PLib.Core** - initialization, logging, utilities
+- **PLib.Options** - mod settings UI (shown above)
+- **PLib.UI** - builder-pattern UI components
+- **PLib.Actions** - custom keybindings rebindable in game options
+- **PLib.Buildings** - simplified building registration
+- **PLib.Database** - localization (`PLocalization.Register()`), codex entries
+- **PLib.Lighting** - custom light shapes
 
 ---
 
@@ -1231,12 +1231,12 @@ PLib 4.0+ is modular and must be ILMerged into your mod DLL:
 ### Log file locations
 
 | Platform | Path |
-|----------|------|
+|-|-|
 | Windows | `%APPDATA%\..\LocalLow\Klei\Oxygen Not Included\Player.log` |
 | macOS | `~/Library/Application Support/unity.Klei.Oxygen Not Included/Player.log` |
 | Linux | `~/.config/unity3d/Klei/Oxygen Not Included/Player.log` |
 
-The log is **overwritten on each launch** — capture it before restarting. Crash dumps go to `%APPDATA%\..\Local\Temp\Klei\Oxygen Not Included\Crashes`.
+The log is **overwritten on each launch** - capture it before restarting. Crash dumps go to `%APPDATA%\..\Local\Temp\Klei\Oxygen Not Included\Crashes`.
 
 ### Logging from your mod
 
@@ -1257,12 +1257,12 @@ PUtil.LogError("Error");
 
 Create an empty file named **`debug_enable.txt`** in `OxygenNotIncluded_Data/` and restart the game. Key debug hotkeys:
 
-- **Backspace** — open debug tools
-- **Ctrl+F4** — Instant Build Mode (free, instant construction)
-- **Ctrl+F2** — spawn duplicant
-- **Alt+M** — reload mods (limited hot-reload)
-- **Alt+Z** — super speed
-- **Alt+F1** — toggle UI
+- **Backspace** - open debug tools
+- **Ctrl+F4** - Instant Build Mode (free, instant construction)
+- **Ctrl+F2** - spawn duplicant
+- **Alt+M** - reload mods (limited hot-reload)
+- **Alt+Z** - super speed
+- **Alt+F1** - toggle UI
 
 ### Unity Explorer
 
@@ -1271,7 +1271,7 @@ Create an empty file named **`debug_enable.txt`** in `OxygenNotIncluded_Data/` a
 ### Common error patterns and solutions
 
 | Error | Cause | Solution |
-|-------|-------|----------|
+|-|-|-|
 | `NullReferenceException` in patches | Method signature changed after game update | Re-decompile latest `Assembly-CSharp.dll`, update parameter names |
 | `Parameter 'X' not found in method` | Harmony can't match parameter name | Update patch parameter names to match current decompiled code |
 | `MissingMethodException` | Referenced method removed or signature changed | Recompile against current game DLLs |
@@ -1293,7 +1293,7 @@ static Exception Finalizer(Exception __exception)
 
 ### Testing workflow
 
-1. Use **`mods/dev/`** folder for active development — mods here always load
+1. Use **`mods/dev/`** folder for active development - mods here always load
 2. Use **Ctrl+F4** (Instant Build) to quickly test building mods
 3. Keep a test save that exercises your mod's features
 4. Use **`PUtil.InitLibrary(true)`** to log your mod's version for confirming the correct DLL loaded
@@ -1321,7 +1321,7 @@ MyMod/
 2. **Close ONI** (DLLs will be locked otherwise)
 3. Launch the uploader, click "Add", browse to your mod folder
 4. Fill in title, description, preview image, and tags (`Base Game`, `Spaced Out!`, `Mods`)
-5. Click "Publish!" — for updates, re-open, select existing mod, publish again
+5. Click "Publish!" - for updates, re-open, select existing mod, publish again
 6. Set visibility to "Public" on your Steam Workshop profile
 
 Your Steam account must have spent at least **$5 USD** to publish Workshop content.
@@ -1331,7 +1331,7 @@ Your Steam account must have spent at least **$5 USD** to publish Workshop conte
 - Use **semantic versioning**: `major.minor.patch`
 - Update `version` in `mod_info.yaml` with each release
 - Update `minimumSupportedBuild` to the current game build when you test
-- When a game update breaks your mod, archive the working version in `archived_versions/` and update the root for the new build — players on older builds automatically get the archived version
+- When a game update breaks your mod, archive the working version in `archived_versions/` and update the root for the new build - players on older builds automatically get the archived version
 - Use consistent `staticID` across versions for reliable mod detection
 
 ---
@@ -1356,7 +1356,7 @@ gameObject.GetComponent<KPrefabID>().AddTag(myTag);
 public static readonly Tag MyTag = TagManager.Create("MyModTag");
 ```
 
-### Db class — the game database singleton
+### Db class - the game database singleton
 
 ```csharp
 Db db = Db.Get();
@@ -1415,7 +1415,7 @@ TUNING.EQUIPMENT.SUITS
 
 ### Strings and localization
 
-The `STRINGS` class hierarchy mirrors game entities. Search for in-game text to find code names — "Wheezewort" maps to `STRINGS.CREATURES.SPECIES.COLDBREATHER.NAME`, revealing the code name "Coldbreather".
+The `STRINGS` class hierarchy mirrors game entities. Search for in-game text to find code names - "Wheezewort" maps to `STRINGS.CREATURES.SPECIES.COLDBREATHER.NAME`, revealing the code name "Coldbreather".
 
 ```csharp
 // Register strings for a custom building
@@ -1429,7 +1429,7 @@ new PLocalization().Register();
 
 Translation files go in `strings/` as `.po` files named by language code (e.g., `zh-CN.po`).
 
-### Event system — GameHashes
+### Event system - GameHashes
 
 ONI uses a hash-based messaging system for game events:
 
@@ -1456,7 +1456,7 @@ gameObject.Trigger((int)GameHashes.OperationalChanged, data);
 gameObject.Unsubscribe(handleId);
 ```
 
-### SimHashes — element identifiers
+### SimHashes - element identifiers
 
 ```csharp
 SimHashes.Water, SimHashes.DirtyWater, SimHashes.SaltWater
@@ -1473,7 +1473,7 @@ SimHashes.Water.CreateTag()
 ONI uses a component architecture on Unity's `GameObject` system:
 
 ```csharp
-// Base class — use instead of MonoBehaviour
+// Base class - use instead of MonoBehaviour
 public class MyComponent : KMonoBehaviour
 {
     [Serialize] public float myValue;  // Automatically saved/loaded
@@ -1550,16 +1550,16 @@ The dominant community library. NuGet package `PLib 4.19.0+` (ILMerged into outp
 | Tool | Best For |
 |-|-|
 | **ILSpy** (GUI, github.com/icsharpcode/ILSpy) | Browsing game classes interactively |
-| **ilspycmd** (CLI) | Scripted decompilation: `ilspycmd -t TypeName -r ManagedDir` |
+| **ilspycmd** (CLI) | Scripted decompilation: `ilspycmd - t TypeName - r ManagedDir` |
 | **dnSpy** (GUI, no longer maintained) | IL + C# side-by-side viewing. Still works fine |
 | **dotPeek** (JetBrains, free) | Rider integration, search across assemblies |
 | **Kanim Explorer** (github.com/romen-h/kanim-explorer) | GUI tool for viewing/editing ONI animation files |
 
 ### Community channels
 
-- **ONI Modding Discord** (linked from Klei Forums) — most active source of current help, real-time troubleshooting
-- **Klei Forums — Modding subforum** (forums.kleientertainment.com) — official venue, slower but archived and searchable
-- **Harmony 2.0 docs** (harmony.pardeike.net) — full patching library reference: prefixes, postfixes, transpilers, finalizers
+- **ONI Modding Discord** (linked from Klei Forums) - most active source of current help, real-time troubleshooting
+- **Klei Forums - Modding subforum** (forums.kleientertainment.com) - official venue, slower but archived and searchable
+- **Harmony 2.0 docs** (harmony.pardeike.net) - full patching library reference: prefixes, postfixes, transpilers, finalizers
 
 ### Modding infrastructure (post-Mergedown)
 
@@ -1568,5 +1568,5 @@ Since the 2021 Mergedown update, ONI has built-in mod loading. No external mod l
 - **`mod_info.yaml`**: Declares `supportedContent` (ALL, VANILLA_ID, EXPANSION1_ID) and `APIVersion: 2`
 - **`mod.yaml`**: Title, description, `staticID` for Workshop identification
 - **Mod load order**: Game scans `Documents/Klei/OxygenNotIncluded/mods/local/` and Steam Workshop folders, loads DLLs matching `mod_info.yaml`, calls `OnLoad(Harmony)` on `UserMod2` subclasses
-- **No IL2CPP**: ONI ships standard Mono/.NET assemblies — direct Harmony patching works without extra tooling
+- **No IL2CPP**: ONI ships standard Mono/.NET assemblies - direct Harmony patching works without extra tooling
 - **PLib dominance**: Most mods use PLib for options/settings. Few other shared libraries exist since PLib covers the common needs

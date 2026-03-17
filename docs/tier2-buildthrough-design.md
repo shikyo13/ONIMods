@@ -1,4 +1,4 @@
-# Tier 2 — BuildThrough Design Reference
+# Tier 2  - BuildThrough Design Reference
 
 Read when editing BuildThrough mod.
 
@@ -39,7 +39,7 @@ call     BuildFlagsSolidIndexer::get_Item(int32)  → call IsCellBlocking(int32)
 ## Edge Cases
 - **ThreadStatic**: Ensures no flag leakage across threads (ONI is single-threaded, but defensive)
 - **Transpiler fallback**: If IL pattern changes in a game update, logs `[BuildThrough] Transpiler failed...` warning and falls back to vanilla behavior (no crash)
-- **Restart required**: `[RestartRequired]` on options — transpilers cannot be toggled at runtime
+- **Restart required**: `[RestartRequired]` on options  - transpilers cannot be toggled at runtime
 - **Scope**: Only bypasses solid checks for Constructable/Deconstructable components. Normal dupe pathing unaffected
 
 ## Dependencies

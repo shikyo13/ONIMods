@@ -27,7 +27,6 @@ namespace DuplicantStatusBar.Config
     [ModInfo("https://steamcommunity.com/sharedfiles/filedetails/?id=3682732647")]
     public sealed class StatusBarOptions : SingletonOptions<StatusBarOptions>, IOptions
     {
-        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL")]
         [JsonProperty]
         public SortOrder SortOrder { get; set; } = SortOrder.StressDescending;
 
@@ -36,18 +35,12 @@ namespace DuplicantStatusBar.Config
         [JsonProperty]
         public int PortraitSize { get; set; } = 36;
 
-        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
-        [Limit(0, 50)]
         [JsonProperty]
         public int MaxDupesPerRow { get; set; } = 0;
 
-        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
-        [Limit(20, 100)]
         [JsonProperty]
         public int MaxBarWidth { get; set; } = 50;
 
-        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE")]
-        [Limit(0, 10)]
         [JsonProperty]
         public int MaxBarRows { get; set; } = 3;
 
@@ -168,7 +161,12 @@ namespace DuplicantStatusBar.Config
             UnityEngine.PlayerPrefs.DeleteKey("DSB_PosX");
             UnityEngine.PlayerPrefs.DeleteKey("DSB_PosY");
             UnityEngine.PlayerPrefs.DeleteKey("DSB_Collapsed");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_BoxW");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_BoxH");
+            // Legacy keys
             UnityEngine.PlayerPrefs.DeleteKey("DSB_PortSize");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_BarWidth");
+            UnityEngine.PlayerPrefs.DeleteKey("DSB_BarHeight");
             UnityEngine.PlayerPrefs.DeleteKey("DSB_HiddenDupes");
             UnityEngine.PlayerPrefs.DeleteKey("DSB_AlertsOnly");
             UnityEngine.PlayerPrefs.DeleteKey("DSB_StressedOnly");

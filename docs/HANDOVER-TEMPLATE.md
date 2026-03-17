@@ -1,4 +1,4 @@
-# {ModName} — Handover
+# {ModName}  - Handover
 
 {One-liner description of what the mod does.}
 
@@ -21,7 +21,7 @@
 
 ## Design Decisions
 
-{Why, not what. Each decision should explain the rationale — what was tried, what failed, why this approach was chosen.}
+{Why, not what. Each decision should explain the rationale  - what was tried, what failed, why this approach was chosen.}
 
 - **{Decision}**: {Rationale}
 
