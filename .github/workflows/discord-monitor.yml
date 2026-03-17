@@ -2,7 +2,7 @@ name: Discord Mod Monitor
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
     inputs:
       post_stats:
