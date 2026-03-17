@@ -1,44 +1,49 @@
 ## DSB Maintenance Report - 2026-03-17
 
+### Previous Items
+- [STILL OPEN] P2 - Feature requests (vertical layout, smaller portrait scaling) - now tracked as issues #5, #6
+- [STILL OPEN] P2 - 3 empty catch blocks (now 7 after code changes) - low priority, acceptable contexts
+- [STILL OPEN] P2 - StatusBarScreen.cs complexity - now 948 lines (was 897)
+
 ### Game Version
 UNCHANGED: Build ID 21518087 - same as last check
 DLL timestamp: 1773620000 - unchanged
-No API drift check needed (game not updated)
+Patched types: Game.OnPrefabInit, ManagementMenu.ToggleScreen - no API drift (game unchanged)
 
 ### GitHub Issues (0 new)
-No open issues found.
+No open issues at start of sweep. 4 issues created during triage (see below).
 
-### Workshop Comments (1 new, excluding ours)
-1. [followup] ArcadeBulls (2026-03-17): Confirmed research screen overlay bug - "the GUI is still visible, it's above the research UI as a layer."
-   Status: ALREADY ADDRESSED - Zero replied "Fixed in the next update, testing vertical scaling."
+### Workshop Comments (1 new since last check, excluding ours)
+1. [followup/bug] ArcadeBulls (2026-03-17, ts:1773763626): Confirmed research screen overlay - "the GUI is still visible, it's above the research UI as a layer."
+   Status: fix-acknowledged (Zero replied "Fixed in the next update")
 
-Recent community themes (from older comments, for awareness):
-- Fattox: Portrait mode reverts to initials at small scale sizes (feature gap)
-- Ch3stnut: Bottom-of-screen clamping issue (FIXED), vertical layout request
-- Oniwabanshu: Scaling issues with 32 dupes, mod.yaml parse warning (FIXED)
-- Sgt_Imalas: Suggested GetMiniIcon() as lightweight portrait fallback, requested credit note for DuperyFixed
-- Dark: Suggested using game's built-in "dreamIcon" portraits
-- General: Positive reception, translation requests fulfilled
+Thread context (older, for awareness):
+- ArcadeBulls (2026-03-17): Also requested vertical layout, noted 10-row max doesn't work with bigger colonies
+- Fattox (2026-03-15): Portrait reverts to initials below size 36, wants small portrait mode
+- Laskoviu_mat (2026-03-15): "thanks for ru" (praise for Russian translation)
 
 ### Triage Actions Taken
-None required. The only new comment is a followup on an already-fixed bug.
+- Retroactively tracked bug: created issue #3 (overlay on management screens), closed with fix commit c76222a
+- Retroactively tracked bug: created issue #4 (bottom screen clamping), closed with fix commit 119d22b
+- Retroactively tracked feature: created issue #5 (portrait scaling below 36px) - enhancement, open
+- Retroactively tracked feature: created issue #6 (vertical layout option) - enhancement, open
 
 ### Build Health
 PASS - 0 warnings, 0 errors
-Built in 0.57s, deployed to dev mods folder.
+Built in 0.56s, deployed to dev mods folder.
 
 ### Code Health
 - TODO/FIXME/HACK/TEMP comments: 0
-- Empty catch blocks: 3
-  - SortFilterPopup.cs:134 - catch around RebuildRoleList()
-  - SortFilterPopup.cs:135 - catch around RebuildFilterList()
-  - TranslationPatch.cs:38 - catch around translation loading
-- Files over 500 lines: 2
-  - StatusBarScreen.cs: 897 lines
+- Empty catch blocks: 7
+  - DiagnosticDump.cs:56,62 - try-load asset patterns (acceptable)
+  - DSBLog.cs:33,46,60,74,95 - logging fallbacks (acceptable)
+- Files over 500 lines: 3
+  - StatusBarScreen.cs: 948 lines
   - SortFilterPopup.cs: 849 lines
+  - DupePortraitWidget.cs: 744 lines
 
 ### Action Items
 No P0 or P1 items.
-P2 - Feature requests logged in workshop (vertical layout, smaller portrait scaling)
-P2 - 3 empty catch blocks could mask errors (low priority)
-P2 - StatusBarScreen.cs approaching 900 lines (monitor for complexity)
+P2 - Issue #5: Portrait scaling threshold (enhancement, open)
+P2 - Issue #6: Vertical layout option (enhancement, open)
+P2 - StatusBarScreen.cs at 948 lines (monitor for complexity)
