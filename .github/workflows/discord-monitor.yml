@@ -334,7 +334,7 @@ jobs:
                 {\"name\": \"GitHub: shikyo13/ONIMods\", \"value\": \"Stars: **$STARS** | Forks: **$FORKS** | Open Issues: **$ISSUES**\", \"inline\": false}
               ],
               \"footer\": {\"text\": \"Updated every 30 min | $(date -u '+%Y-%m-%d %H:%M UTC')\"},
-              \"url\": \"https://shikyo13.github.io/ONIMods/stats/\"
+              \"url\": \"https://shikyo13.github.io/GameModding/stats/\"
             }]
           }"
 
