@@ -457,6 +457,12 @@ namespace DuplicantStatusBar.UI
 
         private void LateUpdate()
         {
+            // Hide bar when any management screen (Research, Skills, etc.) is open
+            bool screenOpen = Patches.ManagementMenu_ToggleScreen_Patch.IsScreenOpen;
+            if (canvasRT != null)
+                canvasRT.gameObject.SetActive(!screenOpen);
+            if (screenOpen) return;
+
             // Track resize grip to BarPanel's bottom-right corner
             if (resizeGripRT == null || barPanel == null) return;
 

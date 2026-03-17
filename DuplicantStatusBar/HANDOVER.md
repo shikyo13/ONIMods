@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.7.0
+**Version**: v2.8.1
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -301,6 +301,16 @@ Unity 6's `UnityEngine.ImageConversionModule.dll` references `netstandard 2.1`, 
 ### Key Design Decision
 
 All fixes use runtime detection (reflection, null-checks) rather than compile-time branching. No `#if` directives, no separate builds. The mod auto-adapts to whichever Unity version loads it.
+
+## v2.8.1 - Management Screen Awareness
+
+**Bug**: DSB bar stayed visible on top of management screens (Research, Skills, Starmap, ClusterMap, etc.) because `ScreenSpaceOverlay` renders after all cameras, bypassing the game's `ScreenSpaceCamera`-based UI stack.
+
+**Root cause**: `ManagementMenu.IsFullscreenUIActive()` is dead code - the `fullscreenUIs` array is populated in `OnPrefabInit()` before `researchInfo`/`skillsInfo`/`starmapInfo`/`clusterMapInfo` are assigned, so it contains 4 nulls and always returns false.
+
+**Fix**: Harmony postfix on `ManagementMenu.ToggleScreen` reads the private `activeScreen` field via `___activeScreen` traversal and sets a static `IsScreenOpen` bool. `StatusBarScreen.LateUpdate()` checks this flag every frame and disables the entire canvas when any management screen is open. Canvas re-enables automatically when the screen closes.
+
+**Files**: `Patches/GamePatches.cs` (new patch class), `UI/StatusBarScreen.cs` (LateUpdate check)
 
 ## Not Yet Implemented
 
