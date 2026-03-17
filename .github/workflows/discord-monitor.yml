@@ -2,9 +2,17 @@ name: Discord Mod Monitor
 
 on:
   schedule:
-    # Run every 30 minutes
     - cron: '*/30 * * * *'
-  workflow_dispatch: # Allow manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      post_stats:
+        description: 'Post full stats dashboard to Discord'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   check-updates:
@@ -23,32 +31,173 @@ jobs:
       - name: Initialize state file if missing
         run: |
           if [ ! -f .monitor-state.json ]; then
-            echo '{"nexus": {}, "workshop": {}}' > .monitor-state.json
+            echo '{"nexus": {}, "workshop": {}, "milestones": {}}' > .monitor-state.json
           fi
 
-      - name: Check Nexus Mods for updates
+      - name: Check Steam Workshop for updates and milestones
+        env:
+          DISCORD_WEBHOOK_WORKSHOP: ${{ secrets.DISCORD_WEBHOOK_WORKSHOP }}
+          POST_STATS: ${{ github.event.inputs.post_stats || 'false' }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_WORKSHOP" ]; then
+            echo "Workshop webhook not configured, skipping"
+            exit 0
+          fi
+
+          WORKSHOP_IDS=(
+            "3682732647:Duplicant Status Bar:oni"
+            "3667874678:Barricade Context Menu:zomboid"
+            "3402208866:Barricades Hurt Zombies:zomboid"
+          )
+
+          STATE=$(cat .monitor-state.json)
+          # Ensure milestones key exists
+          STATE=$(echo "$STATE" | jq '. + {milestones: (.milestones // {})}')
+
+          MILESTONES=(10 25 50 100 250 500 1000 2500 5000 10000)
+          STATS_FIELDS=""
+
+          for entry in "${WORKSHOP_IDS[@]}"; do
+            IFS=':' read -r file_id mod_name game <<< "$entry"
+
+            echo "Checking Workshop: $mod_name ($file_id)"
+
+            RESPONSE=$(curl -s -X POST \
+              -d "itemcount=1&publishedfileids[0]=$file_id" \
+              "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/")
+
+            UPDATED=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].time_updated // 0')
+            TITLE=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].title // "Unknown"')
+            SUBS=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].subscriptions // 0')
+            FAVS=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].favorited // 0')
+            VIEWS=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].views // 0')
+
+            echo "  Subscribers: $SUBS | Favorites: $FAVS | Views: $VIEWS"
+
+            # Build stats for dashboard
+            STATS_FIELDS="$STATS_FIELDS{\"name\": \"$mod_name\", \"value\": \"Subscribers: **$SUBS**\\nFavorites: **$FAVS**\\nViews: **$VIEWS**\", \"inline\": true},"
+
+            LAST_SEEN=$(echo "$STATE" | jq -r ".workshop[\"$file_id\"] // 0")
+
+            # Check for updates
+            if [ "$UPDATED" -gt "$LAST_SEEN" ] && [ "$LAST_SEEN" -ne 0 ]; then
+              echo "Workshop update detected for $mod_name!"
+
+              curl -s -H "Content-Type: application/json" \
+                -d "{
+                  \"embeds\": [{
+                    \"title\": \"Steam Workshop Update: $TITLE\",
+                    \"color\": 1785874,
+                    \"fields\": [
+                      {\"name\": \"Mod\", \"value\": \"$mod_name\", \"inline\": true},
+                      {\"name\": \"Subscribers\", \"value\": \"$SUBS\", \"inline\": true},
+                      {\"name\": \"Favorites\", \"value\": \"$FAVS\", \"inline\": true}
+                    ],
+                    \"url\": \"https://steamcommunity.com/sharedfiles/filedetails/?id=$file_id\",
+                    \"footer\": {\"text\": \"Steam Workshop\"}
+                  }]
+                }" "$DISCORD_WEBHOOK_WORKSHOP"
+            fi
+
+            # Check subscriber milestones
+            LAST_MILESTONE=$(echo "$STATE" | jq -r ".milestones[\"subs_$file_id\"] // 0")
+            for ms in "${MILESTONES[@]}"; do
+              if [ "$SUBS" -ge "$ms" ] && [ "$LAST_MILESTONE" -lt "$ms" ]; then
+                echo "MILESTONE: $mod_name hit $ms subscribers!"
+
+                curl -s -H "Content-Type: application/json" \
+                  -d "{
+                    \"embeds\": [{
+                      \"title\": \"Milestone: $mod_name reached $ms subscribers!\",
+                      \"description\": \"$mod_name just hit **$ms** subscribers on Steam Workshop!\",
+                      \"color\": 16766720,
+                      \"fields\": [
+                        {\"name\": \"Subscribers\", \"value\": \"$SUBS\", \"inline\": true},
+                        {\"name\": \"Favorites\", \"value\": \"$FAVS\", \"inline\": true},
+                        {\"name\": \"Views\", \"value\": \"$VIEWS\", \"inline\": true}
+                      ],
+                      \"url\": \"https://steamcommunity.com/sharedfiles/filedetails/?id=$file_id\",
+                      \"footer\": {\"text\": \"Steam Workshop Milestone\"}
+                    }]
+                  }" "$DISCORD_WEBHOOK_WORKSHOP"
+
+                STATE=$(echo "$STATE" | jq ".milestones[\"subs_$file_id\"] = $ms")
+              fi
+            done
+
+            # Check favorites milestones
+            LAST_FAV_MS=$(echo "$STATE" | jq -r ".milestones[\"favs_$file_id\"] // 0")
+            for ms in "${MILESTONES[@]}"; do
+              if [ "$FAVS" -ge "$ms" ] && [ "$LAST_FAV_MS" -lt "$ms" ]; then
+                echo "MILESTONE: $mod_name hit $ms favorites!"
+
+                curl -s -H "Content-Type: application/json" \
+                  -d "{
+                    \"embeds\": [{
+                      \"title\": \"Milestone: $mod_name reached $ms favorites!\",
+                      \"description\": \"$mod_name just hit **$ms** favorites on Steam Workshop!\",
+                      \"color\": 16753920,
+                      \"fields\": [
+                        {\"name\": \"Favorites\", \"value\": \"$FAVS\", \"inline\": true},
+                        {\"name\": \"Subscribers\", \"value\": \"$SUBS\", \"inline\": true}
+                      ],
+                      \"url\": \"https://steamcommunity.com/sharedfiles/filedetails/?id=$file_id\",
+                      \"footer\": {\"text\": \"Steam Workshop Milestone\"}
+                    }]
+                  }" "$DISCORD_WEBHOOK_WORKSHOP"
+
+                STATE=$(echo "$STATE" | jq ".milestones[\"favs_$file_id\"] = $ms")
+              fi
+            done
+
+            STATE=$(echo "$STATE" | jq ".workshop[\"$file_id\"] = $UPDATED")
+          done
+
+          # Post full stats dashboard if requested
+          if [ "$POST_STATS" = "true" ]; then
+            # Remove trailing comma from STATS_FIELDS
+            STATS_FIELDS="${STATS_FIELDS%,}"
+
+            curl -s -H "Content-Type: application/json" \
+              -d "{
+                \"embeds\": [{
+                  \"title\": \"Steam Workshop Stats Dashboard\",
+                  \"color\": 1785874,
+                  \"fields\": [$STATS_FIELDS],
+                  \"footer\": {\"text\": \"Updated: $(date -u '+%Y-%m-%d %H:%M UTC')\"},
+                  \"url\": \"https://steamcommunity.com/id/ahunt/myworkshopfiles/\"
+                }]
+              }" "$DISCORD_WEBHOOK_WORKSHOP"
+          fi
+
+          echo "$STATE" > .monitor-state.json
+
+      - name: Check Nexus Mods for updates and milestones
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           DISCORD_WEBHOOK_NEXUS: ${{ secrets.DISCORD_WEBHOOK_NEXUS }}
+          POST_STATS: ${{ github.event.inputs.post_stats || 'false' }}
         run: |
           if [ -z "$NEXUS_API_KEY" ] || [ -z "$DISCORD_WEBHOOK_NEXUS" ]; then
             echo "Nexus secrets not configured, skipping"
             exit 0
           fi
 
-          # Define mods to monitor: game_domain:mod_id:mod_name
+          # game_domain:mod_id:mod_name
           NEXUS_MODS=(
             "oxygennnotincluded:0:ONI Mods"
-            # Add more Nexus mod entries as they're published
+            # Add entries as mods are published on Nexus
           )
 
           STATE=$(cat .monitor-state.json)
+          MILESTONES=(10 25 50 100 250 500 1000 2500 5000 10000)
+          STATS_FIELDS=""
 
           for entry in "${NEXUS_MODS[@]}"; do
             IFS=':' read -r domain mod_id mod_name <<< "$entry"
 
             if [ "$mod_id" = "0" ]; then
-              echo "Skipping placeholder entry: $mod_name"
+              echo "Skipping placeholder: $mod_name"
               continue
             fi
 
@@ -60,9 +209,17 @@ jobs:
             UPDATED=$(echo "$RESPONSE" | jq -r '.updated_timestamp // 0')
             MOD_VERSION=$(echo "$RESPONSE" | jq -r '.version // "unknown"')
             SUMMARY=$(echo "$RESPONSE" | jq -r '.summary // "No description"')
+            DOWNLOADS=$(echo "$RESPONSE" | jq -r '.mod_downloads // 0')
+            UNIQUE_DL=$(echo "$RESPONSE" | jq -r '.mod_unique_downloads // 0')
+            ENDORSEMENTS=$(echo "$RESPONSE" | jq -r '.endorsement_count // 0')
+
+            echo "  Downloads: $DOWNLOADS | Unique: $UNIQUE_DL | Endorsements: $ENDORSEMENTS"
+
+            STATS_FIELDS="$STATS_FIELDS{\"name\": \"$mod_name\", \"value\": \"Downloads: **$DOWNLOADS**\\nUnique: **$UNIQUE_DL**\\nEndorsements: **$ENDORSEMENTS**\", \"inline\": true},"
 
             LAST_SEEN=$(echo "$STATE" | jq -r ".nexus[\"${domain}_${mod_id}\"] // 0")
 
+            # Check for updates
             if [ "$UPDATED" -gt "$LAST_SEEN" ] && [ "$LAST_SEEN" -ne 0 ]; then
               echo "New update detected for $mod_name!"
 
@@ -74,7 +231,8 @@ jobs:
                     \"color\": 14051644,
                     \"fields\": [
                       {\"name\": \"Version\", \"value\": \"$MOD_VERSION\", \"inline\": true},
-                      {\"name\": \"Game\", \"value\": \"$domain\", \"inline\": true}
+                      {\"name\": \"Downloads\", \"value\": \"$DOWNLOADS\", \"inline\": true},
+                      {\"name\": \"Endorsements\", \"value\": \"$ENDORSEMENTS\", \"inline\": true}
                     ],
                     \"url\": \"https://www.nexusmods.com/$domain/mods/$mod_id\",
                     \"footer\": {\"text\": \"Nexus Mods\"}
@@ -82,61 +240,77 @@ jobs:
                 }" "$DISCORD_WEBHOOK_NEXUS"
             fi
 
+            # Check download milestones
+            LAST_DL_MS=$(echo "$STATE" | jq -r ".milestones[\"dl_${domain}_${mod_id}\"] // 0")
+            for ms in "${MILESTONES[@]}"; do
+              if [ "$UNIQUE_DL" -ge "$ms" ] && [ "$LAST_DL_MS" -lt "$ms" ]; then
+                echo "MILESTONE: $mod_name hit $ms unique downloads!"
+
+                curl -s -H "Content-Type: application/json" \
+                  -d "{
+                    \"embeds\": [{
+                      \"title\": \"Milestone: $mod_name reached $ms downloads!\",
+                      \"description\": \"$mod_name just hit **$ms** unique downloads on Nexus Mods!\",
+                      \"color\": 14051644,
+                      \"fields\": [
+                        {\"name\": \"Total Downloads\", \"value\": \"$DOWNLOADS\", \"inline\": true},
+                        {\"name\": \"Unique Downloads\", \"value\": \"$UNIQUE_DL\", \"inline\": true},
+                        {\"name\": \"Endorsements\", \"value\": \"$ENDORSEMENTS\", \"inline\": true}
+                      ],
+                      \"url\": \"https://www.nexusmods.com/$domain/mods/$mod_id\",
+                      \"footer\": {\"text\": \"Nexus Mods Milestone\"}
+                    }]
+                  }" "$DISCORD_WEBHOOK_NEXUS"
+
+                STATE=$(echo "$STATE" | jq ".milestones[\"dl_${domain}_${mod_id}\"] = $ms")
+              fi
+            done
+
             STATE=$(echo "$STATE" | jq ".nexus[\"${domain}_${mod_id}\"] = $UPDATED")
           done
 
-          echo "$STATE" > .monitor-state.json
+          # Post Nexus stats dashboard if requested
+          if [ "$POST_STATS" = "true" ] && [ -n "$STATS_FIELDS" ]; then
+            STATS_FIELDS="${STATS_FIELDS%,}"
 
-      - name: Check Steam Workshop for updates
-        env:
-          DISCORD_WEBHOOK_WORKSHOP: ${{ secrets.DISCORD_WEBHOOK_WORKSHOP }}
-        run: |
-          if [ -z "$DISCORD_WEBHOOK_WORKSHOP" ]; then
-            echo "Workshop webhook not configured, skipping"
-            exit 0
+            curl -s -H "Content-Type: application/json" \
+              -d "{
+                \"embeds\": [{
+                  \"title\": \"Nexus Mods Stats Dashboard\",
+                  \"color\": 14051644,
+                  \"fields\": [$STATS_FIELDS],
+                  \"footer\": {\"text\": \"Updated: $(date -u '+%Y-%m-%d %H:%M UTC')\"},
+                  \"url\": \"https://www.nexusmods.com/profile/Zer0TheAbs0lute/mods\"
+                }]
+              }" "$DISCORD_WEBHOOK_NEXUS"
           fi
 
-          # Steam Workshop file IDs to monitor
-          WORKSHOP_IDS=(
-            "3682732647:Duplicant Status Bar"
-            "3667874678:Barricade Context Menu"
-            "3402208866:Barricades Hurt Zombies"
-          )
-
-          STATE=$(cat .monitor-state.json)
-
-          for entry in "${WORKSHOP_IDS[@]}"; do
-            IFS=':' read -r file_id mod_name <<< "$entry"
-
-            echo "Checking Workshop: $mod_name ($file_id)"
-
-            RESPONSE=$(curl -s -X POST \
-              -d "itemcount=1&publishedfileids[0]=$file_id" \
-              "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/")
-
-            UPDATED=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].time_updated // 0')
-            TITLE=$(echo "$RESPONSE" | jq -r '.response.publishedfiledetails[0].title // "Unknown"')
-
-            LAST_SEEN=$(echo "$STATE" | jq -r ".workshop[\"$file_id\"] // 0")
-
-            if [ "$UPDATED" -gt "$LAST_SEEN" ] && [ "$LAST_SEEN" -ne 0 ]; then
-              echo "Workshop update detected for $mod_name!"
-
-              curl -s -H "Content-Type: application/json" \
-                -d "{
-                  \"embeds\": [{
-                    \"title\": \"Steam Workshop Update: $TITLE\",
-                    \"color\": 1785874,
-                    \"fields\": [
-                      {\"name\": \"Mod\", \"value\": \"$mod_name\", \"inline\": true}
-                    ],
-                    \"url\": \"https://steamcommunity.com/sharedfiles/filedetails/?id=$file_id\",
-                    \"footer\": {\"text\": \"Steam Workshop\"}
-                  }]
-                }" "$DISCORD_WEBHOOK_WORKSHOP"
-            fi
-
-            STATE=$(echo "$STATE" | jq ".workshop[\"$file_id\"] = $UPDATED")
-          done
-
           echo "$STATE" > .monitor-state.json
+
+      - name: Check GitHub stats
+        if: github.event.inputs.post_stats == 'true'
+        env:
+          DISCORD_WEBHOOK_WORKSHOP: ${{ secrets.DISCORD_WEBHOOK_WORKSHOP }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          REPO_DATA=$(gh api repos/shikyo13/ONIMods)
+          STARS=$(echo "$REPO_DATA" | jq -r '.stargazers_count')
+          FORKS=$(echo "$REPO_DATA" | jq -r '.forks_count')
+          ISSUES=$(echo "$REPO_DATA" | jq -r '.open_issues_count')
+          WATCHERS=$(echo "$REPO_DATA" | jq -r '.watchers_count')
+
+          curl -s -H "Content-Type: application/json" \
+            -d "{
+              \"embeds\": [{
+                \"title\": \"GitHub Stats: shikyo13/ONIMods\",
+                \"color\": 2303786,
+                \"fields\": [
+                  {\"name\": \"Stars\", \"value\": \"$STARS\", \"inline\": true},
+                  {\"name\": \"Forks\", \"value\": \"$FORKS\", \"inline\": true},
+                  {\"name\": \"Open Issues\", \"value\": \"$ISSUES\", \"inline\": true},
+                  {\"name\": \"Watchers\", \"value\": \"$WATCHERS\", \"inline\": true}
+                ],
+                \"url\": \"https://github.com/shikyo13/ONIMods\",
+                \"footer\": {\"text\": \"Updated: $(date -u '+%Y-%m-%d %H:%M UTC')\"}
+              }]
+            }" "$DISCORD_WEBHOOK_WORKSHOP"
