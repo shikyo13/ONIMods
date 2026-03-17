@@ -1,4 +1,4 @@
-# PLib Options API — ONI Data Map
+# PLib Options API  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 Source: `PeterHan.PLib.Options` (PLib by Peter Han, MIT license)
@@ -144,7 +144,7 @@ public sealed class MyOptions : SingletonOptions<MyOptions>, IOptions
 ```csharp
 [Option("Reset All", "Resets settings to defaults")]
 public Action<object> ResetButton => _ => DoReset();
-// Do NOT add [JsonProperty] — buttons are not serialized
+// Do NOT add [JsonProperty]  - buttons are not serialized
 ```
 
 ## Constants

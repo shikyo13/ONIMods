@@ -1,4 +1,4 @@
-# Expressions & Faces — ONI Data Map
+# Expressions & Faces  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 > Frame indices in "Known Frame Indices" section are from runtime kanim parsing
@@ -16,9 +16,9 @@ Game build: U58-717001 | Generated: 2026-03-16
 
 | Field | Type | Notes |
 |-|-|-|
-| hash | HashedString | Anim hash — matches kanim animation name |
+| hash | HashedString | Anim hash  - matches kanim animation name |
 | headFXHash | HashedString | VFX overlay hash (null if no VFX) |
-| SYMBOL_PREFIX | string (const) | `"headfx_"` — prepended to build headFX symbol name |
+| SYMBOL_PREFIX | string (const) | `"headfx_"`  - prepended to build headFX symbol name |
 
 ## Expressions
 
@@ -110,9 +110,9 @@ Source: `ExpressionResolver.GetFrames()` + `head_master_swap_kanim` parsing.
 | Sick | 19 | 23 | |
 | Sparkle | 27 (raw) | 28 | DSB overrides to eye=22 mouth=28 (raw eye is overlay) |
 | Uncomfortable | 1 | 1 | |
-| Dead | 0 | 0 | Not in kanim — uses fallback; blink fallback #2 |
+| Dead | 0 | 0 | Not in kanim  - uses fallback; blink fallback #2 |
 | Productive | 12 | 31 | |
-| Sleep | 4 | — | Eye frame 4 = closed eyes; used for blink via `GetBlinkFrame()` |
+| Sleep | 4 |  - | Eye frame 4 = closed eyes; used for blink via `GetBlinkFrame()` |
 
 See `frame-map.md` for full 43-face kanim dump including non-DB faces (veryhappy, raging, insanity, etc.).
 

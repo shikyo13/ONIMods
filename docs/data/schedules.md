@@ -1,9 +1,9 @@
-# Schedules — ONI Data Map
+# Schedules  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 ## Schedule Block Types
 
-`Database.ScheduleBlockTypes` — the atomic activity types that fill schedule hours.
+`Database.ScheduleBlockTypes`  - the atomic activity types that fill schedule hours.
 
 | ID | Color (R,G,B) | Hex | Visual |
 |-|-|-|-|
@@ -15,7 +15,7 @@ Game build: U58-717001 | Generated: 2026-03-16
 
 ## Schedule Groups
 
-`Database.ScheduleGroups` — groups define which block types are allowed and their default segment count.
+`Database.ScheduleGroups`  - groups define which block types are allowed and their default segment count.
 
 | Group ID | Default Segments | Allowed Block Types | Has Alarm |
 |-|-|-|-|
@@ -95,10 +95,10 @@ When DLC (Bionic Booster) is active, `AddDefaultSchedule` also creates a bionic 
 
 ## API Notes
 
-- `ScheduleManager.Instance` — singleton access
-- `ScheduleManager.GetSchedule(Schedulable)` — get a dupe's schedule
-- `ScheduleManager.IsAllowed(Schedulable, ScheduleBlockType)` — check if dupe's current block allows a type
-- `ScheduleManager.GetCurrentHour()` — returns `GameClock.Instance.GetCurrentCycleAsPercentage() * 24`
-- `Schedule.SetBlockGroup(int idx, ScheduleGroup group)` — change a single hour's group
-- `Schedule.RotateBlocks(bool directionLeft, int timetableIdx)` — shift schedule left/right
-- `ScheduleGroup.Allowed(ScheduleBlockType type)` — check if block type is permitted in group
+- `ScheduleManager.Instance`  - singleton access
+- `ScheduleManager.GetSchedule(Schedulable)`  - get a dupe's schedule
+- `ScheduleManager.IsAllowed(Schedulable, ScheduleBlockType)`  - check if dupe's current block allows a type
+- `ScheduleManager.GetCurrentHour()`  - returns `GameClock.Instance.GetCurrentCycleAsPercentage() * 24`
+- `Schedule.SetBlockGroup(int idx, ScheduleGroup group)`  - change a single hour's group
+- `Schedule.RotateBlocks(bool directionLeft, int timetableIdx)`  - shift schedule left/right
+- `ScheduleGroup.Allowed(ScheduleBlockType type)`  - check if block type is permitted in group

@@ -1,4 +1,4 @@
-# Building Status Items — ONI Data Map
+# Building Status Items  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 324 fields from `Database.BuildingStatusItems`. All are `StatusItem` unless noted.

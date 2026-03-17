@@ -1,4 +1,4 @@
-# Diseases & Sicknesses — ONI Data Map
+# Diseases & Sicknesses  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 ## Germs / Diseases (Environmental)

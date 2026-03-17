@@ -1,4 +1,4 @@
-# Accessory Slots — ONI Data Map
+# Accessory Slots  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 ## Slot Registry (Database.AccessorySlots)
@@ -50,8 +50,8 @@ Game build: U58-717001 | Generated: 2026-03-16
 ### Custom Accessories (post-init)
 
 After iterating all slots, two additional builds are loaded:
-- `body_lonelyminion_kanim` — Lonely Minion NPC accessories
-- `body_sena_kanim` — Sena NPC accessories
+- `body_lonelyminion_kanim`  - Lonely Minion NPC accessories
+- `body_sena_kanim`  - Sena NPC accessories
 
 ## AccessorySlot Class
 

@@ -1,4 +1,4 @@
-# Tier 2 — Late-Game Lag Spike Investigation
+# Tier 2  - Late-Game Lag Spike Investigation
 
 ## Colony Profile
 
@@ -32,7 +32,7 @@
 | 13 | 20260305_170345 | Manual | 3 | Short verification |
 | 14 | 20260306_083012 | Manual | 6 | Frame-end probe active |
 | 15 | 20260306_085540 | Manual | 4 | Frame-end + coroutine census |
-| 16 | 20260306_091918 | Manual | 7 | Key recording — offset bug confirmed |
+| 16 | 20260306_091918 | Manual | 7 | Key recording  - offset bug confirmed |
 | 17 | 20260306_094530 | Manual | 5 | Verification session |
 | 18 | 20260306_101215 | Manual | 3 | Final pre-fix capture |
 | 19 | 20260308_084928 | Manual | 21 | Cycle 281, bug fix verification, 4.5 min |
@@ -53,7 +53,7 @@
 
 ### Root Cause
 
-`Time.unscaledDeltaTime` is set during Unity's `TimeUpdate` phase at the **start** of each frame. It reflects the **previous** frame's wall-clock cycle duration. Our `OnFrameEnd` callback runs at the **end** of PostLateUpdate — so it captures current-frame diagnostics (system timings, GC flags) but uses previous-frame timing for spike detection.
+`Time.unscaledDeltaTime` is set during Unity's `TimeUpdate` phase at the **start** of each frame. It reflects the **previous** frame's wall-clock cycle duration. Our `OnFrameEnd` callback runs at the **end** of PostLateUpdate  - so it captures current-frame diagnostics (system timings, GC flags) but uses previous-frame timing for spike detection.
 
 On spike frame N:
 - `Time.unscaledDeltaTime` = 16ms (frame N-1's cycle, which was fast)
@@ -65,7 +65,7 @@ On frame N+1:
 - System timings = frame N+1's actual data (PathProbe_Async = 2ms, fast frame)
 - Spike detection: 334ms > threshold → **spike detected, but data is from the wrong frame**
 
-### Proof — Recording 20260306_091918, timestamp 09:19:37
+### Proof  - Recording 20260306_091918, timestamp 09:19:37
 
 | Source | GameUpdate | PathProbe_Async |
 |-|-|-|
@@ -90,7 +90,7 @@ Once the offset bug is understood, the main CSV's per-second `PathProbe_Async_ma
 | 20260306_085540 | 4 | 298-325ms |
 | 20260306_083012 | 6 | 305-341ms |
 
-`PathProbe_Async` is FastTrack's async pathfinding system. It was always the dominant spike contributor — the offset bug made it invisible in spike CSVs by capturing the fast frame after each spike instead.
+`PathProbe_Async` is FastTrack's async pathfinding system. It was always the dominant spike contributor  - the offset bug made it invisible in spike CSVs by capturing the fast frame after each spike instead.
 
 ### What "mystery spikes" actually were
 
@@ -103,7 +103,7 @@ These were offset-corrupted PathProbe_Async spikes. The system was reading the f
 
 ## What GCBudget Actually Achieved
 
-GCBudget's contribution is confirmed and valid — `GC.CollectionCount` is frame-independent:
+GCBudget's contribution is confirmed and valid  - `GC.CollectionCount` is frame-independent:
 
 | Metric | GC Enabled | GC Manual (GCBudget) |
 |-|-|-|
@@ -115,12 +115,12 @@ GCBudget eliminated an entire category of lag spikes. The remaining spikes inclu
 
 ## Next Steps
 
-1. ~~Re-record with fixed profiler~~ — DONE, 4 post-fix recordings captured
-2. ~~Verify fix~~ — DONE, spike CSV matches main CSV on spike seconds
-3. ~~Run experiment protocol~~ — DONE, see Experiment Results below
-4. **Identify unaccounted time** — check if FastTrack transpiler patches bypass our Harmony hooks
-5. **Instrument new spike sources** — World.LateUpdate(), Global.Update(), ChoreConsumer.FindNextChore()
-6. **Investigate shared root cause** — 280–340ms magnitude across diverse systems suggests memory pressure, cache thrashing, or blocking lock
+1. ~~Re-record with fixed profiler~~  - DONE, 4 post-fix recordings captured
+2. ~~Verify fix~~  - DONE, spike CSV matches main CSV on spike seconds
+3. ~~Run experiment protocol~~  - DONE, see Experiment Results below
+4. **Identify unaccounted time**  - check if FastTrack transpiler patches bypass our Harmony hooks
+5. **Instrument new spike sources**  - World.LateUpdate(), Global.Update(), ChoreConsumer.FindNextChore()
+6. **Investigate shared root cause**  - 280–340ms magnitude across diverse systems suggests memory pressure, cache thrashing, or blocking lock
 
 ## Experiment Protocol: A/B Test Matrix
 
@@ -161,9 +161,9 @@ Compare tag frequencies across tests. The multi-tag categorizer shows which tags
 
 ### Protocol Correction
 
-Test B is **not a valid isolation test** for PathProbe — the `AsyncPathProbe` toggle only controls sync-vs-async threading, NOT pathfinding workload. The same `Execute()` runs synchronously on the main thread when "Background Pathing" is OFF. True isolation would require disabling the entire FastTrack mod (counterproductive — FastTrack provides net performance gains).
+Test B is **not a valid isolation test** for PathProbe  - the `AsyncPathProbe` toggle only controls sync-vs-async threading, NOT pathfinding workload. The same `Execute()` runs synchronously on the main thread when "Background Pathing" is OFF. True isolation would require disabling the entire FastTrack mod (counterproductive  - FastTrack provides net performance gains).
 
-**Experiment matrix status**: completed — see Experiment Results below.
+**Experiment matrix status**: completed  - see Experiment Results below.
 
 ## Experiment Results
 
@@ -178,9 +178,9 @@ Tests B, C, D completed 2026-03-06. Key recordings:
 
 ### Test B: Background Pathing OFF + GCBudget ON (170027)
 
-- 4/5 spikes: PathProbe_Async 309–331ms — **toggle only controls threading, workload unchanged**
+- 4/5 spikes: PathProbe_Async 309–331ms  - **toggle only controls threading, workload unchanged**
 - 1 spike: GlobalUpdate 336ms (Global.Update())
-- "Background Pathing" = `AsyncPathProbe` setting — description: "Moves some pathfinding calculations to a non-blocking thread"
+- "Background Pathing" = `AsyncPathProbe` setting  - description: "Moves some pathfinding calculations to a non-blocking thread"
 - Disabling it moves computation back to the main thread; the pathfinding work itself is identical
 - **Conclusion**: pathfinding cost is inherent to colony size (19 dupes), not configurable via this toggle
 
@@ -194,7 +194,7 @@ Tests B, C, D completed 2026-03-06. Key recordings:
 ### Test D: Both OFF (175823)
 
 - PathProbe_Async 281–289ms (2 spikes)
-- WorldLateUpdate 282–300ms (4 spikes) — `World.LateUpdate()` emerges as major source
+- WorldLateUpdate 282–300ms (4 spikes)  - `World.LateUpdate()` emerges as major source
 - Unaccounted 293–298ms (3 spikes)
 - **Conclusion**: WorldLateUpdate is a significant spike source not visible in earlier recordings
 
@@ -213,7 +213,7 @@ The diverse spike landscape across all post-fix recordings:
 
 **Key realization**: the problem is systemic. Multiple independent game systems each intermittently produce 280–340ms spikes. This is NOT a single-culprit problem.
 
-The consistent spike magnitude (~300ms) across diverse systems suggests a possible shared root cause — memory pressure, cache thrashing, or a blocking resource — rather than independent per-system bugs.
+The consistent spike magnitude (~300ms) across diverse systems suggests a possible shared root cause  - memory pressure, cache thrashing, or a blocking resource  - rather than independent per-system bugs.
 
 ### Unaccounted Time (open question)
 
@@ -225,15 +225,15 @@ Several spikes show 275–300ms in Unaccounted_ms where no instrumented system c
 
 Investigating requires either adding more granular instrumentation or checking if FastTrack's patches skip our hooks (transpiler patches can bypass prefix/postfix).
 
-## Recording 20260308_084928 — Bug Fix Verification (Cycle 281)
+## Recording 20260308_084928  - Bug Fix Verification (Cycle 281)
 
 First recording after deploying DataRecorder Bug 1 (FrameMs_max) and Bug 2 (GC_Gen2 accumulator) fixes. Cycle 281, 4.5 min, GCBudget ON, 276 main CSV rows, 328 spike rows, 21 spikes >200ms.
 
 ### Bug Fix Verification: Both Confirmed
 
-**Bug 1 — FrameMs_max**: Main CSV now shows actual wall-clock frame times including GC pauses. 19 rows show FrameMs_max of 503–562ms (previously would have shown ~2ms).
+**Bug 1  - FrameMs_max**: Main CSV now shows actual wall-clock frame times including GC pauses. 19 rows show FrameMs_max of 503–562ms (previously would have shown ~2ms).
 
-**Bug 2 — GC_Gen2 accumulator**: Main CSV `GC_Gen2` now captures all Gen2 events per interval. 19 rows show GC_Gen2=1, matching exactly the 19 Gen2 spike events (previously ~1/142 rows due to single-frame sampling).
+**Bug 2  - GC_Gen2 accumulator**: Main CSV `GC_Gen2` now captures all Gen2 events per interval. 19 rows show GC_Gen2=1, matching exactly the 19 Gen2 spike events (previously ~1/142 rows due to single-frame sampling).
 
 ### Revised Finding: Gen2 is ~90%, Not 100%
 
@@ -244,7 +244,7 @@ First recording after deploying DataRecorder Bug 1 (FrameMs_max) and Bug 2 (GC_G
 | Row 39, 08:52:19 | 251ms | 0 | KScreenManager.Update(): 175ms (BulkUpdate) |
 | Row 43, 08:52:48 | 218ms | 0 | WorldLateUpdate: 87ms + InterFrame gap: 94ms |
 
-The previous "100% Gen2" finding (58+ spikes) may have been partially an artifact of the offset bug — incorrect spike-frame data could have masked non-Gen2 spikes.
+The previous "100% Gen2" finding (58+ spikes) may have been partially an artifact of the offset bug  - incorrect spike-frame data could have masked non-Gen2 spikes.
 
 ### "Massive Unaccounted" Was an Offset Bug Artifact
 
@@ -268,4 +268,4 @@ Higher allocation rate overwhelms GCBudget's ability to space out collections.
 
 ### KScreenManager as Independent Spike Source
 
-175ms in a single BulkUpdate call — a UI system handling screen/overlay updates. Not GC-related. Worth investigating if this occurs under specific UI conditions.
+175ms in a single BulkUpdate call  - a UI system handling screen/overlay updates. Not GC-related. Worth investigating if this occurs under specific UI conditions.

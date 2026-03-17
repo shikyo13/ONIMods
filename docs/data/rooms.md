@@ -1,4 +1,4 @@
-# Room Types — ONI Data Map
+# Room Types  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 ## Washroom
@@ -69,7 +69,7 @@ Game build: U58-717001 | Generated: 2026-03-16
 
 | ID | Display Name | Min Size | Max Size | Required Buildings | Bonus Effect |
 |-|-|-|-|-|-|
-| Neutral | Miscellaneous Room | — | — | None | No effect |
+| Neutral | Miscellaneous Room |  - |  - | None | No effect |
 
 ## Constraint Reference
 

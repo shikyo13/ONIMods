@@ -1,4 +1,4 @@
-# Amounts — ONI Data Map
+# Amounts  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
 ## Duplicant
