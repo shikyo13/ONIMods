@@ -20,6 +20,20 @@ claude -p "/mod-maintenance" \
   2>&1 | tee -a "$LOG_FILE"
 
 echo "" | tee -a "$LOG_FILE"
-echo "Exit code: $?" | tee -a "$LOG_FILE"
+echo "Sweep exit code: $?" | tee -a "$LOG_FILE"
+
+# Post-sweep validation: deterministic issue tracking
+echo "" | tee -a "$LOG_FILE"
+echo "--- Post-sweep validation ---" | tee -a "$LOG_FILE"
+python3 "$REPO_ROOT/.claude/scripts/post-sweep-validate.py" \
+  --report "$REPO_ROOT/maintenance-report.txt" \
+  --state "$REPO_ROOT/maintenance-state.json" \
+  2>&1 | tee -a "$LOG_FILE"
+
+# Commit any issue number patches to the report
+cd "$REPO_ROOT" && git add maintenance-report.txt && git diff --cached --quiet || \
+  git commit -m "chore: post-sweep validation - issue tracking" 2>&1 | tee -a "$LOG_FILE"
+
+echo "" | tee -a "$LOG_FILE"
 echo "Done. Window closing in 30s..."
 sleep 30
