@@ -1,15 +1,9 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
-[h2]v2.9.0 - Resize System Overhaul[/h2]
+[h2]v2.8.2 - Management Screen Fix + Resize Improvements[/h2]
 [list]
-[*] [b]Independent axis resizing[/b] - drag the grip horizontally to change column count only (height auto-wraps), vertically to change visible rows only (width auto-wraps), or diagonally to constrain both
-[*] [b]5px dead zone with sticky activation[/b] - prevents accidental resizing from mouse jitter; once an axis activates it stays active for the rest of the drag
-[*] [b]Top-left anchored growth[/b] - resizing grows the panel rightward and downward only; left and top edges stay fixed (no more symmetric expansion pushing the bar off-screen)
-[*] [b]Screen bounds clamping[/b] - panel size is clamped to remaining screen space from its current position; cannot extend past screen edges
-[*] [b]Eliminated resize rubber-banding[/b] - ContentSizeFitter disabled during drag with direct panel sizing; grip, panel, and cards all move together on the same frame
-[*] [b]Per-frame card reflow during drag[/b] - cards resize every frame while dragging instead of at 4Hz, for smooth visual feedback
-[*] [b]Four layout modes[/b] - auto (both axes free), width-only, height-only, and box (both constrained); card size comes from PortraitSize option in single-axis modes, derived from constraints in box mode
-[*] [b]Position migration[/b] - saved positions from older versions automatically converted to new top-left anchor coordinate system
+[*] [b]Fixed bar rendering on top of management screens[/b] - the status bar now hides when Research, Skills, Starmap, or other full-screen management panels are open
+[*] [b]Resize system rework (beta)[/b] - the resize grip now supports independent horizontal and vertical scaling. Drag right to add/remove columns, drag down to add/remove rows, or drag diagonally to constrain both axes. Panel grows from its top-left corner with screen bounds clamping. Cards reflow smoothly per-frame during drag. [i]Note: the resize feature has been significantly reworked and may have rough edges. Please report any issues on the Workshop or Discord.[/i]
 [/list]
 
 [h2]v2.8.0 - Bionic Dupe Support + Troubleshooting Tools[/h2]
