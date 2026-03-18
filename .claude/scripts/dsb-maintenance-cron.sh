@@ -2,6 +2,9 @@
 # Mod Maintenance Cron Script (unified sweep for all mods)
 export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:/usr/local/bin:$PATH"
 
+# Resolve script directory reliably (works under Task Scheduler)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 REPO_ROOT="D:/Dev/Projects/GameModding"
 LOG_DIR="$REPO_ROOT/maintenance-logs"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
@@ -9,13 +12,26 @@ LOG_FILE="$LOG_DIR/maintenance-$TIMESTAMP.log"
 mkdir -p "$LOG_DIR"
 
 # Log rotation - delete logs older than 7 days
-find "$LOG_DIR" -name "maintenance-*.log" -mtime +7 -delete
+find "$LOG_DIR" -name "maintenance-*.log" -mtime +7 -delete 2>/dev/null
 
-# Pre-flight checks
-for cmd in node claude python3; do
+# Pre-flight checks (python3 or python, whichever exists)
+PYTHON_CMD=""
+for py in python3 python py; do
+  if command -v "$py" &>/dev/null; then
+    PYTHON_CMD="$py"
+    break
+  fi
+done
+if [ -z "$PYTHON_CMD" ]; then
+  echo "[$TIMESTAMP] FATAL: No python found in PATH" | tee -a "$LOG_FILE"
+  bash "$SCRIPT_DIR/alert-failure.sh" "Pre-flight failed: no python found"
+  exit 1
+fi
+
+for cmd in node claude; do
   if ! command -v "$cmd" &>/dev/null; then
     echo "[$TIMESTAMP] FATAL: $cmd not found in PATH" | tee -a "$LOG_FILE"
-    source "$(dirname "$0")/alert-failure.sh" "Pre-flight failed: $cmd not found"
+    bash "$SCRIPT_DIR/alert-failure.sh" "Pre-flight failed: $cmd not found"
     exit 1
   fi
 done
@@ -24,6 +40,7 @@ cd "$REPO_ROOT"
 
 echo "[$TIMESTAMP] Starting unified mod maintenance sweep..." | tee "$LOG_FILE"
 echo "claude: $(which claude)" | tee -a "$LOG_FILE"
+echo "python: $PYTHON_CMD ($(which $PYTHON_CMD))" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 
 claude -p "/mod-maintenance" \
@@ -37,13 +54,19 @@ echo "Sweep exit code: $SWEEP_EXIT" | tee -a "$LOG_FILE"
 
 if [ $SWEEP_EXIT -ne 0 ]; then
   echo "[$TIMESTAMP] Sweep FAILED with exit code $SWEEP_EXIT" | tee -a "$LOG_FILE"
-  source "$(dirname "$0")/alert-failure.sh" "Sweep failed (exit $SWEEP_EXIT). Check log: $LOG_FILE"
+  bash "$SCRIPT_DIR/alert-failure.sh" "Sweep failed (exit $SWEEP_EXIT). Check log: $LOG_FILE"
+  # Skip validation - report may be corrupt or missing
+  echo "Skipping validation due to sweep failure." | tee -a "$LOG_FILE"
+  echo "" | tee -a "$LOG_FILE"
+  echo "Done. Window closing in 30s..."
+  sleep 30
+  exit $SWEEP_EXIT
 fi
 
 # Post-sweep validation: deterministic issue tracking
 echo "" | tee -a "$LOG_FILE"
 echo "--- Post-sweep validation ---" | tee -a "$LOG_FILE"
-python3 "$REPO_ROOT/.claude/scripts/post-sweep-validate.py" \
+$PYTHON_CMD "$REPO_ROOT/.claude/scripts/post-sweep-validate.py" \
   --report "$REPO_ROOT/maintenance-report.txt" \
   --state "$REPO_ROOT/maintenance-state.json" \
   2>&1 | tee -a "$LOG_FILE"
@@ -51,7 +74,7 @@ VALIDATE_EXIT=${PIPESTATUS[0]}
 
 if [ $VALIDATE_EXIT -ne 0 ]; then
   echo "[$TIMESTAMP] Validation FAILED with exit code $VALIDATE_EXIT" | tee -a "$LOG_FILE"
-  source "$(dirname "$0")/alert-failure.sh" "Post-sweep validation failed (exit $VALIDATE_EXIT)"
+  bash "$SCRIPT_DIR/alert-failure.sh" "Post-sweep validation failed (exit $VALIDATE_EXIT)"
 fi
 
 # Only commit if content actually changed (not just timestamps)
@@ -67,3 +90,4 @@ fi
 echo "" | tee -a "$LOG_FILE"
 echo "Done. Window closing in 30s..."
 sleep 30
+exit $((SWEEP_EXIT | VALIDATE_EXIT))
