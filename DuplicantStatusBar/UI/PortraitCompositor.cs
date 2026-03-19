@@ -176,7 +176,8 @@ namespace DuplicantStatusBar.UI
             VerticalAnchor anchor = VerticalAnchor.Center,
             float rotation = 0f)
         {
-            if (symbol == null) return;
+            if (symbol == null || symbol.frameLookup == null || symbol.frameLookup.Length == 0)
+                return;
 
             int frameIdx = frameOverride >= 0 ? frameOverride : 0;
             if (frameIdx >= symbol.frameLookup.Length)
