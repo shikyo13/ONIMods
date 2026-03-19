@@ -209,8 +209,11 @@ namespace DuplicantStatusBar.UI
             if (usePivot)
             {
                 var frame = symbol.GetFrame(frameIdx);
-                pivotX = Mathf.RoundToInt(frame.bboxMin.x + source.width);
-                pivotY = Mathf.RoundToInt(frame.bboxMin.y + source.height);
+                if (!frame.Equals(default(KAnim.Build.SymbolFrameInstance)))
+                {
+                    pivotX = Mathf.RoundToInt(frame.bboxMin.x + source.width);
+                    pivotY = Mathf.RoundToInt(frame.bboxMin.y + source.height);
+                }
             }
             int xStart = (output.width / 2) - (source.width / 2) + xOffset;
             int yStart;
