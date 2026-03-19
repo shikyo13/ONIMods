@@ -4,6 +4,7 @@
 [list]
 [*] [b]Fixed bar rendering on top of management screens[/b] - the status bar now hides when Research, Skills, Starmap, or other full-screen management panels are open
 [*] [b]Resize system rework (beta)[/b] - the resize grip now supports independent horizontal and vertical scaling. Drag right to add/remove columns, drag down to add/remove rows, or drag diagonally to constrain both axes. Panel grows from its top-left corner with screen bounds clamping. Cards reflow smoothly per-frame during drag. [i]Note: the resize feature has been significantly reworked and may have rough edges. Please report any issues on the Workshop or Discord.[/i]
+[*] [b]Fixed portrait crash[/b] - guards against null/default frame data in portrait compositing that could cause NRE with certain dupe accessory configurations (GitHub #10)
 [/list]
 
 [h2]v2.8.0 - Bionic Dupe Support + Troubleshooting Tools[/h2]
