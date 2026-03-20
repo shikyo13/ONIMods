@@ -1,0 +1,403 @@
+# Czech translations for DuplicantStatusBar
+# Language: cs (Čeština)
+#
+msgid ""
+msgstr ""
+"Language: cs\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# --- UI strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.HEADER"
+msgid "Dupes"
+msgstr "Duplikanti"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_TASK"
+msgid "Task:"
+msgstr "Úkol:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_IDLE"
+msgid "Idle"
+msgstr "Nečinný"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STRESS"
+msgid "Stress:"
+msgstr "Stres:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_HEALTH"
+msgid "Health:"
+msgstr "Zdraví:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BREATH"
+msgid "Breath:"
+msgstr "Dech:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BODYTEMP"
+msgid "Body Temp:"
+msgstr "Těl. teplota:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_CALORIES"
+msgid "Calories:"
+msgstr "Kalorie:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
+msgid "Bladder:"
+msgstr "Měchýř:"
+
+# --- Popup strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
+msgid "▼ Sort/Filter"
+msgstr "▼ Řazení/Filtr"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
+msgid "Sort By"
+msgstr "Řadit podle"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_FILTER"
+msgid "Filter"
+msgstr "Filtr"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_APPLY"
+msgid "Apply"
+msgstr "Použít"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_RESET"
+msgid "Reset"
+msgstr "Obnovit"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SHOWALL"
+msgid "Show All"
+msgstr "Zobrazit vše"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_QUICKFILTERS"
+msgid "Quick Filters"
+msgstr "Rychlé filtry"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALERTSONLY"
+msgid "Alerts Only"
+msgstr "Pouze varování"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_STRESSEDONLY"
+msgid "Stressed+ Only"
+msgstr "Pouze stres+"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ROLES"
+msgid "Roles"
+msgstr "Profese"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NOROLE"
+msgid "No Specialization"
+msgstr "Bez specializace"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_DUPES"
+msgid "Dupes"
+msgstr "Duplikanti"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALL"
+msgid "All"
+msgstr "Vše"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NONE"
+msgid "None"
+msgstr "Nic"
+
+# --- ALERT strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"
+msgid "Suffocating"
+msgstr "Dusí se"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWHEALTH"
+msgid "Low Health"
+msgstr "Nízké zdraví"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SCALDING"
+msgid "Scalding"
+msgstr "Opaření"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.HYPOTHERMIA"
+msgid "Hypothermia"
+msgstr "Podchlazení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IRRADIATED"
+msgid "Irradiated"
+msgstr "Ozářený"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STARVING"
+msgid "Starving"
+msgstr "Hladovění"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERSTRESSED"
+msgid "Overstressed"
+msgstr "Přetížený"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.BLADDERURGENT"
+msgid "Bladder Urgent"
+msgstr "Nutně na záchod"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.DISEASED"
+msgid "Diseased"
+msgstr "Nemocný"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERJOYED"
+msgid "Overjoyed"
+msgstr "Nadšený"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STUCK"
+msgid "Stuck"
+msgstr "Zaseknutý"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IDLE"
+msgid "Idle"
+msgstr "Nečinný"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.INCAPACITATED"
+msgid "Incapacitated"
+msgstr "Vyřazený"
+
+# --- OPTIONS category strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL"
+msgid "General"
+msgstr "Obecné"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE"
+msgid "Appearance"
+msgstr "Vzhled"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS"
+msgid "Stress Tiers"
+msgstr "Úrovně stresu"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS"
+msgid "Alerts"
+msgstr "Varování"
+
+# --- OPTIONS enum strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.STRESSDESCENDING"
+msgid "Stress (highest first)"
+msgstr "Stres (nejvyšší první)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ALPHABETICAL"
+msgid "Alphabetical"
+msgstr "Abecedně"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE"
+msgid "Job Role"
+msgstr "Profese"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.CALORIESASCENDING"
+msgid "Calories (lowest first)"
+msgstr "Kalorie (nejnižší první)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS"
+msgid "Portraits"
+msgstr "Portréty"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.INITIALS"
+msgid "Initials Only"
+msgstr "Pouze iniciály"
+
+# --- OPTIONS property strings ---
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME"
+msgid "Sort Order"
+msgstr "Řazení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC"
+msgid "How to sort duplicants in the bar."
+msgstr "Jak řadit duplikany v liště."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.NAME"
+msgid "Portrait Size"
+msgstr "Velikost portrétu"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.DESC"
+msgid "Size of each portrait in pixels."
+msgstr "Velikost každého portrétu v pixelech."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME"
+msgid "Max Dupes Per Row"
+msgstr "Max. duplikantů na řádek"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC"
+msgid "Maximum portraits per row (0 = auto-fit to screen width)."
+msgstr "Maximální počet portrétů na řádek (0 = automaticky podle šířky obrazovky)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME"
+msgid "Max Bar Width (%)"
+msgstr "Max. šířka lišty (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC"
+msgid "Maximum bar width as percentage of screen (triggers row wrapping)."
+msgstr "Maximální šířka lišty v procentech obrazovky (způsobí zalamování řádků)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME"
+msgid "Max Rows"
+msgstr "Max. řádků"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC"
+msgid "Maximum visible rows before scrolling (0 = unlimited)."
+msgstr "Maximální počet viditelných řádků před posouváním (0 = neomezeno)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.NAME"
+msgid "Bar Opacity (%)"
+msgstr "Průhlednost lišty (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.DESC"
+msgid "Opacity of the status bar background."
+msgstr "Průhlednost pozadí stavové lišty."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.NAME"
+msgid "Display Mode"
+msgstr "Režim zobrazení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.DESC"
+msgid "Show portraits or initial letters."
+msgstr "Zobrazit portréty nebo počáteční písmena."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.NAME"
+msgid "Face Expressions"
+msgstr "Výrazy obličeje"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.DESC"
+msgid "Show dynamic facial expressions based on dupe status."
+msgstr "Zobrazit dynamické výrazy obličeje podle stavu duplikanta."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.NAME"
+msgid "Calm Threshold"
+msgstr "Práh klidu"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.DESC"
+msgid "Stress below this % is Calm (green)."
+msgstr "Stres pod tímto % je Klidný (zelený)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.NAME"
+msgid "Mild Threshold"
+msgstr "Práh mírného stresu"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.DESC"
+msgid "Stress below this % is Mild (lime)."
+msgstr "Stres pod tímto % je Mírný (limetkový)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.NAME"
+msgid "Stressed Threshold"
+msgstr "Práh stresu"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.DESC"
+msgid "Stress below this % is Stressed (yellow)."
+msgstr "Stres pod tímto % je Stresovaný (žlutý)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.NAME"
+msgid "High Threshold"
+msgstr "Práh vysokého stresu"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.DESC"
+msgid "Stress below this % is High (orange)."
+msgstr "Stres pod tímto % je Vysoký (oranžový)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.NAME"
+msgid "Suffocating Alert"
+msgstr "Varování dušení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.DESC"
+msgid "Show badge when dupe is suffocating."
+msgstr "Zobrazit odznak, když se duplikant dusí."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.NAME"
+msgid "Low HP Alert"
+msgstr "Varování nízkého zdraví"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.DESC"
+msgid "Show badge when dupe health is low."
+msgstr "Zobrazit odznak, když má duplikant nízké zdraví."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.NAME"
+msgid "Scalding Alert"
+msgstr "Varování opaření"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.DESC"
+msgid "Show badge when dupe is overheating."
+msgstr "Zobrazit odznak, když se duplikant přehřívá."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.NAME"
+msgid "Hypothermia Alert"
+msgstr "Varování podchlazení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.DESC"
+msgid "Show badge when dupe is freezing."
+msgstr "Zobrazit odznak, když duplikant mrzne."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.NAME"
+msgid "Disease Alert"
+msgstr "Varování nemoci"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.DESC"
+msgid "Show badge when dupe is sick."
+msgstr "Zobrazit odznak, když je duplikant nemocný."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.NAME"
+msgid "Overstressed Alert"
+msgstr "Varování přetížení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.DESC"
+msgid "Show badge at critical stress."
+msgstr "Zobrazit odznak při kritickém stresu."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.NAME"
+msgid "Overjoyed Alert"
+msgstr "Varování nadšení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.DESC"
+msgid "Show rainbow border and tooltip during joy reactions."
+msgstr "Zobrazit duhový okraj a popisek při reakcích radosti."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.NAME"
+msgid "Irradiated Alert"
+msgstr "Varování ozáření"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.DESC"
+msgid "Show badge when dupe has radiation sickness."
+msgstr "Zobrazit odznak, když je duplikant ozářený."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.NAME"
+msgid "Starving Alert"
+msgstr "Varování hladovění"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.DESC"
+msgid "Show badge when dupe is starving."
+msgstr "Zobrazit odznak, když duplikant hladoví."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.NAME"
+msgid "Bladder Alert"
+msgstr "Varování měchýře"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.DESC"
+msgid "Show badge when dupe urgently needs a bathroom."
+msgstr "Zobrazit odznak, když duplikant nutně potřebuje záchod."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.NAME"
+msgid "Stuck Alert"
+msgstr "Varování zaseknutí"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.DESC"
+msgid "Show badge when dupe cannot reach the printing pod."
+msgstr "Zobrazit odznak, když duplikant nemůže dosáhnout tiskového modulu."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.NAME"
+msgid "Idle Alert"
+msgstr "Varování nečinnosti"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.DESC"
+msgid "Show badge when dupe has no task for an extended period."
+msgstr "Zobrazit odznak, když duplikant nemá úkol delší dobu."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.NAME"
+msgid "Incapacitated Alert"
+msgstr "Varování vyřazení"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
+msgid "Show badge when dupe is incapacitated (bleeding out)."
+msgstr "Zobrazit odznak, když je duplikant vyřazený (krvácí)."
