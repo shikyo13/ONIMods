@@ -46,8 +46,8 @@ msgstr "膀胱:"
 # Popup strings
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
-msgid "\u25BC Sort/Filter"
-msgstr "\u25BC 排序/筛选"
+msgid "▼ Sort/Filter"
+msgstr "▼ 排序/筛选"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
 msgid "Sort By"

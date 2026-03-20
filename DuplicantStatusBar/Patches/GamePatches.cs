@@ -1,4 +1,6 @@
+using System;
 using HarmonyLib;
+using UnityEngine;
 using DuplicantStatusBar.Core;
 
 namespace DuplicantStatusBar.Patches
@@ -8,8 +10,15 @@ namespace DuplicantStatusBar.Patches
     {
         static void Postfix(Game __instance)
         {
-            DSBLog.Log("Patch", "Game.OnPrefabInit fired - adding StatusBarScreen");
-            __instance.gameObject.AddOrGet<UI.StatusBarScreen>();
+            try
+            {
+                DSBLog.Log("Patch", "Game.OnPrefabInit fired - adding StatusBarScreen");
+                __instance.gameObject.AddOrGet<UI.StatusBarScreen>();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[DSB] Failed to add StatusBarScreen: {ex}");
+            }
         }
     }
 
@@ -26,7 +35,14 @@ namespace DuplicantStatusBar.Patches
 
         static void Postfix(ManagementMenu __instance, ManagementMenu.ScreenData ___activeScreen)
         {
-            IsScreenOpen = ___activeScreen != null;
+            try
+            {
+                IsScreenOpen = ___activeScreen != null;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[DSB] ManagementMenu.ToggleScreen error: {ex}");
+            }
         }
     }
 }

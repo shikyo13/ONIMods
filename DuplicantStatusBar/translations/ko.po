@@ -47,8 +47,8 @@ msgstr "방광:"
 # ── Popup ──
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
-msgid "\u25BC Sort/Filter"
-msgstr "\u25BC 정렬/필터"
+msgid "▼ Sort/Filter"
+msgstr "▼ 정렬/필터"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
 msgid "Sort By"

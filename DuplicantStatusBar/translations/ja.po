@@ -47,8 +47,8 @@ msgstr "膀胱:"
 # ── Popup ──
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
-msgid "\u25BC Sort/Filter"
-msgstr "\u25BC 並べ替え/フィルター"
+msgid "▼ Sort/Filter"
+msgstr "▼ 並べ替え/フィルター"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
 msgid "Sort By"

@@ -42,6 +42,8 @@ namespace DuplicantStatusBar.UI
         private TMPro.TextMeshProUGUI filterTMP;
         private HorizontalLayoutGroup headerHLG;
         private bool firstUpdate = true;
+        private bool needsPostLayoutClamp;
+        private float filterFullWidth = 80f; // measured at build time, fallback 80px
         internal bool isDraggingResize;
         private ContentSizeFitter panelFitter;
 
@@ -70,6 +72,8 @@ namespace DuplicantStatusBar.UI
         private const string PW = "DSB_BoxW";
         private const string PH = "DSB_BoxH";
         private const string PVER = "DSB_PosVer";
+        private const string PCW = "DSB_CanW";
+        private const string PCH = "DSB_CanH";
 
         private void Start()
         {
@@ -101,6 +105,16 @@ namespace DuplicantStatusBar.UI
                 ApplyGameUIScale();
                 DupeStatusTracker.Update();
                 RefreshWidgets();
+
+                if (needsPostLayoutClamp && barPanel.rect.size.x > 0)
+                {
+                    needsPostLayoutClamp = false;
+                    var before = barPanel.anchoredPosition;
+                    ClampPanelPosition();
+                    var after = barPanel.anchoredPosition;
+                    if (before != after)
+                        DSBLog.Log("Load", $"Post-layout clamp: ({before.x:F1}, {before.y:F1}) -> ({after.x:F1}, {after.y:F1})");
+                }
 
                 if (firstUpdate)
                 {
@@ -263,7 +277,7 @@ namespace DuplicantStatusBar.UI
             filterRT.anchorMax = new Vector2(0f, 1f);
             filterRT.pivot = new Vector2(0f, 0.5f);
             filterRT.anchoredPosition = new Vector2(6f, 0f);
-            filterRT.sizeDelta = new Vector2(80f, 0f);
+            filterRT.sizeDelta = new Vector2(80f, 0f); // placeholder, resized after text measurement below
             var filterBtn = filterGO.AddComponent<Button>();
             filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
             filterGO.AddComponent<LayoutElement>().ignoreLayout = true;
@@ -282,6 +296,11 @@ namespace DuplicantStatusBar.UI
             ftRT.anchorMax = Vector2.one;
             ftRT.sizeDelta = Vector2.zero;
 
+            // Measure translated text and size button to fit
+            filterFullWidth = MeasureFilterWidth();
+            filterRT.sizeDelta = new Vector2(filterFullWidth, 0f);
+            hlg.padding = new RectOffset((int)(filterFullWidth + 6f), 6, 3, 3);
+
             // Drag-handle label
             var grip = new GameObject("Grip");
             grip.transform.SetParent(header.transform, false);
@@ -291,9 +310,12 @@ namespace DuplicantStatusBar.UI
             gripTMP.color = Color.white;
             if (GameFont != null) gripTMP.font = GameFont;
             gripTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
+            gripTMP.enableWordWrapping = false;
+            gripTMP.overflowMode = TMPro.TextOverflowModes.Ellipsis;
             gripTMP.raycastTarget = false;
             var gripLE = grip.AddComponent<LayoutElement>();
-            gripLE.preferredWidth = 40;
+            float titleW = gripTMP.GetPreferredValues((string)DSB.UI.HEADER).x;
+            gripLE.preferredWidth = Mathf.Max(40f, Mathf.Ceil(titleW + 4f));
             gripLE.preferredHeight = 14;
 
             // Collapse / expand button
@@ -512,18 +534,20 @@ namespace DuplicantStatusBar.UI
             scrollbarGO.SetActive(needsScroll);
 
             // Filter button: full text -> compact arrow -> hidden
+            // Full text needs room for the measured button width + title + margins
+            float fullTextMinW = filterFullWidth + 80f; // button + ~80px for title
             if (filterBtnGO != null && !isCollapsed)
             {
                 var fRT = filterBtnGO.GetComponent<RectTransform>();
-                if (viewW >= 200f)
+                if (viewW >= fullTextMinW)
                 {
                     filterBtnGO.SetActive(true);
                     if (filterTMP != null) filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
-                    fRT.sizeDelta = new Vector2(80f, 0f);
+                    fRT.sizeDelta = new Vector2(filterFullWidth, 0f);
                     if (headerHLG != null)
                     {
                         var pad = headerHLG.padding;
-                        headerHLG.padding = new RectOffset(86, pad.right, pad.top, pad.bottom);
+                        headerHLG.padding = new RectOffset((int)(filterFullWidth + 6f), pad.right, pad.top, pad.bottom);
                     }
                 }
                 else if (viewW >= 100f)
@@ -917,6 +941,14 @@ namespace DuplicantStatusBar.UI
             UpdateGridLayout(snaps.Count);
             int size = lastComputedSize;
 
+            // Periodic size diagnostic (piggybacks on tracker's 5s Tick interval)
+            if (DSBLog.Active && snaps.Count > 0)
+            {
+                float now = Time.unscaledTime;
+                if ((int)(now / 5f) != (int)((now - UPDATE_INTERVAL) / 5f))
+                    DSBLog.Log("Screen", $"size={size} box={barWidthPx:F0}x{barHeightPx:F0}");
+            }
+
             // Add widgets if needed
             while (widgets.Count < snaps.Count)
             {
@@ -1057,6 +1089,13 @@ namespace DuplicantStatusBar.UI
                 : 100f;
         }
 
+        private float MeasureFilterWidth()
+        {
+            if (filterTMP == null) return 80f;
+            float textW = filterTMP.GetPreferredValues((string)DSB.UI.POPUP_SORTFILTER).x;
+            return Mathf.Max(40f, Mathf.Ceil(textW + 8f));
+        }
+
         private void ClampPanelPosition()
         {
             if (barPanel == null || canvasRT == null) return;
@@ -1076,6 +1115,11 @@ namespace DuplicantStatusBar.UI
             PlayerPrefs.SetFloat(PX, barPanel.anchoredPosition.x);
             PlayerPrefs.SetFloat(PY, barPanel.anchoredPosition.y);
             PlayerPrefs.SetInt(PC, isCollapsed ? 1 : 0);
+            if (canvasRT != null)
+            {
+                PlayerPrefs.SetFloat(PCW, canvasRT.rect.width);
+                PlayerPrefs.SetFloat(PCH, canvasRT.rect.height);
+            }
             PlayerPrefs.Save();
         }
 
@@ -1084,27 +1128,55 @@ namespace DuplicantStatusBar.UI
             if (barPanel == null) return;
             lastConfiguredSize = StatusBarOptions.Instance.PortraitSize;
             bool isLegacy = !PlayerPrefs.HasKey(PVER);
+            float cvW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+            float cvH = canvasRT != null ? canvasRT.rect.height : Screen.height;
+
             if (PlayerPrefs.HasKey(PX))
             {
                 float x = PlayerPrefs.GetFloat(PX, 0);
                 float y = PlayerPrefs.GetFloat(PY, -5);
+
+                DSBLog.Log("Load", $"Raw saved pos=({x:F1}, {y:F1}) canvas=({cvW:F0}, {cvH:F0})" +
+                    $" legacy={isLegacy} panelRect={barPanel.rect.size}");
+
                 if (isLegacy)
                 {
                     // Migrate: old x was offset from center, new x is from left edge
-                    float cvW = canvasRT != null ? canvasRT.rect.width : Screen.width;
                     x = cvW * 0.5f + x;
+                    DSBLog.Log("Load", $"Legacy migration: x adjusted to {x:F1}");
                     PlayerPrefs.SetInt(PVER, 2);
                     PlayerPrefs.Save();
                 }
+
+                // Proportional remap if canvas dimensions changed (resolution or UI scale)
+                if (PlayerPrefs.HasKey(PCW))
+                {
+                    float savedW = PlayerPrefs.GetFloat(PCW);
+                    float savedH = PlayerPrefs.GetFloat(PCH);
+                    if (savedW > 0 && savedH > 0
+                        && (Mathf.Abs(savedW - cvW) > 10f || Mathf.Abs(savedH - cvH) > 10f))
+                    {
+                        x = x * (cvW / savedW);
+                        y = y * (cvH / savedH);
+                        DSBLog.Log("Load", $"Canvas changed ({savedW:F0}x{savedH:F0} -> {cvW:F0}x{cvH:F0}), remapped to ({x:F1}, {y:F1})");
+                    }
+                }
+
                 barPanel.anchoredPosition = new Vector2(x, y);
                 ClampPanelPosition();
+                needsPostLayoutClamp = true;
+
+                var clamped = barPanel.anchoredPosition;
+                if (clamped.x != x || clamped.y != y)
+                    DSBLog.Log("Load", $"Clamped pos=({x:F1}, {y:F1}) -> ({clamped.x:F1}, {clamped.y:F1})");
             }
             else
             {
                 // No saved position: center the panel
-                float cvW = canvasRT != null ? canvasRT.rect.width : Screen.width;
                 barPanel.anchoredPosition = new Vector2(cvW * 0.5f, -5f);
+                DSBLog.Log("Load", "No saved position, centering");
             }
+
             isCollapsed = PlayerPrefs.GetInt(PC, 0) == 1;
             scrollViewGO.SetActive(!isCollapsed);
             if (filterBtnGO != null) filterBtnGO.SetActive(!isCollapsed);
@@ -1116,6 +1188,9 @@ namespace DuplicantStatusBar.UI
                 barWidthPx = PlayerPrefs.GetFloat(PW, -1f);
             if (PlayerPrefs.HasKey(PH))
                 barHeightPx = PlayerPrefs.GetFloat(PH, -1f);
+
+            DSBLog.Log("Load", $"Final state: pos={barPanel.anchoredPosition}" +
+                $" collapsed={isCollapsed} box={barWidthPx:F0}x{barHeightPx:F0}");
 
             // Migrate legacy keys (one-time cleanup)
             if (PlayerPrefs.HasKey("DSB_BarWidth") || PlayerPrefs.HasKey("DSB_BarHeight")

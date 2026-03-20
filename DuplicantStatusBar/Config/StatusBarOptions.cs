@@ -22,7 +22,10 @@ namespace DuplicantStatusBar.Config
 
     /// <summary>
     /// PLib options schema for the Duplicant Status Bar. Live-reloaded via OnOptionsChanged — no restart required.
+    /// SharedConfigLocation prevents config.json from being written to the mod's Steam Workshop
+    /// folder, which would trigger Mod Updater to think the mod was modified (restart loop).
     /// </summary>
+    [ConfigFile("DuplicantStatusBar.json", false, true)]
     [JsonObject(MemberSerialization.OptIn)]
     [ModInfo("https://steamcommunity.com/sharedfiles/filedetails/?id=3682732647")]
     public sealed class StatusBarOptions : SingletonOptions<StatusBarOptions>, IOptions

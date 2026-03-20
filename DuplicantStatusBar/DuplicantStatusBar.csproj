@@ -3,8 +3,8 @@
     <TargetFramework>net471</TargetFramework>
     <AssemblyTitle>DuplicantStatusBar</AssemblyTitle>
     <RootNamespace>DuplicantStatusBar</RootNamespace>
-    <AssemblyVersion>2.7.0.0</AssemblyVersion>
-    <FileVersion>2.7.0.0</FileVersion>
+    <AssemblyVersion>2.8.4.0</AssemblyVersion>
+    <FileVersion>2.8.4.0</FileVersion>
     <LangVersion>8.0</LangVersion>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -78,11 +78,17 @@
       <ModDeploy>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded\mods\dev\DuplicantStatusBar\</ModDeploy>
     </PropertyGroup>
     <MakeDir Directories="$(ModDeploy)" />
+    <!-- Remove stale artifacts that shouldn't be in the mod folder -->
+    <ItemGroup>
+      <StaleFiles Include="$(ModDeploy)config.json" Condition="Exists('$(ModDeploy)config.json')" />
+      <StaleFiles Include="$(ModDeploy)*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(StaleFiles)" />
     <ItemGroup>
       <ModDlls Include="$(OutputPath)DuplicantStatusBar.dll;$(OutputPath)PLib.dll" />
       <ModMeta Include="$(ProjectDir)mod.yaml;$(ProjectDir)mod_info.yaml" />
       <ModPreview Include="$(ProjectDir)Preview.png" Condition="Exists('$(ProjectDir)Preview.png')" />
-      <ModAssets Include="$(ProjectDir)funnel.png" Condition="Exists('$(ProjectDir)funnel.png')" />
+      <!-- funnel.png removed - LoadFilterIcon is unused dead code -->
       <ModStrings Include="$(ProjectDir)translations\*.po" />
     </ItemGroup>
     <Copy SourceFiles="@(ModDlls)" DestinationFolder="$(ModDeploy)" SkipUnchangedFiles="true" />

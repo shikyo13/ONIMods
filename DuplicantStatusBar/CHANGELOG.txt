@@ -1,5 +1,22 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.8.4 - Position & Localization Fixes[/h2]
+[list]
+[*] [b]Fixed header text overlap with translations[/b] - filter button and title now measure translated text width at runtime instead of hardcoded pixel widths. German, Russian, Japanese and other languages no longer overlap in the header (GitHub #14)
+[*] [b]Fixed unicode escape in translations[/b] - arrow character was displaying as literal "\u25BC" text instead of ▼ in non-English languages
+[*] [b]Position recovery on resolution change[/b] - bar position now remaps proportionally when screen resolution or UI scale changes between sessions, with a deferred safety clamp after first layout pass
+[/list]
+
+[h2]v2.8.3 - Mod Updater Restart Loop Fix[/h2]
+[list]
+[*] [b]Fixed endless restart loop with Mod Updater[/b] - PLib was writing config.json into the mod's Steam Workshop folder, which could trigger Mod Updater's change detection on every launch. Config now stored in PLib's shared config folder (GitHub #13)
+[*] [b]Fixed AssemblyVersion mismatch[/b] - DLL version was stuck at 2.7.0.0 since v2.7, now properly synced to 2.8.3. This caused version tracking confusion with Mod Updater
+[*] [b]Fixed portraits showing initials on one asteroid[/b] - when the bar was resized small with many dupes, card size dropped below the portrait threshold. Threshold lowered from 36px to 20px so portraits display at smaller sizes (GitHub #10)
+[*] [b]Crash-safe initialization[/b] - all Harmony patches and mod loading now wrapped in try-catch so DSB can never crash the game during startup
+[*] [b]Version diagnostic[/b] - Player.log now always shows [DSB] version and load path for easier troubleshooting
+[*] [b]Build cleanup[/b] - deploy no longer includes stale config.json, .pdb files, or unused funnel.png
+[/list]
+
 [h2]v2.8.2 - Management Screen Fix + Resize Improvements[/h2]
 [list]
 [*] [b]Fixed bar rendering on top of management screens[/b] - the status bar now hides when Research, Skills, Starmap, or other full-screen management panels are open

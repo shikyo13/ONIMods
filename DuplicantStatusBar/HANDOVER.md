@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.8.2
+**Version**: v2.8.4
 **Branch**: master
 **Build**: clean, 0 warnings
 
@@ -11,11 +11,11 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 
 | File | Purpose |
 |-|-|
-| `Core/DuplicantStatusBarMod.cs` | UserMod2 entry, PLib init |
-| `Config/StatusBarOptions.cs` | PLib options (sort, size, opacity, thresholds, alert toggles) |
+| `Core/DuplicantStatusBarMod.cs` | UserMod2 entry, PLib init, crash-safe try-catch, version diagnostic |
+| `Config/StatusBarOptions.cs` | PLib options (sort, size, opacity, thresholds, alert toggles). Uses `[ConfigFile(SharedConfigLocation = true)]` to avoid writing to mod folder |
 | `Data/DupeStatusTracker.cs` | Polls `LiveMinionIdentities` every 0.25s, creates `DupeSnapshot` structs |
 | `UI/StatusBarScreen.cs` | MonoBehaviour on Game object; builds uGUI Canvas + manages widgets |
-| `UI/DupePortraitWidget.cs` | Individual card: compositor portrait (>=36px) or initials fallback + colored border + alert badge |
+| `UI/DupePortraitWidget.cs` | Individual card: compositor portrait (>=20px) or initials fallback + colored border + alert badge |
 | `UI/PortraitCompositor.cs` | Static utility: composites dupe accessories from KAnim atlas into Texture2D/Sprite |
 | `UI/AlertEffects.cs` | Alert effect definitions, procedural sprite cache, alpha evaluation |
 | `UI/ExpressionResolver.cs` | Maps alert/stress → expression → eye/mouth frame indices (runtime discovery from kanim) |
@@ -25,7 +25,7 @@ RimWorld-style colonist bar showing dupe portraits with stress-colored borders a
 | `Core/ImageConversionHelper.cs` | Reflection wrappers for LoadImage/EncodeToPNG (Unity 6 compat) |
 | `UI/DiagnosticDump.cs` | Debug-only portrait diagnostic output (disabled in production) |
 | `Localization/DSBStrings.cs` | All LocString definitions (UI, alerts, options, popup) |
-| `Patches/GamePatches.cs` | `Game.OnPrefabInit` postfix — injects `StatusBarScreen` |
+| `Patches/GamePatches.cs` | `Game.OnPrefabInit` + `ManagementMenu.ToggleScreen` postfixes, all try-catch wrapped |
 | `Patches/TranslationPatch.cs` | Loads .po translation files at game start |
 | `API/Experimental/DSBApi.cs` | Public static entry point for extensibility API |
 | `API/Experimental/AlertRegistration.cs` | Custom alert registration type + AlertPattern enum |
@@ -277,6 +277,31 @@ Public API in `DuplicantStatusBar.API.Experimental` namespace. External mods can
 6. **Visibility events**: `StatusBarScreen.ToggleCollapse()` fires `BarVisibilityChanged`
 
 See `docs/api-guide.md` for the external mod author guide.
+
+## v2.8.3 — Mod Updater Restart Loop Fix
+
+### Bugs Fixed
+
+| Bug | Root Cause | Fix |
+|-|-|-|
+| Endless restart loop with Mod Updater (#13) | PLib `SingletonOptions` defaults to writing `config.json` inside the mod's own directory. For Steam Workshop mods, this modifies the mod folder, which can trigger Steam content verification and Mod Updater change detection on every launch. PeterHan's own ModUpdateDate uses `SharedConfigLocation = true` to avoid this. | Added `[ConfigFile("DuplicantStatusBar.json", false, true)]` to `StatusBarOptions`. Config now stored in PLib's shared config folder outside the mod directory. |
+| Stale AssemblyVersion (2.7.0.0 since v2.7) | `AssemblyVersion` and `FileVersion` in csproj were never bumped past 2.7.0.0. Mod Updater's `CompareVersions()` reads `packagedModInfo.version` from the DLL, so all versions since v2.7 reported as 2.7.0.0. | Bumped to 2.8.3.0. Added to release checklist. |
+| Portraits show initials on one asteroid (#10) | `DeriveLayout()` (box mode) computes card size from bounding box. With 17 dupes in a fixed box, size drops below `PORTRAIT_THRESHOLD` (36px), falling back to initials. With 2-3 dupes, same box yields larger cards showing portraits. | Lowered `PORTRAIT_THRESHOLD` from 36 to 20. Compositor's 125x125 texture scales fine via bilinear filtering. |
+| No crash safety on initialization | `OnLoad`, `Game.OnPrefabInit` postfix, and `ManagementMenu.ToggleScreen` postfix had no try-catch. A game update changing any patched method signature would crash the game with no recovery. | Wrapped all Harmony entry points in try-catch. DSB can never crash the game during init. |
+
+### Investigation Notes
+
+Mod Updater (`PeterHan.ModUpdateDate`) uses two detection mechanisms:
+1. **Timestamp comparison** (primary): compares `LocalLastModified` vs Steam API `time_updated`. If Steam is newer, mod is `Outdated`.
+2. **Version comparison** (secondary): `CompareVersions()` checks `FilesystemVersion` (transient, runtime-only) against `packagedModInfo.version` from the DLL's `AssemblyVersion`. Only used for `NewerLocal` detection.
+
+The restart loop had compounding causes: PLib config.json in the mod folder, stale AssemblyVersion, and for some users, OneDrive file locks preventing clean Steam downloads. Environmental factors (OneDrive, antivirus) are outside our control but crash-safety prevents DSB from making them worse.
+
+### Diagnostics Added
+
+- Player.log always shows `[DSB] v{version} loaded from {path}` (not gated by DebugLogging)
+- Debug log periodic `[Screen] size={N} box={W}x{H}` for portrait threshold diagnosis
+- Build target cleans stale `config.json` and `.pdb` from deploy folder
 
 ## v2.7.0 — Unity 6 / Testing Branch Compatibility
 
