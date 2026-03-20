@@ -47,8 +47,8 @@ msgstr "Мочевой пузырь:"
 # ── Popup ──
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
-msgid "\u25BC Sort/Filter"
-msgstr "\u25BC Сортировка/Фильтр"
+msgid "▼ Sort/Filter"
+msgstr "▼ Сортировка/Фильтр"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
 msgid "Sort By"

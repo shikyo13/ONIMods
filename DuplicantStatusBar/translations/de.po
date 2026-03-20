@@ -47,8 +47,8 @@ msgstr "Blase:"
 # --- Popup strings ---
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
-msgid "\u25BC Sort/Filter"
-msgstr "\u25BC Sortieren/Filtern"
+msgid "▼ Sort/Filter"
+msgstr "▼ Sortieren/Filtern"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
 msgid "Sort By"

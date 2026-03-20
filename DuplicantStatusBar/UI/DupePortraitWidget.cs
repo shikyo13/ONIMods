@@ -28,7 +28,7 @@ namespace DuplicantStatusBar.UI
         private Image portraitImage;
         private int currentIdentityId;
         private string currentHat;
-        private const int PORTRAIT_THRESHOLD = 36;
+        private const int PORTRAIT_THRESHOLD = 20;
 
         // Expression state
         private ExpressionType currentExpression = ExpressionType.Neutral;

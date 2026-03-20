@@ -47,8 +47,8 @@ msgstr "Vejiga:"
 # ── Popup ──
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
-msgid "\u25BC Sort/Filter"
-msgstr "\u25BC Ordenar/Filtrar"
+msgid "▼ Sort/Filter"
+msgstr "▼ Ordenar/Filtrar"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
 msgid "Sort By"

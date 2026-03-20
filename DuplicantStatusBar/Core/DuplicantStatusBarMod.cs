@@ -1,7 +1,10 @@
+using System;
+using System.Reflection;
 using HarmonyLib;
 using KMod;
 using PeterHan.PLib.Core;
 using PeterHan.PLib.Options;
+using UnityEngine;
 
 namespace DuplicantStatusBar.Core
 {
@@ -14,12 +17,22 @@ namespace DuplicantStatusBar.Core
 
         public override void OnLoad(Harmony harmony)
         {
-            base.OnLoad(harmony);
-            ModPath = mod.ContentPath;
-            PUtil.InitLibrary();
-            LocString.CreateLocStringKeys(typeof(Localization.STRINGS), "");
-            new POptions().RegisterOptions(this, typeof(Config.StatusBarOptions));
-            DSBLog.Log("Init", $"DuplicantStatusBar loaded from {ModPath}");
+            try
+            {
+                base.OnLoad(harmony);
+                ModPath = mod.ContentPath;
+                PUtil.InitLibrary();
+                LocString.CreateLocStringKeys(typeof(Localization.STRINGS), "");
+                new POptions().RegisterOptions(this, typeof(Config.StatusBarOptions));
+
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                Debug.Log($"[DSB] v{version} loaded from {ModPath}");
+                DSBLog.Log("Init", $"DuplicantStatusBar v{version} loaded from {ModPath}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[DSB] Failed to initialize: {ex}");
+            }
         }
     }
 }

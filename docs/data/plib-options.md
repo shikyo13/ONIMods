@@ -8,7 +8,7 @@ Source: `PeterHan.PLib.Options` (PLib by Peter Han, MIT license)
 | Attribute | Target | Parameters | Purpose |
 |-|-|-|-|
 | `[ModInfo]` | Class | `string url`, `string image = null`, `bool collapse = false` | Sets workshop URL, preview image filename, and whether categories start collapsed |
-| `[ConfigFile]` | Class | `string FileName = "config.json"`, `bool IndentOutput = false`, `bool SharedConfigLocation = false` | Overrides config filename, enables pretty-print, or moves config to shared folder |
+| `[ConfigFile]` | Class | `string FileName = "config.json"`, `bool IndentOutput = false`, `bool SharedConfigLocation = false` | Overrides config filename, enables pretty-print, or moves config to shared folder. **Constructor is positional**: `[ConfigFile("name.json", false, true)]`. Property `UseSharedConfigLocation` is read-only. **Always use shared config for Workshop mods** to prevent Mod Updater restart loops. |
 | `[RestartRequired]` | Class, Property, Field | _(none)_ | Prompts user to restart game after changing options. On properties, compares old/new via `Equals` |
 | `[JsonObject]` | Class | `MemberSerialization.OptIn` | Standard Newtonsoft; required if using `[JsonProperty]` on individual fields |
 
