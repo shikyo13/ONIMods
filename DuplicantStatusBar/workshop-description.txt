@@ -30,7 +30,7 @@ Portraits are expression-driven - dupes change facial expressions based on their
 [/list]
 
 [h2]Localization[/h2]
-All UI text is translated into Chinese, Korean, Russian, Japanese, German, Spanish, and French. Translations load automatically based on your game language setting.
+All UI text is translated into Chinese, Czech, Korean, Russian, Japanese, German, Spanish, and French. Translations load automatically based on your game language setting.
 
 [h2]Compatibility[/h2]
 Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Compatible with both the public branch and the Unity 6 testing branch. Display only - does not modify any game logic or save data.
