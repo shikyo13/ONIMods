@@ -1,7 +1,7 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.8.4
+**Version**: v2.8.5
 **Branch**: master
 **Build**: clean, 0 warnings
 

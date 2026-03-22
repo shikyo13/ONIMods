@@ -1,14 +1,18 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.8.5 - 4K/High-DPI Fix + Czech Localization[/h2]
+[list]
+[*] [b]Fixed bar invisible or mispositioned on 4K/high-DPI displays[/b] - all positioning, clamping, and resize calculations now account for UI scale factor. Previously the bar was pushed off-screen at scale > 1x. Reset Bar Position button also fixed (GitHub #15)
+[*] [b]Added Czech localization[/b] - now 8 languages total (de, es, fr, ja, ko, ru, zh, cs). Please report any translation issues or corrections on [url=https://github.com/ZeroPointNothing/ONIMods/issues]GitHub Issues[/url]
+[*] [b]Fixed translation load errors silently swallowed[/b] - if a .po translation file fails to load, the error is now logged to Player.log instead of being silently ignored
+[*] [b]Visibility diagnostic[/b] - when debug logging is enabled, the first tick now logs canvas state, overlay sort orders, effective viewport size, and parent hierarchy to help diagnose invisible-bar reports
+[/list]
+
 [h2]v2.8.4 - Position & Localization Fixes[/h2]
 [list]
 [*] [b]Fixed header text overlap with translations[/b] - filter button and title now measure translated text width at runtime instead of hardcoded pixel widths. German, Russian, Japanese and other languages no longer overlap in the header (GitHub #14)
 [*] [b]Fixed unicode escape in translations[/b] - arrow character was displaying as literal "\u25BC" text instead of ▼ in non-English languages
 [*] [b]Position recovery on resolution change[/b] - bar position now remaps proportionally when screen resolution or UI scale changes between sessions, with a deferred safety clamp after first layout pass
-[*] [b]Added Czech localization[/b] - now 8 languages total (de, es, fr, ja, ko, ru, zh, cs). Please report any translation issues or corrections on [url=https://github.com/ZeroPointNothing/ONIMods/issues]GitHub Issues[/url]
-[*] [b]Fixed bar invisible or mispositioned on 4K/high-DPI displays[/b] - all positioning, clamping, and resize calculations now account for UI scale factor. Previously the bar was pushed off-screen at scale > 1x. Reset Bar Position button also fixed (GitHub #15)
-[*] [b]Fixed translation load errors silently swallowed[/b] - if a .po translation file fails to load, the error is now logged to Player.log instead of being silently ignored
-[*] [b]Visibility diagnostic[/b] - when debug logging is enabled, the first tick now logs canvas state, overlay sort orders, effective viewport size, and parent hierarchy to help diagnose invisible-bar reports
 [/list]
 
 [h2]v2.8.3 - Mod Updater Restart Loop Fix[/h2]
