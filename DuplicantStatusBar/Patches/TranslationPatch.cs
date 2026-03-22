@@ -35,7 +35,7 @@ namespace DuplicantStatusBar.Patches
                 if (translated != null && translated.Count > 0)
                     ApplyToType(typeof(ModStrings), "STRINGS", translated);
             }
-            catch (Exception) { }
+            catch (Exception ex) { UnityEngine.Debug.LogWarning($"[DSB] Failed to load translation: {ex.Message}"); }
         }
 
         private static void ApplyToType(Type type, string path,

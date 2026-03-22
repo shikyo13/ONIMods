@@ -844,6 +844,10 @@ namespace DuplicantStatusBar.UI
             filterLabels.Clear();
             filterNames.Clear();
             filterVisible.Clear();
+            roleLabels.Clear();
+            roleKeys.Clear();
+            roleDisplayNames.Clear();
+            roleVisible.Clear();
         }
     }
 }

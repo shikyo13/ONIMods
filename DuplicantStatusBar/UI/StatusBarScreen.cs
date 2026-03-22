@@ -128,6 +128,8 @@ namespace DuplicantStatusBar.UI
                         $" stressedOnly={SortFilterPopup.StressedOnly}" +
                         $" hiddenDupes={SortFilterPopup.HiddenDupes.Count}" +
                         $" hiddenRoles={SortFilterPopup.HiddenRoles.Count}");
+                    if (DSBLog.Active)
+                        LogVisibilityDiagnostic();
                 }
             }
         }
@@ -140,6 +142,14 @@ namespace DuplicantStatusBar.UI
             PortraitCompositor.ClearCaches();
             SaveState();
             Core.DSBLog.Close();
+        }
+
+        // canvasRT.rect reports Screen.size in ConstantPixelSize mode;
+        // the visible area in canvas coordinates is Screen.size / scaleFactor.
+        private Vector2 EffectiveCanvasSize()
+        {
+            float s = canvasScaler != null ? canvasScaler.scaleFactor : 1f;
+            return new Vector2(Screen.width / s, Screen.height / s);
         }
 
         private void ApplyGameUIScale()
@@ -434,7 +444,7 @@ namespace DuplicantStatusBar.UI
         {
             if (dupeCount <= 0) return;
             var opts = StatusBarOptions.Instance;
-            float canvasW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+            float canvasW = EffectiveCanvasSize().x;
 
             int size;
             int cols;
@@ -664,6 +674,50 @@ namespace DuplicantStatusBar.UI
             handle.screen = this;
         }
 
+        private void LogVisibilityDiagnostic()
+        {
+            DSBLog.Log("Visibility", "--- diagnostic start ---");
+
+            // Canvas state
+            var canvasGO = canvasRT != null ? canvasRT.gameObject : null;
+            var canvas = canvasGO != null ? canvasGO.GetComponent<Canvas>() : null;
+            DSBLog.Log("Visibility", $"Canvas GO active={canvasGO?.activeSelf} Canvas enabled={canvas?.enabled} sortOrder={canvas?.sortingOrder}");
+            var ecs = EffectiveCanvasSize();
+            DSBLog.Log("Visibility", $"Canvas raw rect={canvasRT?.rect.size} effective={ecs} scale={canvasScaler?.scaleFactor}");
+
+            // Parent chain - check if anything above us is disabled
+            var t = canvasGO != null ? canvasGO.transform.parent : null;
+            while (t != null)
+            {
+                if (!t.gameObject.activeSelf)
+                    DSBLog.Log("Visibility", $"INACTIVE PARENT: {t.name}");
+                t = t.parent;
+            }
+
+            // Management screen stuck?
+            bool screenOpen = Patches.ManagementMenu_ToggleScreen_Patch.IsScreenOpen;
+            DSBLog.Log("Visibility", $"ManagementScreen.IsScreenOpen={screenOpen}");
+
+            // Bar panel bounds
+            if (barPanel != null)
+            {
+                var corners = new Vector3[4];
+                barPanel.GetWorldCorners(corners);
+                DSBLog.Log("Visibility", $"BarPanel rect={barPanel.rect.size} anchoredPos={barPanel.anchoredPosition}");
+                DSBLog.Log("Visibility", $"BarPanel world corners: BL=({corners[0].x:F0},{corners[0].y:F0}) TR=({corners[2].x:F0},{corners[2].y:F0})");
+            }
+
+            // Scan all ScreenSpaceOverlay canvases for sort order conflicts
+            var allCanvases = FindObjectsOfType<Canvas>();
+            foreach (var c in allCanvases)
+            {
+                if (c.renderMode == RenderMode.ScreenSpaceOverlay && c.sortingOrder >= 90)
+                    DSBLog.Log("Visibility", $"Overlay canvas: \"{c.gameObject.name}\" sortOrder={c.sortingOrder} active={c.gameObject.activeInHierarchy}");
+            }
+
+            DSBLog.Log("Visibility", "--- diagnostic end ---");
+        }
+
         private void LateUpdate()
         {
             // Hide bar when any management screen (Research, Skills, etc.) is open
@@ -828,13 +882,15 @@ namespace DuplicantStatusBar.UI
 
             public void OnDrag(PointerEventData e)
             {
-                float canvasW = screen.canvasRT != null ? screen.canvasRT.rect.width : Screen.width;
-                float canvasH = screen.canvasRT != null ? screen.canvasRT.rect.height : Screen.height;
+                var ecz = screen.EffectiveCanvasSize();
+                float canvasW = ecz.x;
+                float canvasH = ecz.y;
                 float panelLeft = screen.barPanel.anchoredPosition.x;
                 float panelTop  = -screen.barPanel.anchoredPosition.y;
 
-                float deltaX = e.position.x - startX;
-                float deltaY = startY - e.position.y;
+                float sf = screen.canvasScaler != null ? screen.canvasScaler.scaleFactor : 1f;
+                float deltaX = (e.position.x - startX) / sf;
+                float deltaY = (startY - e.position.y) / sf;
 
                 // Sticky dead zone: once activated, stays active for this drag
                 if (!xActivated && Mathf.Abs(deltaX) > DEAD_ZONE) xActivated = true;
@@ -992,7 +1048,7 @@ namespace DuplicantStatusBar.UI
             if (collapseLabel != null) collapseLabel.text = "\u2212";
             if (barPanel != null && canvasRT != null)
             {
-                float cx = canvasRT.rect.width * 0.5f;
+                float cx = EffectiveCanvasSize().x * 0.5f;
                 barPanel.anchoredPosition = new Vector2(cx, -5f);
             }
             barWidthPx = -1f;
@@ -1006,7 +1062,7 @@ namespace DuplicantStatusBar.UI
             int N = lastDupeCount > 0 ? lastDupeCount : 1;
             float headerH = headerRT != null ? headerRT.rect.height : 20f;
             var opts = StatusBarOptions.Instance;
-            float canvasW = canvasRT != null ? canvasRT.rect.width : Screen.width;
+            float canvasW = EffectiveCanvasSize().x;
 
             bool wCon = constraintW > 0;
             bool hCon = constraintH > 0;
@@ -1099,11 +1155,11 @@ namespace DuplicantStatusBar.UI
         private void ClampPanelPosition()
         {
             if (barPanel == null || canvasRT == null) return;
-            var cv  = canvasRT.rect;
+            var cv  = EffectiveCanvasSize();
             var sz  = barPanel.rect.size;
             var pos = barPanel.anchoredPosition;
-            pos.x = Mathf.Clamp(pos.x, 0f, Mathf.Max(0f, cv.width - sz.x));
-            pos.y = Mathf.Clamp(pos.y, -(cv.height - 20f), 0f);
+            pos.x = Mathf.Clamp(pos.x, 0f, Mathf.Max(0f, cv.x - sz.x));
+            pos.y = Mathf.Clamp(pos.y, -(cv.y - 20f), 0f);
             barPanel.anchoredPosition = pos;
         }
 
@@ -1115,11 +1171,9 @@ namespace DuplicantStatusBar.UI
             PlayerPrefs.SetFloat(PX, barPanel.anchoredPosition.x);
             PlayerPrefs.SetFloat(PY, barPanel.anchoredPosition.y);
             PlayerPrefs.SetInt(PC, isCollapsed ? 1 : 0);
-            if (canvasRT != null)
-            {
-                PlayerPrefs.SetFloat(PCW, canvasRT.rect.width);
-                PlayerPrefs.SetFloat(PCH, canvasRT.rect.height);
-            }
+            var ecs = EffectiveCanvasSize();
+            PlayerPrefs.SetFloat(PCW, ecs.x);
+            PlayerPrefs.SetFloat(PCH, ecs.y);
             PlayerPrefs.Save();
         }
 
@@ -1128,8 +1182,9 @@ namespace DuplicantStatusBar.UI
             if (barPanel == null) return;
             lastConfiguredSize = StatusBarOptions.Instance.PortraitSize;
             bool isLegacy = !PlayerPrefs.HasKey(PVER);
-            float cvW = canvasRT != null ? canvasRT.rect.width : Screen.width;
-            float cvH = canvasRT != null ? canvasRT.rect.height : Screen.height;
+            var ecv = EffectiveCanvasSize();
+            float cvW = ecv.x;
+            float cvH = ecv.y;
 
             if (PlayerPrefs.HasKey(PX))
             {
@@ -1174,6 +1229,7 @@ namespace DuplicantStatusBar.UI
             {
                 // No saved position: center the panel
                 barPanel.anchoredPosition = new Vector2(cvW * 0.5f, -5f);
+                needsPostLayoutClamp = true;
                 DSBLog.Log("Load", "No saved position, centering");
             }
 
