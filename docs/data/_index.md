@@ -8,7 +8,7 @@ Indexed reference tables extracted from Assembly-CSharp.dll. Use instead of ad-h
 | File | Category | Entries | Lines |
 |-|-|-|-|
 | [amounts.md](amounts.md) | Dupe/Critter/Plant amounts (Stress, Calories, etc.) | 38 | 65 |
-| [skills.md](skills.md) | Duplicant skills by group | 52 | 134 |
+| [skills.md](skills.md) | Duplicant skills by group | 154 | 134 |
 | [choretypes.md](choretypes.md) | Chore types with priority tiers | 142 | 195 |
 | [rooms.md](rooms.md) | Room types with requirements + bonuses | 20 | 101 |
 | [elements.md](elements.md) | SimHashes  - all elements by state | 191 | 213 |
