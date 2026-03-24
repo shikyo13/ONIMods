@@ -1,6 +1,26 @@
 # Skills  - ONI Data Map
 Game build: U58-717001 | Generated: 2026-03-16
 
+## Section Index
+
+| Section | Heading |
+|-|-|
+| Mining | `## Mining` |
+| Building | `## Building` |
+| Farming | `## Farming` |
+| Ranching | `## Ranching` |
+| Cooking | `## Cooking` |
+| Art | `## Art` |
+| Research | `## Research` |
+| Rocketry | `## Rocketry` |
+| Suits | `## Suits` |
+| Hauling | `## Hauling` |
+| Technicals | `## Technicals` |
+| Basekeeping | `## Basekeeping` |
+| Medicine | `## Medicine` |
+| Bionics (DLC3) | `## Bionics` |
+| Notes | `## Notes` |
+
 ## Mining
 
 | ID | Display Name | Group | Tier | Prerequisites | Perks |
