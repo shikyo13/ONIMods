@@ -1,5 +1,11 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.8.6 - Portrait Crash Fix + Header Layout[/h2]
+[list]
+[*] [b]Fixed NRE crash in portrait compositing[/b] - hair/hat accessories with unloaded build data (null symbol.build) could crash the portrait renderer every frame. Now guarded in both WriteSymbolDirect and GetSpriteFromSymbol
+[*] [b]Fixed header title disappearing with long translations[/b] - the title text ("Duplicants" / "Дупликанты" etc.) was squeezed out when the Sort/Filter button text was wide (e.g. Russian). Threshold now measures actual title width instead of hardcoded 80px
+[/list]
+
 [h2]v2.8.5 - 4K/High-DPI Fix[/h2]
 [list]
 [*] [b]Fixed bar invisible or mispositioned on 4K/high-DPI displays[/b] - all positioning, clamping, and resize calculations now account for UI scale factor. Previously the bar was pushed off-screen at scale > 1x. Reset Bar Position button also fixed (GitHub #15)

@@ -176,7 +176,7 @@ namespace DuplicantStatusBar.UI
             VerticalAnchor anchor = VerticalAnchor.Center,
             float rotation = 0f)
         {
-            if (symbol == null || symbol.frameLookup == null || symbol.frameLookup.Length == 0)
+            if (symbol == null || symbol.build == null || symbol.frameLookup == null || symbol.frameLookup.Length == 0)
                 return;
 
             int frameIdx = frameOverride >= 0 ? frameOverride : 0;
@@ -294,7 +294,7 @@ namespace DuplicantStatusBar.UI
 
         internal static Sprite GetSpriteFromSymbol(KAnim.Build.Symbol symbol, int frameOverride = -1)
         {
-            if (symbol.frameLookup == null || symbol.frameLookup.Length == 0)
+            if (symbol.build == null || symbol.frameLookup == null || symbol.frameLookup.Length == 0)
                 return null;
 
             int frameIdx = frameOverride >= 0 ? frameOverride : 0;

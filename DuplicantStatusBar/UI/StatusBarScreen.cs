@@ -44,6 +44,7 @@ namespace DuplicantStatusBar.UI
         private bool firstUpdate = true;
         private bool needsPostLayoutClamp;
         private float filterFullWidth = 80f; // measured at build time, fallback 80px
+        private LayoutElement gripLE;
         internal bool isDraggingResize;
         private ContentSizeFitter panelFitter;
 
@@ -323,7 +324,7 @@ namespace DuplicantStatusBar.UI
             gripTMP.enableWordWrapping = false;
             gripTMP.overflowMode = TMPro.TextOverflowModes.Ellipsis;
             gripTMP.raycastTarget = false;
-            var gripLE = grip.AddComponent<LayoutElement>();
+            gripLE = grip.AddComponent<LayoutElement>();
             float titleW = gripTMP.GetPreferredValues((string)DSB.UI.HEADER).x;
             gripLE.preferredWidth = Mathf.Max(40f, Mathf.Ceil(titleW + 4f));
             gripLE.preferredHeight = 14;
@@ -545,7 +546,8 @@ namespace DuplicantStatusBar.UI
 
             // Filter button: full text -> compact arrow -> hidden
             // Full text needs room for the measured button width + title + margins
-            float fullTextMinW = filterFullWidth + 80f; // button + ~80px for title
+            float gripW = gripLE != null ? gripLE.preferredWidth : 40f;
+            float fullTextMinW = filterFullWidth + gripW + 34f; // button + title + collapse(16) + spacing/margins(18)
             if (filterBtnGO != null && !isCollapsed)
             {
                 var fRT = filterBtnGO.GetComponent<RectTransform>();
