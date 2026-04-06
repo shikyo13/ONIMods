@@ -3,8 +3,8 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyTitle>DuplicantStatusBar</AssemblyTitle>
     <RootNamespace>DuplicantStatusBar</RootNamespace>
-    <AssemblyVersion>2.8.6.0</AssemblyVersion>
-    <FileVersion>2.8.6.0</FileVersion>
+    <AssemblyVersion>2.8.7.0</AssemblyVersion>
+    <FileVersion>2.8.7.0</FileVersion>
     <LangVersion>8.0</LangVersion>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
