@@ -1,5 +1,12 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.8.7 - Portuguese Translations[/h2]
+[list]
+[*] [b]Added Portuguese (Portugal) localization[/b] - pt.po
+[*] [b]Added Brazilian Portuguese localization[/b] - pt_BR.po
+[*] Now 10 languages total (de, es, fr, ja, ko, ru, zh, cs, pt, pt_BR)
+[/list]
+
 [h2]v2.8.6 - Portrait Crash Fix + Header Layout[/h2]
 [list]
 [*] [b]Fixed NRE crash in portrait compositing[/b] - hair/hat accessories with unloaded build data (null symbol.build) could crash the portrait renderer every frame. Now guarded in both WriteSymbolDirect and GetSpriteFromSymbol

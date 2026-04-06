@@ -1,0 +1,403 @@
+# Portuguese translations for DuplicantStatusBar
+# Language: pt (Portuguese - Portugal)
+#
+msgid ""
+msgstr ""
+"Language: pt\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# ── UI ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.HEADER"
+msgid "Dupes"
+msgstr "Duplicantes"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_TASK"
+msgid "Task:"
+msgstr "Tarefa:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_IDLE"
+msgid "Idle"
+msgstr "Inativo"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STRESS"
+msgid "Stress:"
+msgstr "Stress:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_HEALTH"
+msgid "Health:"
+msgstr "Saúde:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BREATH"
+msgid "Breath:"
+msgstr "Respiração:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BODYTEMP"
+msgid "Body Temp:"
+msgstr "Temp. Corporal:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_CALORIES"
+msgid "Calories:"
+msgstr "Calorias:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BLADDER"
+msgid "Bladder:"
+msgstr "Bexiga:"
+
+# ── Popup ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER"
+msgid "▼ Sort/Filter"
+msgstr "▼ Ordenar/Filtrar"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTBY"
+msgid "Sort By"
+msgstr "Ordenar por"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_FILTER"
+msgid "Filter"
+msgstr "Filtrar"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_APPLY"
+msgid "Apply"
+msgstr "Aplicar"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_RESET"
+msgid "Reset"
+msgstr "Repor"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SHOWALL"
+msgid "Show All"
+msgstr "Mostrar Todos"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_QUICKFILTERS"
+msgid "Quick Filters"
+msgstr "Filtros Rápidos"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALERTSONLY"
+msgid "Alerts Only"
+msgstr "Apenas Alertas"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_STRESSEDONLY"
+msgid "Stressed+ Only"
+msgstr "Apenas Stressados+"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ROLES"
+msgid "Roles"
+msgstr "Profissões"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NOROLE"
+msgid "No Specialization"
+msgstr "Sem Especialização"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_DUPES"
+msgid "Dupes"
+msgstr "Duplicantes"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_ALL"
+msgid "All"
+msgstr "Todos"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_NONE"
+msgid "None"
+msgstr "Nenhum"
+
+# ── Alerts ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SUFFOCATING"
+msgid "Suffocating"
+msgstr "Asfixia"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWHEALTH"
+msgid "Low Health"
+msgstr "Saúde Baixa"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.SCALDING"
+msgid "Scalding"
+msgstr "Escaldadura"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.HYPOTHERMIA"
+msgid "Hypothermia"
+msgstr "Hipotermia"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IRRADIATED"
+msgid "Irradiated"
+msgstr "Irradiado"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STARVING"
+msgid "Starving"
+msgstr "Esfomeado"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERSTRESSED"
+msgid "Overstressed"
+msgstr "Demasiado Stressado"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.BLADDERURGENT"
+msgid "Bladder Urgent"
+msgstr "Bexiga Urgente"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.DISEASED"
+msgid "Diseased"
+msgstr "Doente"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.OVERJOYED"
+msgid "Overjoyed"
+msgstr "Eufórico"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.STUCK"
+msgid "Stuck"
+msgstr "Preso"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.IDLE"
+msgid "Idle"
+msgstr "Inativo"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.INCAPACITATED"
+msgid "Incapacitated"
+msgstr "Incapacitado"
+
+# ── Options — Categories ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.GENERAL"
+msgid "General"
+msgstr "Geral"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.APPEARANCE"
+msgid "Appearance"
+msgstr "Aparência"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.STRESSTIERS"
+msgid "Stress Tiers"
+msgstr "Níveis de Stress"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.ALERTS"
+msgid "Alerts"
+msgstr "Alertas"
+
+# ── Options — Enums ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.STRESSDESCENDING"
+msgid "Stress (highest first)"
+msgstr "Stress (maior primeiro)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ALPHABETICAL"
+msgid "Alphabetical"
+msgstr "Alfabético"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.ROLE"
+msgid "Job Role"
+msgstr "Profissão"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTMODE.CALORIESASCENDING"
+msgid "Calories (lowest first)"
+msgstr "Calorias (menor primeiro)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.PORTRAITS"
+msgid "Portraits"
+msgstr "Retratos"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.VIEWMODE.INITIALS"
+msgid "Initials Only"
+msgstr "Apenas Iniciais"
+
+# ── Options — Properties ──
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.NAME"
+msgid "Sort Order"
+msgstr "Ordem de Classificação"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SORTORDER.DESC"
+msgid "How to sort duplicants in the bar."
+msgstr "Como ordenar os duplicantes na barra."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.NAME"
+msgid "Portrait Size"
+msgstr "Tamanho do Retrato"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.PORTRAITSIZE.DESC"
+msgid "Size of each portrait in pixels."
+msgstr "Tamanho de cada retrato em píxeis."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME"
+msgid "Max Dupes Per Row"
+msgstr "Máx. Duplicantes por Linha"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC"
+msgid "Maximum portraits per row (0 = auto-fit to screen width)."
+msgstr "Máximo de retratos por linha (0 = ajuste automático à largura do ecrã)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME"
+msgid "Max Bar Width (%)"
+msgstr "Largura Máx. da Barra (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC"
+msgid "Maximum bar width as percentage of screen (triggers row wrapping)."
+msgstr "Largura máxima da barra em percentagem do ecrã (ativa a quebra de linhas)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME"
+msgid "Max Rows"
+msgstr "Máx. Linhas"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC"
+msgid "Maximum visible rows before scrolling (0 = unlimited)."
+msgstr "Máximo de linhas visíveis antes de deslocar (0 = ilimitado)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.NAME"
+msgid "Bar Opacity (%)"
+msgstr "Opacidade da Barra (%)"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.BAROPACITY.DESC"
+msgid "Opacity of the status bar background."
+msgstr "Opacidade do fundo da barra de estado."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.NAME"
+msgid "Display Mode"
+msgstr "Modo de Visualização"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.DISPLAYMODE.DESC"
+msgid "Show portraits or initial letters."
+msgstr "Mostrar retratos ou letras iniciais."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.NAME"
+msgid "Face Expressions"
+msgstr "Expressões Faciais"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.FACEEXPRESSIONS.DESC"
+msgid "Show dynamic facial expressions based on dupe status."
+msgstr "Mostrar expressões faciais dinâmicas com base no estado do duplicante."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.NAME"
+msgid "Calm Threshold"
+msgstr "Limiar de Calma"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CALMTHRESHOLD.DESC"
+msgid "Stress below this % is Calm (green)."
+msgstr "Stress abaixo deste % é Calma (verde)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.NAME"
+msgid "Mild Threshold"
+msgstr "Limiar Ligeiro"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MILDTHRESHOLD.DESC"
+msgid "Stress below this % is Mild (lime)."
+msgstr "Stress abaixo deste % é Ligeiro (lima)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.NAME"
+msgid "Stressed Threshold"
+msgstr "Limiar de Stress"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.STRESSEDTHRESHOLD.DESC"
+msgid "Stress below this % is Stressed (yellow)."
+msgstr "Stress abaixo deste % é Stressado (amarelo)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.NAME"
+msgid "High Threshold"
+msgstr "Limiar Alto"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.HIGHTHRESHOLD.DESC"
+msgid "Stress below this % is High (orange)."
+msgstr "Stress abaixo deste % é Alto (laranja)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.NAME"
+msgid "Suffocating Alert"
+msgstr "Alerta de Asfixia"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSUFFOCATING.DESC"
+msgid "Show badge when dupe is suffocating."
+msgstr "Mostrar emblema quando o duplicante está a sufocar."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.NAME"
+msgid "Low HP Alert"
+msgstr "Alerta de Saúde Baixa"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWHP.DESC"
+msgid "Show badge when dupe health is low."
+msgstr "Mostrar emblema quando a saúde do duplicante está baixa."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.NAME"
+msgid "Scalding Alert"
+msgstr "Alerta de Escaldadura"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSCALDING.DESC"
+msgid "Show badge when dupe is overheating."
+msgstr "Mostrar emblema quando o duplicante está a sobreaquecer."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.NAME"
+msgid "Hypothermia Alert"
+msgstr "Alerta de Hipotermia"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTHYPOTHERMIA.DESC"
+msgid "Show badge when dupe is freezing."
+msgstr "Mostrar emblema quando o duplicante está a congelar."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.NAME"
+msgid "Disease Alert"
+msgstr "Alerta de Doença"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTDISEASED.DESC"
+msgid "Show badge when dupe is sick."
+msgstr "Mostrar emblema quando o duplicante está doente."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.NAME"
+msgid "Overstressed Alert"
+msgstr "Alerta de Stress Excessivo"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERSTRESSED.DESC"
+msgid "Show badge at critical stress."
+msgstr "Mostrar emblema quando o stress é crítico."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.NAME"
+msgid "Overjoyed Alert"
+msgstr "Alerta de Euforia"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTOVERJOYED.DESC"
+msgid "Show rainbow border and tooltip during joy reactions."
+msgstr "Mostrar borda arco-íris e descrição durante reações de euforia."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.NAME"
+msgid "Irradiated Alert"
+msgstr "Alerta de Irradiação"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIRRADIATED.DESC"
+msgid "Show badge when dupe has radiation sickness."
+msgstr "Mostrar emblema quando o duplicante tem doença por radiação."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.NAME"
+msgid "Starving Alert"
+msgstr "Alerta de Fome"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTARVING.DESC"
+msgid "Show badge when dupe is starving."
+msgstr "Mostrar emblema quando o duplicante está esfomeado."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.NAME"
+msgid "Bladder Alert"
+msgstr "Alerta de Bexiga"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTBLADDER.DESC"
+msgid "Show badge when dupe urgently needs a bathroom."
+msgstr "Mostrar emblema quando o duplicante precisa urgentemente de uma casa de banho."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.NAME"
+msgid "Stuck Alert"
+msgstr "Alerta de Preso"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTSTUCK.DESC"
+msgid "Show badge when dupe cannot reach the printing pod."
+msgstr "Mostrar emblema quando o duplicante não consegue chegar à cápsula de impressão."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.NAME"
+msgid "Idle Alert"
+msgstr "Alerta de Inatividade"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTIDLE.DESC"
+msgid "Show badge when dupe has no task for an extended period."
+msgstr "Mostrar emblema quando o duplicante não tem tarefas durante um período prolongado."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.NAME"
+msgid "Incapacitated Alert"
+msgstr "Alerta de Incapacitação"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
+msgid "Show badge when dupe is incapacitated (bleeding out)."
+msgstr "Mostrar emblema quando o duplicante está incapacitado (a sangrar)."
