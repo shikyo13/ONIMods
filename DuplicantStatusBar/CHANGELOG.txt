@@ -1,5 +1,13 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.8.8 - PLib 4.24 + ILRepack Integration[/h2]
+[list]
+[*] [b]Fixed TypeLoadException crash on ONI U58-720697+[/b] - PLib now properly embedded into mod DLL via ILRepack instead of shipping as separate assembly. Fixes crash when opening mod options with Enum-type settings (DisplayMode, SortOrder) on latest ONI builds
+[*] [b]Upgraded PLib from 4.22 to 4.24[/b] - latest PLib version with improved Unity 6 compatibility
+[*] [b]ILRepack integration with LibraryPath[/b] - PLib types internalized and merged at build time, prevents version conflicts with other mods using different PLib versions
+[*] Build system now uses ILRepack.Lib.MSBuild.Task 2.0.40 for reliable assembly merging
+[/list]
+
 [h2]v2.8.7 - Portuguese Translations[/h2]
 [list]
 [*] [b]Added Portuguese (Portugal) localization[/b] - pt.po
