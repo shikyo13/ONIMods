@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblyTitle>ReplaceStuff</AssemblyTitle>
     <RootNamespace>ReplaceStuff</RootNamespace>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PLib" Version="4.19.0" />
+    <PackageReference Include="PLib" Version="4.24.0" />
   </ItemGroup>
 
   <ItemGroup>
