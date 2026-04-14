@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="ILRepacking" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <WorkingDirectory>$(MSBuildThisFileDirectory)bin\$(Configuration)</WorkingDirectory>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <InputAssemblies Include="$(WorkingDirectory)\DuplicantStatusBar.dll" />
+      <InputAssemblies Include="$(WorkingDirectory)\PLib*.dll" />
+    </ItemGroup>
+
+    <ILRepack
+      Parallel="true"
+      Internalize="true"
+      InputAssemblies="@(InputAssemblies)"
+      TargetKind="Dll"
+      LibraryPath="$(GameManaged)"
+      OutputFile="$(WorkingDirectory)\DuplicantStatusBar.dll" />
+  </Target>
+</Project>
