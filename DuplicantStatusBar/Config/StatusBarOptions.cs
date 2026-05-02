@@ -38,12 +38,18 @@ namespace DuplicantStatusBar.Config
         [JsonProperty]
         public int PortraitSize { get; set; } = 36;
 
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXDUPESPERROW.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.LAYOUT")]
+        [Limit(0, 100)]
         [JsonProperty]
         public int MaxDupesPerRow { get; set; } = 0;
 
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXBARWIDTH.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.LAYOUT")]
+        [Limit(10, 100)]
         [JsonProperty]
         public int MaxBarWidth { get; set; } = 50;
 
+        [Option("STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.NAME", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.MAXROWS.DESC", "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.CATEGORIES.LAYOUT")]
+        [Limit(0, 20)]
         [JsonProperty]
         public int MaxBarRows { get; set; } = 3;
 

@@ -22,12 +22,33 @@ namespace DuplicantStatusBar.Patches
                 code = GameLocalization.GetCurrentLanguageCode();
             if (string.IsNullOrEmpty(code)) return;
 
-            string modDir = Path.GetDirectoryName(
-                Assembly.GetAssembly(typeof(Core.DuplicantStatusBarMod)).Location);
-            string poFile = Path.Combine(Path.Combine(modDir, "translations"),
-                code + ".po");
+            string modDir = Core.DuplicantStatusBarMod.ModPath;
+            if (string.IsNullOrEmpty(modDir))
+            {
+                modDir = Path.GetDirectoryName(
+                    Assembly.GetAssembly(typeof(Core.DuplicantStatusBarMod)).Location);
+            }
 
-            if (!File.Exists(poFile)) return;
+            string poFile = TranslationFileResolver.Resolve(modDir, code);
+            if (poFile == null)
+            {
+                if (!code.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+                {
+                    UnityEngine.Debug.LogWarning("[DSB] No translation file found for locale "
+                        + code + ". Checked: "
+                        + string.Join(", ", TranslationFileResolver.GetCandidatePaths(modDir, code)));
+                }
+                return;
+            }
+
+            string normalPoFile = Path.Combine(Path.Combine(modDir, "translations"), code + ".po");
+            string brokenPoFile = Path.Combine(modDir,
+                TranslationFileResolver.GetBrokenExtractorFileName(code));
+            if (!string.Equals(poFile, normalPoFile, StringComparison.Ordinal)
+                && string.Equals(poFile, brokenPoFile, StringComparison.Ordinal))
+            {
+                UnityEngine.Debug.Log("[DSB] Loading translation from fallback path: " + poFile);
+            }
 
             try
             {

@@ -12,6 +12,7 @@ namespace DuplicantStatusBar.Localization
                 public static LocString TOOLTIP_STRESS = "Stress:";
                 public static LocString TOOLTIP_HEALTH = "Health:";
                 public static LocString TOOLTIP_BREATH = "Breath:";
+                public static LocString TOOLTIP_OXYGEN_TANK = "Oxygen Tank:";
                 public static LocString TOOLTIP_BODYTEMP = "Body Temp:";
                 public static LocString TOOLTIP_CALORIES = "Calories:";
                 public static LocString TOOLTIP_BLADDER = "Bladder:";
@@ -60,6 +61,7 @@ namespace DuplicantStatusBar.Localization
                 {
                     public static LocString GENERAL = "General";
                     public static LocString APPEARANCE = "Appearance";
+                    public static LocString LAYOUT = "Layout";
                     public static LocString STRESSTIERS = "Stress Tiers";
                     public static LocString ALERTS = "Alerts";
                 }
