@@ -46,6 +46,8 @@ namespace DuplicantStatusBar.Data
         public float StressPercent;
         public float HealthPercent;
         public float BreathPercent;
+        public bool HasOxygenTank;
+        public float OxygenTankPercent;
         public float BodyTemperature;
         public StressTier Tier;
         public AlertType HighestAlert;
@@ -109,6 +111,7 @@ namespace DuplicantStatusBar.Data
         private static Klei.AI.Amount caloriesAmount;
         private static Klei.AI.Amount bionicBatteryAmount;
         private static Klei.AI.Amount bionicOilAmount;
+        private static Klei.AI.Amount bionicOxygenTankAmount;
 
         // Stuck/Idle detection state
         private static bool firstTick = true;
@@ -150,6 +153,7 @@ namespace DuplicantStatusBar.Data
             public Klei.AI.AmountInstance Calories;
             public Klei.AI.AmountInstance BionicBattery;
             public Klei.AI.AmountInstance BionicOil;
+            public Klei.AI.AmountInstance BionicOxygenTank;
 
             public bool IsBionic;
         }
@@ -194,6 +198,7 @@ namespace DuplicantStatusBar.Data
             {
                 cache.BionicBattery = bionicBatteryAmount?.Lookup(go);
                 cache.BionicOil = bionicOilAmount?.Lookup(go);
+                cache.BionicOxygenTank = bionicOxygenTankAmount?.Lookup(go);
             }
 
             dupeCache[id] = cache;
@@ -260,6 +265,7 @@ namespace DuplicantStatusBar.Data
                     StressPercent = 0f,
                     HealthPercent = 100f,
                     BreathPercent = 100f,
+                    OxygenTankPercent = 100f,
                     BodyTemperature = 310.15f,
                     ChoreDescription = "Idle"
                 };
@@ -350,10 +356,18 @@ namespace DuplicantStatusBar.Data
                         snap.IsLowGearOil = oilPct <= 0.2f;
                         snap.IsGrindingGears = cache.OilSMI.CurrentOilMass <= 0f;
                     }
+                    if (cache.BionicOxygenTank != null)
+                    {
+                        float max = cache.BionicOxygenTank.GetMax();
+                        snap.HasOxygenTank = true;
+                        snap.OxygenTankPercent = max > 0f
+                            ? cache.BionicOxygenTank.value / max * 100f
+                            : 0f;
+                    }
 
                     DSBLog.Log("Bionic", $"{snap.Name}: battery={snap.BatteryPercent:F0}%" +
                         $" banks={snap.ChargedElectrobankCount}/{snap.ElectrobankCapacity}" +
-                        $" oil={snap.GearOilPercent:F0}% gunk={snap.GunkPercent:F0}%" +
+                        $" oil={snap.GearOilPercent:F0}% gunk={snap.GunkPercent:F0}% oxygen={snap.OxygenTankPercent:F0}%" +
                         $" alerts=[bat={snap.IsLowBattery} oil={snap.IsLowGearOil} grind={snap.IsGrindingGears}]");
                 }
 
@@ -519,6 +533,7 @@ namespace DuplicantStatusBar.Data
             caloriesAmount = db.Amounts.Calories;
             bionicBatteryAmount = db.Amounts.Get("BionicInternalBattery");
             bionicOilAmount = db.Amounts.Get("BionicOil");
+            bionicOxygenTankAmount = db.Amounts.Get("BionicOxygenTank");
         }
 
         private static StressTier ComputeTier(float stress, StatusBarOptions opts)

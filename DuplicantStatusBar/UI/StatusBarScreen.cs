@@ -47,6 +47,8 @@ namespace DuplicantStatusBar.UI
         private LayoutElement gripLE;
         internal bool isDraggingResize;
         private ContentSizeFitter panelFitter;
+        private readonly Dictionary<int, Vector2> worldBoxSizes = new Dictionary<int, Vector2>();
+        private int lastActiveWorldId = int.MinValue;
 
         // Game font (ONI-native, with fallback)
         private static TMPro.TMP_FontAsset _gameFont;
@@ -104,6 +106,7 @@ namespace DuplicantStatusBar.UI
             {
                 updateTimer = UPDATE_INTERVAL;
                 ApplyGameUIScale();
+                HandleActiveWorldChanged(CurrentActiveWorldId());
                 DupeStatusTracker.Update();
                 RefreshWidgets();
 
@@ -151,6 +154,74 @@ namespace DuplicantStatusBar.UI
         {
             float s = canvasScaler != null ? canvasScaler.scaleFactor : 1f;
             return new Vector2(Screen.width / s, Screen.height / s);
+        }
+
+        private static int CurrentActiveWorldId()
+        {
+            return ClusterManager.Instance != null
+                ? ClusterManager.Instance.activeWorldId
+                : -1;
+        }
+
+        private void HandleActiveWorldChanged(int currentWorldId)
+        {
+            if (currentWorldId < 0)
+                return;
+
+            if (lastActiveWorldId == int.MinValue)
+            {
+                lastActiveWorldId = currentWorldId;
+                return;
+            }
+
+            if (currentWorldId == lastActiveWorldId)
+                return;
+
+            StoreCurrentWorldBoxSize();
+            int previousWorldId = lastActiveWorldId;
+            lastActiveWorldId = currentWorldId;
+
+            if (worldBoxSizes.TryGetValue(currentWorldId, out Vector2 savedBox))
+            {
+                barWidthPx = savedBox.x;
+                barHeightPx = savedBox.y;
+            }
+            else
+            {
+                barWidthPx = -1f;
+                barHeightPx = -1f;
+            }
+
+            lastDupeCount = -1;
+            forceRefresh = true;
+            ResetScrollForWorldChange();
+            DSBLog.Log("Screen", $"World changed {previousWorldId}->{currentWorldId}; box={barWidthPx:F0}x{barHeightPx:F0}");
+        }
+
+        private void StoreCurrentWorldBoxSize()
+        {
+            if (lastActiveWorldId >= 0)
+                worldBoxSizes[lastActiveWorldId] = new Vector2(barWidthPx, barHeightPx);
+        }
+
+        private void ResetScrollForWorldChange()
+        {
+            if (scrollRect != null)
+            {
+                scrollRect.StopMovement();
+                scrollRect.verticalNormalizedPosition = 1f;
+            }
+            if (contentRT != null)
+                contentRT.anchoredPosition = Vector2.zero;
+            MarkBarLayoutForRebuild();
+        }
+
+        private void MarkBarLayoutForRebuild()
+        {
+            if (contentRT != null)
+                LayoutRebuilder.MarkLayoutForRebuild(contentRT);
+            if (barPanel != null)
+                LayoutRebuilder.MarkLayoutForRebuild(barPanel);
         }
 
         private void ApplyGameUIScale()
@@ -443,9 +514,16 @@ namespace DuplicantStatusBar.UI
 
         private void UpdateGridLayout(int dupeCount)
         {
-            if (dupeCount <= 0) return;
+            if (dupeCount <= 0)
+            {
+                ApplyEmptyLayout();
+                return;
+            }
+
             var opts = StatusBarOptions.Instance;
             float canvasW = EffectiveCanvasSize().x;
+            if (scrollViewGO != null)
+                scrollViewGO.SetActive(!isCollapsed);
 
             int size;
             int cols;
@@ -461,6 +539,7 @@ namespace DuplicantStatusBar.UI
                 float headerH = headerRT != null ? headerRT.rect.height : 20f;
                 DeriveLayout(barWidthPx, barHeightPx - headerH, dupeCount,
                     out size, out cols, out needsScroll, out flowVertical);
+                cols = ApplyColumnLimit(cols, dupeCount, opts);
             }
             else if (wConstrained)
             {
@@ -468,7 +547,7 @@ namespace DuplicantStatusBar.UI
                 size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
                 int cellW = size + 10;
                 int fitCols = Mathf.Max(1, Mathf.FloorToInt((barWidthPx - 8 + 4) / (cellW + 4)));
-                cols = Mathf.Clamp(fitCols, 1, dupeCount);
+                cols = ApplyColumnLimit(Mathf.Clamp(fitCols, 1, dupeCount), dupeCount, opts);
                 needsScroll = false;
                 flowVertical = false;
             }
@@ -487,8 +566,9 @@ namespace DuplicantStatusBar.UI
                 cols = Mathf.CeilToInt((float)dupeCount / visibleRows);
                 // Cap columns by canvas width
                 int cellW = size + 10;
-                int maxFitCols = Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (cellW + 4)));
-                cols = Mathf.Clamp(cols, 1, Mathf.Min(maxFitCols, dupeCount));
+                float layoutW = GetMaxAutoWidth(canvasW, opts);
+                int maxFitCols = Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (cellW + 4)));
+                cols = ApplyColumnLimit(Mathf.Clamp(cols, 1, Mathf.Min(maxFitCols, dupeCount)), dupeCount, opts);
                 int actualRows = Mathf.CeilToInt((float)dupeCount / cols);
                 needsScroll = actualRows > visibleRows;
                 flowVertical = false;
@@ -498,8 +578,9 @@ namespace DuplicantStatusBar.UI
                 // AUTO MODE: use PortraitSize, fit canvas width, show all rows
                 size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
                 int totalW_auto = size + 10;
-                int fitCols = Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (totalW_auto + 4)));
-                cols = Mathf.Min(fitCols, dupeCount);
+                float layoutW = GetMaxAutoWidth(canvasW, opts);
+                int fitCols = Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (totalW_auto + 4)));
+                cols = ApplyColumnLimit(Mathf.Min(fitCols, dupeCount), dupeCount, opts);
                 needsScroll = false;
                 flowVertical = false;
             }
@@ -527,12 +608,21 @@ namespace DuplicantStatusBar.UI
             int spacing = (int)grid.spacing.y;
             int hSpacing = (int)grid.spacing.x;
 
-            // In height-only mode with scroll, show visible rows, not all rows
-            int displayRows = needsScroll && hConstrained && !wConstrained
-                ? Mathf.Max(1, Mathf.FloorToInt(
+            int displayRows = rows;
+            if (hConstrained)
+            {
+                int fitRows = Mathf.Max(1, Mathf.FloorToInt(
                     (barHeightPx - (headerRT != null ? headerRT.rect.height : 20f)
-                     - grid.padding.top - grid.padding.bottom + spacing) / (totalH + spacing)))
-                : rows;
+                     - grid.padding.top - grid.padding.bottom + spacing) / (totalH + spacing)));
+                if (rows > fitRows || needsScroll)
+                {
+                    displayRows = Mathf.Min(rows, fitRows);
+                    needsScroll = rows > displayRows;
+                }
+            }
+            displayRows = ApplyRowLimit(displayRows, rows, opts, ref needsScroll,
+                !hConstrained);
+
             float viewH = displayRows * (totalH + spacing) - spacing
                          + grid.padding.top + grid.padding.bottom;
             float viewW = cols * totalW + Mathf.Max(0, cols - 1) * hSpacing
@@ -583,6 +673,73 @@ namespace DuplicantStatusBar.UI
                     }
                 }
             }
+        }
+
+        private void ApplyEmptyLayout()
+        {
+            var opts = StatusBarOptions.Instance;
+            int size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
+            lastComputedSize = size;
+
+            if (grid != null)
+            {
+                grid.cellSize = new Vector2(size + 10, size + 22);
+                grid.constraintCount = 1;
+                grid.startAxis = GridLayoutGroup.Axis.Horizontal;
+            }
+            if (scrollViewLayout != null)
+            {
+                scrollViewLayout.preferredWidth = 0f;
+                scrollViewLayout.preferredHeight = 0f;
+            }
+            if (scrollRect != null)
+                scrollRect.vertical = false;
+            if (scrollbarGO != null)
+                scrollbarGO.SetActive(false);
+            if (scrollViewGO != null)
+                scrollViewGO.SetActive(false);
+            if (filterBtnGO != null)
+                filterBtnGO.SetActive(false);
+            ResetHeaderFilterPadding();
+            MarkBarLayoutForRebuild();
+        }
+
+        private void ResetHeaderFilterPadding()
+        {
+            if (headerHLG == null) return;
+            var pad = headerHLG.padding;
+            headerHLG.padding = new RectOffset(6, pad.right, pad.top, pad.bottom);
+        }
+
+        private static int ApplyColumnLimit(int cols, int dupeCount, StatusBarOptions opts)
+        {
+            int maxDupes = Mathf.Max(1, dupeCount);
+            int limited = Mathf.Clamp(cols, 1, maxDupes);
+            if (opts.MaxDupesPerRow > 0)
+                limited = Mathf.Min(limited, Mathf.Clamp(opts.MaxDupesPerRow, 1, 100));
+            return Mathf.Clamp(limited, 1, maxDupes);
+        }
+
+        private static int ApplyRowLimit(int displayRows, int totalRows,
+            StatusBarOptions opts, ref bool needsScroll, bool honorMaxRows)
+        {
+            int limitedRows = Mathf.Max(1, displayRows);
+            if (honorMaxRows && opts.MaxBarRows > 0)
+            {
+                int maxRows = Mathf.Clamp(opts.MaxBarRows, 1, 20);
+                if (limitedRows > maxRows)
+                    limitedRows = maxRows;
+                if (totalRows > maxRows)
+                    needsScroll = true;
+            }
+            return limitedRows;
+        }
+
+        private static float GetMaxAutoWidth(float canvasW, StatusBarOptions opts)
+        {
+            int percent = Mathf.Clamp(opts.MaxBarWidth, 10, 100);
+            float minWidth = MIN_CARD_SIZE + 10 + 8;
+            return Mathf.Max(minWidth, canvasW * percent / 100f);
         }
 
         private static void DeriveLayout(float W, float H, int N,
@@ -737,6 +894,12 @@ namespace DuplicantStatusBar.UI
                 return;
             }
 
+            if (lastDupeCount <= 0)
+            {
+                resizeGripRT.gameObject.SetActive(false);
+                return;
+            }
+
             resizeGripRT.gameObject.SetActive(true);
             Vector3[] corners = new Vector3[4];
             barPanel.GetWorldCorners(corners);
@@ -814,8 +977,9 @@ namespace DuplicantStatusBar.UI
         private void ToggleCollapse()
         {
             isCollapsed = !isCollapsed;
-            scrollViewGO.SetActive(!isCollapsed);
-            if (filterBtnGO != null) filterBtnGO.SetActive(!isCollapsed);
+            bool showContent = !isCollapsed && lastDupeCount > 0;
+            scrollViewGO.SetActive(showContent);
+            if (filterBtnGO != null) filterBtnGO.SetActive(showContent);
             collapseLabel.text = isCollapsed ? "+" : "\u2212";
             SaveState();
             API.Internal.AlertRegistry.FireBarVisibilityChanged(!isCollapsed);
@@ -957,6 +1121,7 @@ namespace DuplicantStatusBar.UI
                     screen.panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
                 }
                 screen.ClampPanelPosition();
+                screen.StoreCurrentWorldBoxSize();
                 PlayerPrefs.SetFloat(PW, screen.barWidthPx);
                 PlayerPrefs.SetFloat(PH, screen.barHeightPx);
                 PlayerPrefs.Save();
@@ -1045,8 +1210,9 @@ namespace DuplicantStatusBar.UI
         internal void ResetToDefaults()
         {
             isCollapsed = false;
-            scrollViewGO.SetActive(true);
-            if (filterBtnGO != null) filterBtnGO.SetActive(true);
+            bool hasDupes = lastDupeCount > 0 || DupeStatusTracker.Snapshots.Count > 0;
+            scrollViewGO.SetActive(hasDupes);
+            if (filterBtnGO != null) filterBtnGO.SetActive(hasDupes);
             if (collapseLabel != null) collapseLabel.text = "\u2212";
             if (barPanel != null && canvasRT != null)
             {
@@ -1061,7 +1227,14 @@ namespace DuplicantStatusBar.UI
         internal void ComputeContentPreferredSizes(float constraintW, float constraintH,
             out float contentW, out float contentH)
         {
-            int N = lastDupeCount > 0 ? lastDupeCount : 1;
+            int N = lastDupeCount;
+            if (N <= 0)
+            {
+                contentW = 0f;
+                contentH = 0f;
+                return;
+            }
+
             float headerH = headerRT != null ? headerRT.rect.height : 20f;
             var opts = StatusBarOptions.Instance;
             float canvasW = EffectiveCanvasSize().x;
@@ -1076,6 +1249,7 @@ namespace DuplicantStatusBar.UI
                 // Box mode
                 DeriveLayout(constraintW, constraintH - headerH, N,
                     out sz, out c, out scroll, out _);
+                c = ApplyColumnLimit(c, N, opts);
             }
             else if (wCon)
             {
@@ -1085,6 +1259,7 @@ namespace DuplicantStatusBar.UI
                 c = Mathf.Clamp(
                     Mathf.Max(1, Mathf.FloorToInt((constraintW - 8 + 4) / (cellW + 4))),
                     1, N);
+                c = ApplyColumnLimit(c, N, opts);
                 scroll = false;
             }
             else if (hCon)
@@ -1099,8 +1274,10 @@ namespace DuplicantStatusBar.UI
                     (constraintH - headerH - padTopTmp - 4 + 4) / (cellH + 4)));
                 c = Mathf.CeilToInt((float)N / visRows);
                 int cellW = sz + 10;
-                int maxFit = Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (cellW + 4)));
+                float layoutW = GetMaxAutoWidth(canvasW, opts);
+                int maxFit = Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (cellW + 4)));
                 c = Mathf.Clamp(c, 1, Mathf.Min(maxFit, N));
+                c = ApplyColumnLimit(c, N, opts);
                 int actualRows = Mathf.CeilToInt((float)N / c);
                 scroll = actualRows > visRows;
             }
@@ -1109,9 +1286,11 @@ namespace DuplicantStatusBar.UI
                 // Auto
                 sz = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
                 int cellW = sz + 10;
+                float layoutW = GetMaxAutoWidth(canvasW, opts);
                 c = Mathf.Min(
-                    Mathf.Max(1, Mathf.FloorToInt((canvasW - 8 + 4) / (cellW + 4))),
+                    Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (cellW + 4))),
                     N);
+                c = ApplyColumnLimit(c, N, opts);
                 scroll = false;
             }
 
@@ -1121,14 +1300,19 @@ namespace DuplicantStatusBar.UI
             float badge = Mathf.Max(9f, cardSz2 * 0.28f);
             int padTop = Mathf.Max(4, Mathf.CeilToInt(badge * 0.35f));
 
-            // For height-only with scroll, use visible rows for viewport height
             int displayR = r;
-            if (scroll && hCon && !wCon)
+            if (hCon)
             {
                 int cellH = sz + 22;
-                displayR = Mathf.Max(1, Mathf.FloorToInt(
+                int fitRows = Mathf.Max(1, Mathf.FloorToInt(
                     (constraintH - headerH - padTop - 4 + 4) / (cellH + 4)));
+                if (r > fitRows || scroll)
+                {
+                    displayR = Mathf.Min(r, fitRows);
+                    scroll = r > displayR;
+                }
             }
+            displayR = ApplyRowLimit(displayR, r, opts, ref scroll, !hCon);
 
             contentW = c * tW + Mathf.Max(0, c - 1) * 4 + 4 + 4;
             if (scroll) contentW += 12f;

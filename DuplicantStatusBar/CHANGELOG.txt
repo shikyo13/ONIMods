@@ -1,5 +1,19 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.9.0 - Layout Caps + Asteroid Transition + Bionic Oxygen[/h2]
+[list]
+[*] [b]Fixed Max Dupes Per Row and row/width caps[/b] - layout options are now exposed in PLib and honored by automatic layout without overriding manual drag resizing
+[*] [b]Fixed empty active-world sizing[/b] - switching to a world with no dupes now compacts the bar instead of keeping a large blank portrait area
+[*] [b]Fixed asteroid transition sizing[/b] - switching worlds now reloads the bar for the active asteroid, resets stale scroll position, and keeps manual resize state per world
+[*] [b]Added bionic oxygen tank tooltip[/b] - bionic dupes now show their oxygen tank percentage instead of normal breath when that game amount is available
+[/list]
+
+[h2]v2.8.9 - Linux Workshop Metadata Fix[/h2]
+[list]
+[*] [b]Fixed Linux translation fallback[/b] - translations now load from the normal translations folder and from the broken root-level backslash filename shape produced by some Workshop extraction flows
+[*] [b]Shortened mod list description[/b] - mod.yaml now uses a concise plain tooltip summary instead of the full Steam Workshop BBCode description
+[/list]
+
 [h2]v2.8.8 - PLib 4.24 + ILRepack Integration[/h2]
 [list]
 [*] [b]Fixed TypeLoadException crash on ONI U58-720697+[/b] - PLib now properly embedded into mod DLL via ILRepack instead of shipping as separate assembly. Fixes crash when opening mod options with Enum-type settings (DisplayMode, SortOrder) on latest ONI builds

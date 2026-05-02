@@ -125,8 +125,16 @@ namespace DuplicantStatusBar.UI
                    : ColorUtil.ToHtml(ColorUtil.Red);
             sb.AppendLine($"{DSB.UI.TOOLTIP_HEALTH} <color=#{hc}>{snap.HealthPercent:F0}%</color>");
 
-            var bc = snap.BreathPercent < 30f ? ColorUtil.ToHtml(ColorUtil.Blue) : ColorUtil.ToHtml(ColorUtil.Green);
-            sb.AppendLine($"{DSB.UI.TOOLTIP_BREATH} <color=#{bc}>{snap.BreathPercent:F0}%</color>");
+            if (snap.IsBionic && snap.HasOxygenTank)
+            {
+                var oc = snap.OxygenTankPercent < 30f ? ColorUtil.ToHtml(ColorUtil.Blue) : ColorUtil.ToHtml(ColorUtil.Green);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_OXYGEN_TANK} <color=#{oc}>{snap.OxygenTankPercent:F0}%</color>");
+            }
+            else
+            {
+                var bc = snap.BreathPercent < 30f ? ColorUtil.ToHtml(ColorUtil.Blue) : ColorUtil.ToHtml(ColorUtil.Green);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_BREATH} <color=#{bc}>{snap.BreathPercent:F0}%</color>");
+            }
 
             float tempC = snap.BodyTemperature - 273.15f;
             float dev = Mathf.Abs(tempC - 36.85f);
