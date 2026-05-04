@@ -401,3 +401,83 @@ msgstr "Varování vyřazení"
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
 msgid "Show badge when dupe is incapacitated (bleeding out)."
 msgstr "Zobrazit odznak, když je duplikant vyřazený (krvácí)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
+msgid "Oxygen Tank:"
+msgstr "Kyslíková nádrž:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS"
+msgid "Skill Points:"
+msgstr "Body dovedností:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS_AVAILABLE"
+msgid "available"
+msgstr "k dispozici"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STAMINA"
+msgid "Stamina:"
+msgstr "Výdrž:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BATTERY"
+msgid "Battery:"
+msgstr "Baterie:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GUNK"
+msgid "Gunk:"
+msgstr "Nečistoty:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GEAR_OIL"
+msgid "Gear Oil:"
+msgstr "Převodový olej:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWBATTERY"
+msgid "Low Battery"
+msgstr "Nízká baterie"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWGEAROIL"
+msgid "Low Gear Oil"
+msgstr "Málo převodového oleje"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.GRINDINGGEARS"
+msgid "Grinding Gears"
+msgstr "Drhnoucí převody"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.NAME"
+msgid "Skill Point Badges"
+msgstr "Odznaky bodů dovedností"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.DESC"
+msgid "Show a small portrait count badge when a dupe has unspent skill points."
+msgstr "Zobrazit na portrétu malý odznak s počtem, když má duplikant nevyužité body dovedností."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.NAME"
+msgid "Skill Points In Tooltip"
+msgstr "Body dovedností v tooltipu"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.DESC"
+msgid "Show unspent skill points in the dupe hover tooltip."
+msgstr "Zobrazit nevyužité body dovedností v tooltipu duplikanta."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.NAME"
+msgid "Low Battery Alert"
+msgstr "Upozornění na nízkou baterii"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.DESC"
+msgid "Show badge when bionic dupe has 1 or fewer charged electrobanks."
+msgstr "Zobrazit odznak, když má bionický duplikant 1 nebo méně nabitých elektrobank."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.NAME"
+msgid "Low Gear Oil Alert"
+msgstr "Upozornění na málo převodového oleje"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.DESC"
+msgid "Show badge when bionic dupe gear oil drops below 20%."
+msgstr "Zobrazit odznak, když převodový olej bionického duplikanta klesne pod 20 %."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.NAME"
+msgid "Grinding Gears Alert"
+msgstr "Upozornění na drhnoucí převody"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.DESC"
+msgid "Show badge when bionic dupe has no gear oil (actively debuffed)."
+msgstr "Zobrazit odznak, když bionický duplikant nemá převodový olej (aktivní postih)."

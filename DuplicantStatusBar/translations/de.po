@@ -401,3 +401,83 @@ msgstr "Kampfunfähig-Warnung"
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
 msgid "Show badge when dupe is incapacitated (bleeding out)."
 msgstr "Abzeichen anzeigen, wenn der Duplikant kampfunfähig ist (verblutet)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
+msgid "Oxygen Tank:"
+msgstr "Sauerstofftank:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS"
+msgid "Skill Points:"
+msgstr "Fähigkeitspunkte:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS_AVAILABLE"
+msgid "available"
+msgstr "verfügbar"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STAMINA"
+msgid "Stamina:"
+msgstr "Ausdauer:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BATTERY"
+msgid "Battery:"
+msgstr "Batterie:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GUNK"
+msgid "Gunk:"
+msgstr "Schmutz:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GEAR_OIL"
+msgid "Gear Oil:"
+msgstr "Getriebeöl:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWBATTERY"
+msgid "Low Battery"
+msgstr "Niedrige Batterie"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWGEAROIL"
+msgid "Low Gear Oil"
+msgstr "Wenig Getriebeöl"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.GRINDINGGEARS"
+msgid "Grinding Gears"
+msgstr "Schleifende Zahnräder"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.NAME"
+msgid "Skill Point Badges"
+msgstr "Fähigkeitspunkte-Abzeichen"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.DESC"
+msgid "Show a small portrait count badge when a dupe has unspent skill points."
+msgstr "Zeigt ein kleines Zählabzeichen auf dem Porträt, wenn ein Dupe ungenutzte Fähigkeitspunkte hat."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.NAME"
+msgid "Skill Points In Tooltip"
+msgstr "Fähigkeitspunkte im Tooltip"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.DESC"
+msgid "Show unspent skill points in the dupe hover tooltip."
+msgstr "Zeigt ungenutzte Fähigkeitspunkte im Dupe-Tooltip."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.NAME"
+msgid "Low Battery Alert"
+msgstr "Warnung bei niedriger Batterie"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.DESC"
+msgid "Show badge when bionic dupe has 1 or fewer charged electrobanks."
+msgstr "Zeigt ein Abzeichen, wenn ein bionischer Dupe 1 oder weniger geladene Elektrobänke hat."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.NAME"
+msgid "Low Gear Oil Alert"
+msgstr "Warnung bei wenig Getriebeöl"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.DESC"
+msgid "Show badge when bionic dupe gear oil drops below 20%."
+msgstr "Zeigt ein Abzeichen, wenn das Getriebeöl eines bionischen Dupes unter 20 % fällt."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.NAME"
+msgid "Grinding Gears Alert"
+msgstr "Warnung bei schleifenden Zahnrädern"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.DESC"
+msgid "Show badge when bionic dupe has no gear oil (actively debuffed)."
+msgstr "Zeigt ein Abzeichen, wenn ein bionischer Dupe kein Getriebeöl hat (aktiver Debuff)."

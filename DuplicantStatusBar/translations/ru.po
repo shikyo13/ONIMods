@@ -401,3 +401,83 @@ msgstr "Оповещение: Недееспособен"
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
 msgid "Show badge when dupe is incapacitated (bleeding out)."
 msgstr "Показывать значок, когда дупликант недееспособен (истекает кровью)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
+msgid "Oxygen Tank:"
+msgstr "Кислородный бак:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS"
+msgid "Skill Points:"
+msgstr "Очки навыков:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS_AVAILABLE"
+msgid "available"
+msgstr "доступно"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STAMINA"
+msgid "Stamina:"
+msgstr "Выносливость:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BATTERY"
+msgid "Battery:"
+msgstr "Батарея:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GUNK"
+msgid "Gunk:"
+msgstr "Грязь:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GEAR_OIL"
+msgid "Gear Oil:"
+msgstr "Смазка:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWBATTERY"
+msgid "Low Battery"
+msgstr "Низкий заряд батареи"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWGEAROIL"
+msgid "Low Gear Oil"
+msgstr "Мало смазки"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.GRINDINGGEARS"
+msgid "Grinding Gears"
+msgstr "Скрежет шестерен"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.NAME"
+msgid "Skill Point Badges"
+msgstr "Значки очков навыков"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.DESC"
+msgid "Show a small portrait count badge when a dupe has unspent skill points."
+msgstr "Показывать небольшой значок с числом на портрете, когда у дубликанта есть неиспользованные очки навыков."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.NAME"
+msgid "Skill Points In Tooltip"
+msgstr "Очки навыков в подсказке"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.DESC"
+msgid "Show unspent skill points in the dupe hover tooltip."
+msgstr "Показывать неиспользованные очки навыков во всплывающей подсказке дубликанта."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.NAME"
+msgid "Low Battery Alert"
+msgstr "Предупреждение о низком заряде батареи"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.DESC"
+msgid "Show badge when bionic dupe has 1 or fewer charged electrobanks."
+msgstr "Показывать значок, когда у бионического дубликанта 1 или меньше заряженных электробанков."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.NAME"
+msgid "Low Gear Oil Alert"
+msgstr "Предупреждение о малом количестве смазки"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.DESC"
+msgid "Show badge when bionic dupe gear oil drops below 20%."
+msgstr "Показывать значок, когда уровень смазки бионического дубликанта ниже 20 %."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.NAME"
+msgid "Grinding Gears Alert"
+msgstr "Предупреждение о скрежете шестерен"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.DESC"
+msgid "Show badge when bionic dupe has no gear oil (actively debuffed)."
+msgstr "Показывать значок, когда у бионического дубликанта нет смазки (активный штраф)."

@@ -401,3 +401,83 @@ msgstr "行動不能アラート"
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
 msgid "Show badge when dupe is incapacitated (bleeding out)."
 msgstr "デュプリカントが行動不能 (出血) の時にバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
+msgid "Oxygen Tank:"
+msgstr "酸素タンク:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS"
+msgid "Skill Points:"
+msgstr "スキルポイント:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS_AVAILABLE"
+msgid "available"
+msgstr "使用可能"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STAMINA"
+msgid "Stamina:"
+msgstr "スタミナ:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BATTERY"
+msgid "Battery:"
+msgstr "バッテリー:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GUNK"
+msgid "Gunk:"
+msgstr "汚れ:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GEAR_OIL"
+msgid "Gear Oil:"
+msgstr "ギアオイル:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWBATTERY"
+msgid "Low Battery"
+msgstr "バッテリー低下"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWGEAROIL"
+msgid "Low Gear Oil"
+msgstr "ギアオイル低下"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.GRINDINGGEARS"
+msgid "Grinding Gears"
+msgstr "ギア摩耗"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.NAME"
+msgid "Skill Point Badges"
+msgstr "スキルポイントバッジ"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.DESC"
+msgid "Show a small portrait count badge when a dupe has unspent skill points."
+msgstr "複製人間に未使用のスキルポイントがある場合、肖像に小さな数値バッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.NAME"
+msgid "Skill Points In Tooltip"
+msgstr "ツールチップにスキルポイントを表示"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.DESC"
+msgid "Show unspent skill points in the dupe hover tooltip."
+msgstr "複製人間のホバーツールチップに未使用のスキルポイントを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.NAME"
+msgid "Low Battery Alert"
+msgstr "バッテリー低下アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.DESC"
+msgid "Show badge when bionic dupe has 1 or fewer charged electrobanks."
+msgstr "バイオニック複製人間の充電済みエレクトロバンクが1個以下のときにバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.NAME"
+msgid "Low Gear Oil Alert"
+msgstr "ギアオイル低下アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.DESC"
+msgid "Show badge when bionic dupe gear oil drops below 20%."
+msgstr "バイオニック複製人間のギアオイルが20%未満になったときにバッジを表示します。"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.NAME"
+msgid "Grinding Gears Alert"
+msgstr "ギア摩耗アラート"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.DESC"
+msgid "Show badge when bionic dupe has no gear oil (actively debuffed)."
+msgstr "バイオニック複製人間にギアオイルがない場合 (デバフ中) にバッジを表示します。"
