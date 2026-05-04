@@ -6,6 +6,8 @@
 [*] [b]Added skill points to tooltips[/b] - hover text can show how many skill points are available, controlled separately from the portrait badge
 [*] [b]Added stamina tooltip[/b] - dupes now show stamina percentage on hover, useful for cold maps and cold-related debuffs
 [*] [b]Improved badge scaling[/b] - alert badges and skill count badges keep their corner placement while using slower capped scaling at large portrait sizes
+[*] [b]Improved locale matching[/b] - language aliases such as zh-CN, zh_CN, pt-BR, and pt_BR now resolve to the shipped translation files
+[*] [b]Updated translation coverage[/b] - bionic, skill point, stamina, and new option strings are now present in every bundled translation file
 [/list]
 
 [h2]v2.9.0 - Layout Caps + Asteroid Transition + Bionic Oxygen[/h2]

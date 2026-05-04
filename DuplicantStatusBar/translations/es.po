@@ -401,3 +401,83 @@ msgstr "Alerta de Incapacitación"
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
 msgid "Show badge when dupe is incapacitated (bleeding out)."
 msgstr "Mostrar insignia cuando el duplicante está incapacitado (desangrándose)."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
+msgid "Oxygen Tank:"
+msgstr "Tanque de oxígeno:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS"
+msgid "Skill Points:"
+msgstr "Puntos de habilidad:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_SKILLPOINTS_AVAILABLE"
+msgid "available"
+msgstr "disponibles"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STAMINA"
+msgid "Stamina:"
+msgstr "Aguante:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_BATTERY"
+msgid "Battery:"
+msgstr "Batería:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GUNK"
+msgid "Gunk:"
+msgstr "Mugre:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_GEAR_OIL"
+msgid "Gear Oil:"
+msgstr "Aceite de engranajes:"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWBATTERY"
+msgid "Low Battery"
+msgstr "Batería baja"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.LOWGEAROIL"
+msgid "Low Gear Oil"
+msgstr "Aceite de engranajes bajo"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.ALERTS.GRINDINGGEARS"
+msgid "Grinding Gears"
+msgstr "Engranajes rechinando"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.NAME"
+msgid "Skill Point Badges"
+msgstr "Insignias de puntos de habilidad"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTBADGES.DESC"
+msgid "Show a small portrait count badge when a dupe has unspent skill points."
+msgstr "Muestra una pequeña insignia con contador en el retrato cuando un duplicante tiene puntos de habilidad sin usar."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.NAME"
+msgid "Skill Points In Tooltip"
+msgstr "Puntos de habilidad en la descripción"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.SHOWSKILLPOINTSTOOLTIP.DESC"
+msgid "Show unspent skill points in the dupe hover tooltip."
+msgstr "Muestra puntos de habilidad sin usar en la descripción emergente del duplicante."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.NAME"
+msgid "Low Battery Alert"
+msgstr "Alerta de batería baja"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWBATTERY.DESC"
+msgid "Show badge when bionic dupe has 1 or fewer charged electrobanks."
+msgstr "Muestra una insignia cuando el duplicante biónico tiene 1 electrobanco cargado o menos."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.NAME"
+msgid "Low Gear Oil Alert"
+msgstr "Alerta de aceite de engranajes bajo"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTLOWGEAROIL.DESC"
+msgid "Show badge when bionic dupe gear oil drops below 20%."
+msgstr "Muestra una insignia cuando el aceite de engranajes del duplicante biónico cae por debajo del 20 %."
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.NAME"
+msgid "Grinding Gears Alert"
+msgstr "Alerta de engranajes rechinando"
+
+msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTGRINDINGGEARS.DESC"
+msgid "Show badge when bionic dupe has no gear oil (actively debuffed)."
+msgstr "Muestra una insignia cuando el duplicante biónico no tiene aceite de engranajes (penalización activa)."

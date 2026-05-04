@@ -1,4 +1,4 @@
-[h1]Duplicant Status Bar[/h1]
+[h1]Duplicant Status Bar - All DLC Status HUD[/h1]
 A persistent bar at the top of your screen showing every duplicant on the current asteroid with the ability to click to focus. Think RimWorld's colonist bar, but for ONI. Does not break steam achievements.
 
 [h2]Latest Update - v2.10.0[/h2]
@@ -7,6 +7,7 @@ A persistent bar at the top of your screen showing every duplicant on the curren
 [*] [b]Skill point tooltip option[/b] - hover text can show available skill points, controlled separately from the portrait badge.
 [*] [b]Stamina tooltip[/b] - dupes now show stamina percentage on hover, useful for cold maps and cold-related debuffs.
 [*] [b]Badge scaling polish[/b] - alert badges and skill count badges keep their corner placement while using slower capped scaling at large portrait sizes.
+[*] [b]DLC and language polish[/b] - locale aliases such as zh-CN and pt-BR resolve to shipped translations, and new bionic, skill point, and stamina text is translated.
 [/list]
 
 Vanilla gives you a global stress number in the corner and that's about it. No persistent per-dupe status, no way to spot a suffocating dupe or an imminent breakdown without clicking through menus or hunting someone down on the map. By the time you notice, they're already destroying your oxygen diffusers. This mod fixes that.
@@ -42,7 +43,7 @@ Portraits are expression-driven - dupes change facial expressions based on their
 All UI text is translated into Chinese, Czech, Korean, Russian, Japanese, German, Spanish, French, Portuguese, and Brazilian Portuguese. Translations load automatically based on your game language setting.
 
 [h2]Compatibility[/h2]
-Works with the base game and all DLCs (Spaced Out!, The Frosty Planet Pack). Compatible with both the public branch and the Unity 6 testing branch. Display only - does not modify any game logic or save data.
+Works with the base game and all current gameplay DLCs: Spaced Out!, The Frosty Planet Pack, The Bionic Booster Pack, and The Prehistoric Planet Pack. Cosmetic packs do not require special handling. Compatible with both the public branch and the Unity 6 testing branch. Display only - does not modify any game logic or save data.
 
 [b]Note:[/b] On the testing branch, the PLib mod options dialog may crash when opening dropdowns (PLib bug with Unity 6 TMP). The mod itself works fine - this only affects the settings screen.
 

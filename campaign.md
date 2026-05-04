@@ -24,6 +24,9 @@
 - User screenshot showing top-left skill point badges overlapping the bar edge and clipping at the portrait boundary.
 - User screenshot showing top-right alert badges scaling too large when cards are enlarged.
 - Release checklist items in `CLAUDE.md`, `DuplicantStatusBar/CHANGELOG.txt`, `DuplicantStatusBar/workshop-description.txt`, `DuplicantStatusBar/HANDOVER.md`, and `docs/tier1-quickref.md`.
+- Code review findings for locale aliases, missing v2.9/v2.10 translation keys, and stale Workshop DLC wording.
+- `DuplicantStatusBar/Patches/TranslationFileResolver.cs`, `DuplicantStatusBar/tests/translation-path-fallback.ps1`, all bundled `.po` files, and Workshop title/description files.
+- Steam DLC page for the current Oxygen Not Included gameplay DLC list.
 
 ## Tested
 - Baseline `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with existing warnings.
@@ -73,6 +76,10 @@
 - Final skill count scaling verification: `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, `layout-bionic-regression.ps1`, `translation-path-fallback.ps1`, `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release`, and `git diff --check` all passed.
 - Updated v2.10.0 release notes in `CHANGELOG.txt`, `workshop-description.txt`, `HANDOVER.md`, and `docs/tier1-quickref.md`.
 - Final v2.10.0 closeout verification on 2026-05-04: `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, `layout-bionic-regression.ps1`, and `translation-path-fallback.ps1` passed; `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with the existing duplicate ILRepack import warning; the built DLL file version is `2.10.0.0`; `git diff --check` and the added-line dash scan had no output.
+- Updated `translation-path-fallback.ps1` for locale aliases, missing translation keys, and Workshop title/description coverage; it failed first on missing `zh-CN` alias support.
+- After alias support, `translation-path-fallback.ps1` failed on missing bundled `.po` keys for the new bionic oxygen tank, skill point, stamina, and bionic alert strings.
+- After translation coverage, added a case-sensitive candidate check for lowercase `pt-br`; it failed until `pt_BR.po` was emitted before the generic `pt.po` fallback.
+- Final localization and Workshop copy verification: `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, `layout-bionic-regression.ps1`, and `translation-path-fallback.ps1` passed; `.po` duplicate `msgctxt` check passed; `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with existing warnings; built DLL file version is `2.10.0.0`; `git diff --check` and the added-line dash scan had no output.
 
 ## Built
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after adding the campaign log.
@@ -103,6 +110,7 @@
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after restoring original alert badge corner placement and slowing badge growth, with only existing warnings.
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after applying capped slower growth to the skill point count badge, with only existing warnings.
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed during final v2.10.0 closeout and deployed `DuplicantStatusBar.dll` to `C:\Users\Zero\Documents\Klei\OxygenNotIncluded\mods\dev\DuplicantStatusBar`.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after locale alias and translation coverage fixes, with the existing duplicate ILRepack import warning and existing Unity/TMP obsolete API warnings.
 
 ## Decisions
 - Treat the archive backslash paths as a packer or uploader problem, but still mitigate in DSB because Linux users can receive a broken extracted shape.
@@ -132,6 +140,9 @@
 - Use the same `9px + scaled growth from card size`, capped at 22 px, for the bottom-left skill point count badge.
 - Workshop-facing v2.10.0 copy should emphasize skill point badges, separate skill point tooltip option, stamina tooltip, and badge scaling polish.
 - Actual Steam Workshop publishing was not automated from Codex because `OniUploader64.exe` is installed as an interactive uploader and no non-interactive publish command was found locally.
+- Locale resolution should try exact, normalized dash, normalized underscore, and base-language candidates, preserving case variants so Linux filesystems can find `pt_BR.po`.
+- Keep version `2.10.0.0` for this localization and Workshop copy polish because v2.10.0 has been prepared but not published through the Workshop uploader in this session.
+- Workshop title should be updated to `Duplicant Status Bar - All DLC Status HUD` and description compatibility should name current gameplay DLCs explicitly: Spaced Out!, The Frosty Planet Pack, The Bionic Booster Pack, and The Prehistoric Planet Pack.
 
 ## Issues
 - No dedicated DSB test project exists. Use focused script checks plus full project build.

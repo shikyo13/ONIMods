@@ -9,6 +9,7 @@ obj/
 
 # Claude Code / Superpowers
 .claude/
+.wolf/
 .mcp.json
 CLAUDE.md
 .superpowers/
@@ -19,6 +20,10 @@ Screenshot *.png
 
 # Reference repos
 ONIMods - peterhaneve/
+PeterHan-ONIMods/
+NuGet/
+DuplicantStatusBar/NuGet/
+DuplicantStatusBar/PLib.dll
 
 # Wiki (separate git repo cloned in-tree)
 wiki/
@@ -29,3 +34,8 @@ OniProfiler/All
 # Git worktrees
 .worktrees/
 .reference/
+
+# Workshop media preparation scratch files
+DuplicantStatusBar/NewDemoVid.mp4
+DuplicantStatusBar/workshop-media/
+mod-page-images-campaign.md
