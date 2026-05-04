@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using DuplicantStatusBar.Config;
 using DuplicantStatusBar.Data;
 using DSB = DuplicantStatusBar.Localization.STRINGS.DUPLICANTSTATUSBAR;
 
@@ -114,6 +115,11 @@ namespace DuplicantStatusBar.UI
                 ? (string)DSB.UI.TOOLTIP_IDLE
                 : snap.ChoreDescription;
             sb.AppendLine($"{DSB.UI.TOOLTIP_TASK} {task}");
+            if (StatusBarOptions.Instance.ShowSkillPointsInTooltip && snap.AvailableSkillPoints > 0)
+            {
+                var spc = ColorUtil.ToHtml(ColorUtil.Gold);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_SKILLPOINTS} <color=#{spc}>{snap.AvailableSkillPoints} {DSB.UI.TOOLTIP_SKILLPOINTS_AVAILABLE}</color>");
+            }
             sb.AppendLine();
 
             var sc = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.TierColor(snap.Tier));
@@ -143,6 +149,15 @@ namespace DuplicantStatusBar.UI
                    : dev < 5.5f ? ColorUtil.ToHtml(ColorUtil.Orange)
                    : ColorUtil.ToHtml(ColorUtil.Red);
             sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} <color=#{tc}>{tempC:F1}\u00B0C</color>");
+
+            if (snap.HasStamina)
+            {
+                var stc = snap.StaminaPercent >= 60f ? ColorUtil.ToHtml(ColorUtil.Green)
+                        : snap.StaminaPercent >= 40f ? ColorUtil.ToHtml(ColorUtil.Gold)
+                        : snap.StaminaPercent >= 20f ? ColorUtil.ToHtml(ColorUtil.Orange)
+                        : ColorUtil.ToHtml(ColorUtil.Red);
+                sb.AppendLine($"{DSB.UI.TOOLTIP_STAMINA} <color=#{stc}>{snap.StaminaPercent:F0}%</color>");
+            }
 
             // Calories / Battery (conditional)
             if (snap.IsBionic)

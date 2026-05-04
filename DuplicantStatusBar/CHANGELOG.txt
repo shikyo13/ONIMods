@@ -1,5 +1,13 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.10.0 - Skill Points + Stamina[/h2]
+[list]
+[*] [b]Added skill point count badges[/b] - dupes with unspent skill points can show a small count badge on their portrait, with a separate option for the badge
+[*] [b]Added skill points to tooltips[/b] - hover text can show how many skill points are available, controlled separately from the portrait badge
+[*] [b]Added stamina tooltip[/b] - dupes now show stamina percentage on hover, useful for cold maps and cold-related debuffs
+[*] [b]Improved badge scaling[/b] - alert badges and skill count badges keep their corner placement while using slower capped scaling at large portrait sizes
+[/list]
+
 [h2]v2.9.0 - Layout Caps + Asteroid Transition + Bionic Oxygen[/h2]
 [list]
 [*] [b]Fixed Max Dupes Per Row and row/width caps[/b] - layout options are now exposed in PLib and honored by automatic layout without overriding manual drag resizing

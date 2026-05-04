@@ -13,7 +13,10 @@ namespace DuplicantStatusBar.Localization
                 public static LocString TOOLTIP_HEALTH = "Health:";
                 public static LocString TOOLTIP_BREATH = "Breath:";
                 public static LocString TOOLTIP_OXYGEN_TANK = "Oxygen Tank:";
+                public static LocString TOOLTIP_SKILLPOINTS = "Skill Points:";
+                public static LocString TOOLTIP_SKILLPOINTS_AVAILABLE = "available";
                 public static LocString TOOLTIP_BODYTEMP = "Body Temp:";
+                public static LocString TOOLTIP_STAMINA = "Stamina:";
                 public static LocString TOOLTIP_CALORIES = "Calories:";
                 public static LocString TOOLTIP_BLADDER = "Bladder:";
                 public static LocString TOOLTIP_BATTERY = "Battery:";
@@ -126,6 +129,18 @@ namespace DuplicantStatusBar.Localization
                 {
                     public static LocString NAME = "Face Expressions";
                     public static LocString DESC = "Show dynamic facial expressions based on dupe status.";
+                }
+
+                public static class SHOWSKILLPOINTBADGES
+                {
+                    public static LocString NAME = "Skill Point Badges";
+                    public static LocString DESC = "Show a small portrait count badge when a dupe has unspent skill points.";
+                }
+
+                public static class SHOWSKILLPOINTSTOOLTIP
+                {
+                    public static LocString NAME = "Skill Points In Tooltip";
+                    public static LocString DESC = "Show unspent skill points in the dupe hover tooltip.";
                 }
 
                 public static class CALMTHRESHOLD
