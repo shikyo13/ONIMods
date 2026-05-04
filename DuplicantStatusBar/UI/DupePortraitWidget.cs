@@ -17,8 +17,14 @@ namespace DuplicantStatusBar.UI
         private TextMeshProUGUI initialText;
         private Image damageOverlay;
         private const int MAX_BADGES = 3;
+        private const float ALERT_BADGE_MIN_SIZE = 9f;
+        private const float ALERT_BADGE_MAX_SIZE = 22f;
+        private const float ALERT_BADGE_GROWTH_RATE = 0.55f;
+        private const float ALERT_BADGE_CORNER_OFFSET_FACTOR = 0.15f;
         private Image[] badgeImages = new Image[MAX_BADGES];
         private TextMeshProUGUI[] badgeSymbols = new TextMeshProUGUI[MAX_BADGES];
+        private Image skillPointBadge;
+        private TextMeshProUGUI skillPointText;
         private TextMeshProUGUI nameLabel;
         private LayoutElement rootLayout;
         private LayoutElement cardLayout;
@@ -187,6 +193,26 @@ namespace DuplicantStatusBar.UI
                 badgeSymbols[i] = sym;
             }
 
+            skillPointBadge = AddImage(cardGO.transform, "SkillPointBadge");
+            skillPointBadge.sprite = Circle;
+            skillPointBadge.type = Image.Type.Simple;
+            skillPointBadge.color = ColorUtil.Hex(ColorUtil.Gold);
+            skillPointBadge.raycastTarget = false;
+            var sprt = skillPointBadge.rectTransform;
+            sprt.anchorMin = new Vector2(0f, 0f);
+            sprt.anchorMax = new Vector2(0f, 0f);
+            sprt.pivot = new Vector2(0.5f, 0.5f);
+            skillPointBadge.gameObject.SetActive(false);
+
+            skillPointText = AddText(skillPointBadge.transform, "Count");
+            skillPointText.fontSize = 7f;
+            skillPointText.color = ColorUtil.DarkBase;
+            skillPointText.alignment = TextAlignmentOptions.Center;
+            skillPointText.fontStyle = FontStyles.Bold;
+            skillPointText.raycastTarget = false;
+            if (StatusBarScreen.GameFont != null) skillPointText.font = StatusBarScreen.GameFont;
+            Stretch(skillPointText.rectTransform);
+
             // ── Name label (below card) ───────────────────
             nameLabel = AddText(transform, "Name");
             nameLabel.fontSize = 12;
@@ -309,6 +335,7 @@ namespace DuplicantStatusBar.UI
 
             // Multi-badge with per-alert hysteresis
             UpdateBadges(snapshot.AlertMask, snapshot.CustomAlerts);
+            UpdateSkillPointBadge(snapshot.AvailableSkillPoints, cardSz);
 
             // Resize
             rootLayout.preferredWidth = totalW;
@@ -320,7 +347,9 @@ namespace DuplicantStatusBar.UI
             // Scale & position badges
             int badgeCount = BitCount(heldMask);
             float badgeFrac = badgeCount <= 1 ? 0.28f : badgeCount == 2 ? 0.24f : 0.21f;
-            float badgeSize = Mathf.Max(9f, cardSz * badgeFrac);
+            float badgeSize = Mathf.Clamp(
+                ALERT_BADGE_MIN_SIZE + Mathf.Max(0f, cardSz - 20f) * badgeFrac * ALERT_BADGE_GROWTH_RATE,
+                ALERT_BADGE_MIN_SIZE, ALERT_BADGE_MAX_SIZE);
             float gap = 1f;
             int slot = 0;
             for (int i = 0; i < MAX_BADGES; i++)
@@ -328,11 +357,32 @@ namespace DuplicantStatusBar.UI
                 if (!badgeImages[i].gameObject.activeSelf) continue;
                 var brt = badgeImages[i].rectTransform;
                 brt.sizeDelta = new Vector2(badgeSize, badgeSize);
-                float xOff = -(badgeSize * 0.15f) - slot * (badgeSize + gap);
-                brt.anchoredPosition = new Vector2(xOff, -badgeSize * 0.15f);
+                float xOff = -(badgeSize * ALERT_BADGE_CORNER_OFFSET_FACTOR) - slot * (badgeSize + gap);
+                brt.anchoredPosition = new Vector2(xOff, -badgeSize * ALERT_BADGE_CORNER_OFFSET_FACTOR);
                 badgeSymbols[i].fontSize = Mathf.Max(7f, badgeSize * 0.6f);
                 slot++;
             }
+        }
+
+        private void UpdateSkillPointBadge(int points, int cardSz)
+        {
+            bool show = StatusBarOptions.Instance.ShowSkillPointBadges && points > 0;
+            skillPointBadge.gameObject.SetActive(show);
+            if (!show) return;
+
+            string text = points > 99 ? "99+" : points.ToString();
+            if (skillPointText.text != text)
+                skillPointText.text = text;
+
+            float badgeSize = Mathf.Clamp(
+                ALERT_BADGE_MIN_SIZE + Mathf.Max(0f, cardSz - 20f) * 0.22f * ALERT_BADGE_GROWTH_RATE,
+                ALERT_BADGE_MIN_SIZE, ALERT_BADGE_MAX_SIZE);
+            var rt = skillPointBadge.rectTransform;
+            rt.sizeDelta = new Vector2(badgeSize, badgeSize);
+            rt.anchoredPosition = new Vector2(badgeSize * 0.58f, badgeSize * 0.58f);
+
+            float scale = text.Length <= 1 ? 0.62f : text.Length == 2 ? 0.48f : 0.34f;
+            skillPointText.fontSize = Mathf.Max(6f, badgeSize * scale);
         }
 
         private void DestroyPortraitSprite()

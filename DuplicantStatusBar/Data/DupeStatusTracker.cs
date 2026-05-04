@@ -48,7 +48,10 @@ namespace DuplicantStatusBar.Data
         public float BreathPercent;
         public bool HasOxygenTank;
         public float OxygenTankPercent;
+        public bool HasStamina;
+        public float StaminaPercent;
         public float BodyTemperature;
+        public int AvailableSkillPoints;
         public StressTier Tier;
         public AlertType HighestAlert;
         public uint AlertMask;
@@ -109,6 +112,7 @@ namespace DuplicantStatusBar.Data
         private static Klei.AI.Amount breathAmount;
         private static Klei.AI.Amount bladderAmount;
         private static Klei.AI.Amount caloriesAmount;
+        private static Klei.AI.Amount staminaAmount;
         private static Klei.AI.Amount bionicBatteryAmount;
         private static Klei.AI.Amount bionicOilAmount;
         private static Klei.AI.Amount bionicOxygenTankAmount;
@@ -133,6 +137,7 @@ namespace DuplicantStatusBar.Data
             public KSelectable Selectable;
             public PrimaryElement PrimaryElement;
             public ChoreDriver ChoreDriver;
+            public MinionResume Resume;
             public Health Health;
             public Navigator Navigator;
             public Klei.AI.Sicknesses Sicknesses;
@@ -151,6 +156,7 @@ namespace DuplicantStatusBar.Data
             public Klei.AI.AmountInstance Breath;
             public Klei.AI.AmountInstance Bladder;
             public Klei.AI.AmountInstance Calories;
+            public Klei.AI.AmountInstance Stamina;
             public Klei.AI.AmountInstance BionicBattery;
             public Klei.AI.AmountInstance BionicOil;
             public Klei.AI.AmountInstance BionicOxygenTank;
@@ -170,6 +176,7 @@ namespace DuplicantStatusBar.Data
                 Selectable = go.GetComponent<KSelectable>(),
                 PrimaryElement = go.GetComponent<PrimaryElement>(),
                 ChoreDriver = go.GetComponent<ChoreDriver>(),
+                Resume = go.GetComponent<MinionResume>(),
                 Health = go.GetComponent<Health>(),
                 Navigator = go.GetComponent<Navigator>(),
                 Sicknesses = go.GetComponent<Klei.AI.Sicknesses>(),
@@ -194,6 +201,7 @@ namespace DuplicantStatusBar.Data
             cache.Breath = breathAmount?.Lookup(go);
             cache.Bladder = bladderAmount?.Lookup(go);
             cache.Calories = caloriesAmount?.Lookup(go);
+            cache.Stamina = staminaAmount?.Lookup(go);
             if (cache.IsBionic)
             {
                 cache.BionicBattery = bionicBatteryAmount?.Lookup(go);
@@ -266,6 +274,7 @@ namespace DuplicantStatusBar.Data
                     HealthPercent = 100f,
                     BreathPercent = 100f,
                     OxygenTankPercent = 100f,
+                    StaminaPercent = 100f,
                     BodyTemperature = 310.15f,
                     ChoreDescription = "Idle"
                 };
@@ -288,9 +297,19 @@ namespace DuplicantStatusBar.Data
                     snap.BreathPercent = max > 0f ? cache.Breath.value / max * 100f : 100f;
                 }
 
+                if (cache.Stamina != null)
+                {
+                    float max = cache.Stamina.GetMax();
+                    snap.HasStamina = true;
+                    snap.StaminaPercent = max > 0f ? cache.Stamina.value / max * 100f : 0f;
+                }
+
                 // Body temperature
                 if (cache.PrimaryElement != null)
                     snap.BodyTemperature = cache.PrimaryElement.Temperature;
+
+                if (cache.Resume != null)
+                    snap.AvailableSkillPoints = cache.Resume.AvailableSkillpoints;
 
                 // Current chore
                 if (cache.ChoreDriver != null)
@@ -531,6 +550,7 @@ namespace DuplicantStatusBar.Data
             breathAmount = db.Amounts.Breath;
             bladderAmount = db.Amounts.Bladder;
             caloriesAmount = db.Amounts.Calories;
+            staminaAmount = db.Amounts.Stamina;
             bionicBatteryAmount = db.Amounts.Get("BionicInternalBattery");
             bionicOilAmount = db.Amounts.Get("BionicOil");
             bionicOxygenTankAmount = db.Amounts.Get("BionicOxygenTank");

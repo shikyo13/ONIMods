@@ -6,6 +6,7 @@
 - Harden translation loading against Linux extraction of bad Workshop zip entry names.
 - Research whether the backslash-packed Workshop `.bin` issue is known in the ONI Mod Uploader ecosystem.
 - Investigate and fix Steam comment reports for empty active-world layout, `MaxDupesPerRow`, and bionic oxygen tank visibility.
+- Implement Steam comment requests for skill point visibility and stamina tooltip support.
 
 ## Read And Checked
 - Issue 21 text and attached Linux `Player.log`.
@@ -18,6 +19,11 @@
 - GitHub searches for public reports mentioning ONI uploader backslash zip paths, `mod_publish_data_file.zip`, and `translations\cs.po`.
 - Local Steam Workshop cache under `D:\SteamLibrary\steamapps\workshop\content\457140` for cross-mod raw archive comparison.
 - Steam published file details API for titles of mods whose raw archives contain `.po` paths.
+- Steam comments requesting dupe skill point visibility and stamina values on cold maps.
+- `DuplicantStatusBar/Data/DupeStatusTracker.cs`, `UI/DupePortraitWidget.cs`, `UI/DupeTooltip.cs`, `Config/StatusBarOptions.cs`, `Localization/DSBStrings.cs`, and `docs/data/amounts.md` for skill and stamina integration points.
+- User screenshot showing top-left skill point badges overlapping the bar edge and clipping at the portrait boundary.
+- User screenshot showing top-right alert badges scaling too large when cards are enlarged.
+- Release checklist items in `CLAUDE.md`, `DuplicantStatusBar/CHANGELOG.txt`, `DuplicantStatusBar/workshop-description.txt`, `DuplicantStatusBar/HANDOVER.md`, and `docs/tier1-quickref.md`.
 
 ## Tested
 - Baseline `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with existing warnings.
@@ -51,6 +57,22 @@
 - Implemented active-world change handling in `StatusBarScreen` so it saves manual size by world, resets unknown worlds to auto sizing, forces a dupe-count refresh, and resets scroll.
 - Hardened the empty-world path to explicitly mark the bar layout dirty after zeroing the portrait viewport.
 - Tightened `layout-bionic-regression.ps1` to check transition operation order, previous-world save before current-world restore, scroll momentum reset, viewport reset, empty viewport zeroing, and manual resize cache persistence.
+- Added `DuplicantStatusBar/tests/skill-stamina-regression.ps1`; it failed before implementation on the missing `AvailableSkillPoints` snapshot field.
+- `DuplicantStatusBar/tests/skill-stamina-regression.ps1` passed after implementing skill point and stamina wiring.
+- Final skill and stamina verification: `skill-stamina-regression.ps1`, `layout-bionic-regression.ps1`, `translation-path-fallback.ps1`, `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release`, and `git diff --check` all passed.
+- Updated `skill-stamina-regression.ps1` to require separate skill point badge and tooltip options, bottom-left badge anchoring, and a smaller badge scale; it failed before the option split.
+- `skill-stamina-regression.ps1` passed after moving the badge bottom-left, shrinking it, and splitting badge and tooltip options.
+- Final badge placement verification: `skill-stamina-regression.ps1`, `layout-bionic-regression.ps1`, `translation-path-fallback.ps1`, `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release`, and `git diff --check` all passed.
+- Added `DuplicantStatusBar/tests/badge-scaling-regression.ps1`; it failed before implementation because alert badges had no maximum size constants.
+- `badge-scaling-regression.ps1` passed after clamping alert badge size and moving top-right alert badges fully inside the card.
+- Final alert badge verification: `badge-scaling-regression.ps1`, `skill-stamina-regression.ps1`, `layout-bionic-regression.ps1`, `translation-path-fallback.ps1`, `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release`, and `git diff --check` all passed.
+- Follow-up screenshot showed the inset alert badge placement was wrong for small portraits; updated `badge-scaling-regression.ps1` to require the original corner offset plus slower capped growth.
+- `badge-scaling-regression.ps1` passed after restoring the original alert badge corner offset and changing only the growth curve and maximum size.
+- Updated `skill-stamina-regression.ps1` to require the skill point count badge to use the same slower capped growth model as alert badges; it failed before implementation on the uncapped direct size multiplier.
+- `skill-stamina-regression.ps1` passed after applying capped slower growth to the skill point count badge.
+- Final skill count scaling verification: `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, `layout-bionic-regression.ps1`, `translation-path-fallback.ps1`, `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release`, and `git diff --check` all passed.
+- Updated v2.10.0 release notes in `CHANGELOG.txt`, `workshop-description.txt`, `HANDOVER.md`, and `docs/tier1-quickref.md`.
+- Final v2.10.0 closeout verification on 2026-05-04: `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, `layout-bionic-regression.ps1`, and `translation-path-fallback.ps1` passed; `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with the existing duplicate ILRepack import warning; the built DLL file version is `2.10.0.0`; `git diff --check` and the added-line dash scan had no output.
 
 ## Built
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after adding the campaign log.
@@ -74,6 +96,13 @@
 - `DuplicantStatusBar/tests/layout-bionic-regression.ps1` passed after tightening asteroid transition invariants.
 - `DuplicantStatusBar/tests/translation-path-fallback.ps1` passed after tightening asteroid transition invariants.
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after empty-layout rebuild hardening, with only existing warnings.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after skill point and stamina implementation, with only the existing duplicate ILRepack import and Unity/TMP obsolete API warnings.
+- Final `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after campaign update, with the existing duplicate ILRepack import warning.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after the badge placement and option split, with only existing warnings.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after alert badge scaling fix, with only existing warnings.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after restoring original alert badge corner placement and slowing badge growth, with only existing warnings.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after applying capped slower growth to the skill point count badge, with only existing warnings.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed during final v2.10.0 closeout and deployed `DuplicantStatusBar.dll` to `C:\Users\Zero\Documents\Klei\OxygenNotIncluded\mods\dev\DuplicantStatusBar`.
 
 ## Decisions
 - Treat the archive backslash paths as a packer or uploader problem, but still mitigate in DSB because Linux users can receive a broken extracted shape.
@@ -91,10 +120,22 @@
 - Treat option caps as automatic-layout defaults. Manual drag sizing on an axis takes priority over the cap for that axis.
 - Treat asteroid switches as explicit layout reload events. The new active world should size from its actual active dupe count unless that world already has a saved manual resize.
 - Reset scroll on active-world changes so a smaller or empty world cannot inherit an off-screen viewport from a larger world.
+- Treat skill points as a dedicated portrait count badge rather than an alert, so Alerts Only filtering and existing alert badge priority remain unchanged.
+- Show the skill point badge for any dupe with one or more available points; no threshold option.
+- Add stamina as tooltip-only data because the request asked for visibility, not a new low-stamina alert.
+- Use minor version `2.10.0` because skill point visibility and stamina tooltip support are user-visible features.
+- Move the skill point count badge to the lower-left corner inside the card and reduce it to 22 percent of card size to avoid top-edge clipping and alert badge competition.
+- Split skill point display into `ShowSkillPointBadges` and `ShowSkillPointsInTooltip`, both defaulting to enabled.
+- Cap top-right alert badges at 22 px while keeping a 9 px minimum so small bar layouts stay readable and large card layouts do not produce oversized alert badges.
+- Rejected the 58 percent inset for top-right alert badges because it moved badges up and right relative to the original corner behavior, especially on small portraits.
+- Keep the original 15 percent corner offset for top-right alert badges, but compute size as `9px + scaled growth from card size`, capped at 22 px.
+- Use the same `9px + scaled growth from card size`, capped at 22 px, for the bottom-left skill point count badge.
+- Workshop-facing v2.10.0 copy should emphasize skill point badges, separate skill point tooltip option, stamina tooltip, and badge scaling polish.
+- Actual Steam Workshop publishing was not automated from Codex because `OniUploader64.exe` is installed as an interactive uploader and no non-interactive publish command was found locally.
 
 ## Issues
 - No dedicated DSB test project exists. Use focused script checks plus full project build.
 - Windows cannot create a literal filename containing `\`, so the regression script validates the fallback candidate shape and normal resolution rather than creating the Linux-only malformed filename.
 
 ## Remaining
-- Publish/update Workshop after merging if desired. The raw archive backslash behavior may remain if Klei's uploader continues to pack that way.
+- Publish the prepared dev mod folder through Oxygen Not Included Uploader after merging if desired. The raw archive backslash behavior may remain if Klei's uploader continues to pack that way.

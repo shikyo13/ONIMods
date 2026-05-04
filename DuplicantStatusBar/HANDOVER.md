@@ -1,25 +1,25 @@
 # DuplicantStatusBar — Handover
 
 ## Purpose & Status
-**Version**: v2.8.7
+**Version**: v2.10.0
 **Branch**: master
-**Build**: clean, 0 warnings
+**Build**: Release build passes with existing warnings
 
-RimWorld-style colonist bar showing dupe portraits with stress-colored borders and alert badges. Always visible at top-center of screen.
+RimWorld-style colonist bar showing dupe portraits with stress-colored borders, alert badges, optional skill point count badges, and hover stats. Always visible at top-center of screen.
 
 ## Architecture
 
 | File | Purpose |
 |-|-|
 | `Core/DuplicantStatusBarMod.cs` | UserMod2 entry, PLib init, crash-safe try-catch, version diagnostic |
-| `Config/StatusBarOptions.cs` | PLib options (sort, size, opacity, thresholds, alert toggles). Uses `[ConfigFile(SharedConfigLocation = true)]` to avoid writing to mod folder |
-| `Data/DupeStatusTracker.cs` | Polls `LiveMinionIdentities` every 0.25s, creates `DupeSnapshot` structs |
+| `Config/StatusBarOptions.cs` | PLib options (sort, size, opacity, skill point display, thresholds, alert toggles). Uses `[ConfigFile(SharedConfigLocation = true)]` to avoid writing to mod folder |
+| `Data/DupeStatusTracker.cs` | Polls `LiveMinionIdentities` every 0.25s, creates `DupeSnapshot` structs with vitals, stamina, skill points, and bionic stats |
 | `UI/StatusBarScreen.cs` | MonoBehaviour on Game object; builds uGUI Canvas + manages widgets |
-| `UI/DupePortraitWidget.cs` | Individual card: compositor portrait (>=20px) or initials fallback + colored border + alert badge |
+| `UI/DupePortraitWidget.cs` | Individual card: compositor portrait (>=20px) or initials fallback + colored border + alert badges + skill point count badge |
 | `UI/PortraitCompositor.cs` | Static utility: composites dupe accessories from KAnim atlas into Texture2D/Sprite |
 | `UI/AlertEffects.cs` | Alert effect definitions, procedural sprite cache, alpha evaluation |
 | `UI/ExpressionResolver.cs` | Maps alert/stress → expression → eye/mouth frame indices (runtime discovery from kanim) |
-| `UI/DupeTooltip.cs` | Hover tooltip: name, task, stress/health/breath/temp/calories/bladder, animated alert text |
+| `UI/DupeTooltip.cs` | Hover tooltip: name, task, skill points, stress/health/breath/stamina/temp/calories/bladder, animated alert text |
 | `UI/SortFilterPopup.cs` | In-game sort/filter dropdown — sort modes, smart filters, role/dupe visibility |
 | `UI/ColorUtil.cs` | Centralized color palette — stat gradients, alert badges, stress tiers, UI chrome |
 | `Core/ImageConversionHelper.cs` | Reflection wrappers for LoadImage/EncodeToPNG (Unity 6 compat) |
