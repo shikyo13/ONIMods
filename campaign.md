@@ -7,6 +7,7 @@
 - Research whether the backslash-packed Workshop `.bin` issue is known in the ONI Mod Uploader ecosystem.
 - Investigate and fix Steam comment reports for empty active-world layout, `MaxDupesPerRow`, and bionic oxygen tank visibility.
 - Implement Steam comment requests for skill point visibility and stamina tooltip support.
+- Investigate and fix the Steam comment report where filtering out every dupe hides the in-bar Sort/Filter recovery control.
 
 ## Read And Checked
 - Issue 21 text and attached Linux `Player.log`.
@@ -27,6 +28,12 @@
 - Code review findings for locale aliases, missing v2.9/v2.10 translation keys, and stale Workshop DLC wording.
 - `DuplicantStatusBar/Patches/TranslationFileResolver.cs`, `DuplicantStatusBar/tests/translation-path-fallback.ps1`, all bundled `.po` files, and Workshop title/description files.
 - Steam DLC page for the current Oxygen Not Included gameplay DLC list.
+- Steam comment report from SgtErayze that unticking every dupe removes portraits and also hides the in-bar options control.
+- `StatusBarOptions.ResetBarState()`, confirming the PLib reset button deletes saved filter keys and calls `SortFilterPopup.ResetFilters()`.
+- `SortFilterPopup.Reset()`, `ResetFilters()`, `RebuildFilterList()`, and `GetAllDupeNames()`, confirming runtime filters clear and the popup sources hidden-dupe names from active-world live identities.
+- Local Windows registry query under `HKCU\Software\Klei\Oxygen Not Included`, confirming DSB PlayerPrefs are stored there with Unity hash suffixes and not in `DuplicantStatusBar.json`.
+- `DupeStatusTracker.Update()`, confirming `Snapshots` is post-filter and cannot distinguish "no active dupes" from "all active dupes hidden by filters".
+- `StatusBarScreen.UpdateGridLayout()`, `ApplyEmptyLayout()`, `ToggleCollapse()`, and `ResetToDefaults()`, confirming the post-filter zero count hid `filterBtnGO`.
 
 ## Tested
 - Baseline `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with existing warnings.
@@ -80,6 +87,18 @@
 - After alias support, `translation-path-fallback.ps1` failed on missing bundled `.po` keys for the new bionic oxygen tank, skill point, stamina, and bionic alert strings.
 - After translation coverage, added a case-sensitive candidate check for lowercase `pt-br`; it failed until `pt_BR.po` was emitted before the generic `pt.po` fallback.
 - Final localization and Workshop copy verification: `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, `layout-bionic-regression.ps1`, and `translation-path-fallback.ps1` passed; `.po` duplicate `msgctxt` check passed; `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with existing warnings; built DLL file version is `2.10.0.0`; `git diff --check` and the added-line dash scan had no output.
+- Added `DuplicantStatusBar/tests/filter-empty-regression.ps1`; it failed before implementation on missing `DupeStatusTracker.ActiveWorldDupeCount`.
+- `filter-empty-regression.ps1` passed after exposing the unfiltered active-world dupe count and keeping Sort/Filter visible in filtered-empty layout.
+- `layout-bionic-regression.ps1` initially failed on its old `ApplyEmptyLayout()` signature guard; updated it to require `ApplyEmptyLayout(bool keepFilterAvailable)` while preserving the empty-world viewport compaction check.
+- Filter-empty verification on 2026-05-05: `filter-empty-regression.ps1`, `layout-bionic-regression.ps1`, `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, and `translation-path-fallback.ps1` passed; `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with the existing duplicate ILRepack import warning.
+- Follow-up `filter-empty-regression.ps1` checks failed before implementation on PLib reset ordering and popup Reset not committing cleared filters.
+- `filter-empty-regression.ps1` passed after moving `SortFilterPopup.ResetFilters()` before live screen reset and making popup Reset call Apply after restoring all visibility choices.
+- Follow-up filter reset verification on 2026-05-05: `filter-empty-regression.ps1`, `layout-bionic-regression.ps1`, `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, and `translation-path-fallback.ps1` passed; `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with existing warnings.
+- Updated v2.10.1 changelog and Workshop latest-update copy for the filter recovery and reset behavior fixes.
+- Bumped `DuplicantStatusBar.csproj` `AssemblyVersion` and `FileVersion` to `2.10.1.0`; updated the skill/stamina regression version guard accordingly.
+- v2.10.1 upload readiness verification on 2026-05-05: `filter-empty-regression.ps1`, `layout-bionic-regression.ps1`, `skill-stamina-regression.ps1`, `badge-scaling-regression.ps1`, and `translation-path-fallback.ps1` passed; `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed with the existing duplicate ILRepack import warning.
+- Confirmed `DuplicantStatusBar/bin/Release/DuplicantStatusBar.dll` and `C:\Users\Zero\Documents\Klei\OxygenNotIncluded\mods\dev\DuplicantStatusBar\DuplicantStatusBar.dll` both report file version `2.10.1.0`.
+- Confirmed the dev upload folder contains `DuplicantStatusBar.dll`, `mod.yaml`, `mod_info.yaml`, `preview.jpg`, and the `translations` folder.
 
 ## Built
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after adding the campaign log.
@@ -111,6 +130,9 @@
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after applying capped slower growth to the skill point count badge, with only existing warnings.
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed during final v2.10.0 closeout and deployed `DuplicantStatusBar.dll` to `C:\Users\Zero\Documents\Klei\OxygenNotIncluded\mods\dev\DuplicantStatusBar`.
 - `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after locale alias and translation coverage fixes, with the existing duplicate ILRepack import warning and existing Unity/TMP obsolete API warnings.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after the filter-empty recovery fix, with the existing duplicate ILRepack import warning.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after reset hardening, with the existing duplicate ILRepack import warning and existing Unity/TMP obsolete API warnings.
+- `dotnet build DuplicantStatusBar/DuplicantStatusBar.csproj -c Release` passed after the v2.10.1 version bump and changelog update, with the existing duplicate ILRepack import warning.
 
 ## Decisions
 - Treat the archive backslash paths as a packer or uploader problem, but still mitigate in DSB because Linux users can receive a broken extracted shape.
@@ -143,6 +165,13 @@
 - Locale resolution should try exact, normalized dash, normalized underscore, and base-language candidates, preserving case variants so Linux filesystems can find `pt_BR.po`.
 - Keep version `2.10.0.0` for this localization and Workshop copy polish because v2.10.0 has been prepared but not published through the Workshop uploader in this session.
 - Workshop title should be updated to `Duplicant Status Bar - All DLC Status HUD` and description compatibility should name current gameplay DLCs explicitly: Spaced Out!, The Frosty Planet Pack, The Bionic Booster Pack, and The Prehistoric Planet Pack.
+- Treat the PLib `Reset Bar Position & Filters` button as the external recovery workaround for users already in this state.
+- Fix the root cause in the bar by tracking active-world dupes before portrait filters, rather than using post-filter `Snapshots.Count` for recovery control visibility.
+- Keep the portrait viewport zero-sized when all active-world dupes are filtered out, but reserve header space for the full Sort/Filter control so users can undo the filter from inside the bar.
+- Keep truly empty active worlds compact with the filter control hidden.
+- Treat the in-popup Reset button as a committed reset, not just a pending checkbox reset, because the existing label reasonably implies it should undo the filter immediately.
+- Explain user recovery in terms of Unity PlayerPrefs: job filtering is `DSB_HiddenRoles`, per-dupe filtering is `DSB_HiddenDupes`, and deleting the PLib JSON cannot clear either one.
+- Ship this as `v2.10.1` because it is a patch bugfix on top of the user-visible `v2.10.0` feature release.
 
 ## Issues
 - No dedicated DSB test project exists. Use focused script checks plus full project build.

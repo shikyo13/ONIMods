@@ -190,13 +190,13 @@ namespace DuplicantStatusBar.Config
             UnityEngine.PlayerPrefs.DeleteKey("DSB_HiddenRoles");
             UnityEngine.PlayerPrefs.Save();
 
+            // Reset filter state before refreshing the live screen layout
+            UI.SortFilterPopup.ResetFilters();
+
             // Reset the live screen if in-game
             var screen = UI.StatusBarScreen.Instance;
             if (screen != null)
                 screen.ResetToDefaults();
-
-            // Reset filter state
-            UI.SortFilterPopup.ResetFilters();
 
             Core.DSBLog.Log("Reset", "Bar position, collapse, and filters reset to defaults");
         }

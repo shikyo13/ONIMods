@@ -1,13 +1,11 @@
 [h1]Duplicant Status Bar - All DLC Status HUD[/h1]
 A persistent bar at the top of your screen showing every duplicant on the current asteroid with the ability to click to focus. Think RimWorld's colonist bar, but for ONI. Does not break steam achievements.
 
-[h2]Latest Update - v2.10.0[/h2]
+[h2]Latest Update - v2.10.1[/h2]
 [list]
-[*] [b]Skill point count badges[/b] - dupes with unspent skill points can show a small count badge on their portrait.
-[*] [b]Skill point tooltip option[/b] - hover text can show available skill points, controlled separately from the portrait badge.
-[*] [b]Stamina tooltip[/b] - dupes now show stamina percentage on hover, useful for cold maps and cold-related debuffs.
-[*] [b]Badge scaling polish[/b] - alert badges and skill count badges keep their corner placement while using slower capped scaling at large portrait sizes.
-[*] [b]DLC and language polish[/b] - locale aliases such as zh-CN and pt-BR resolve to shipped translations, and new bionic, skill point, and stamina text is translated.
+[*] [b]Filter recovery fix[/b] - Sort/Filter remains visible when filters hide every duplicant, so filters can be undone from the bar.
+[*] [b]Reset behavior fix[/b] - the Sort/Filter Reset button now applies the reset immediately, and the main menu reset clears live filter state before refreshing the bar.
+[*] [b]v2.10 feature recap[/b] - skill point badges, skill point tooltip options, stamina tooltip support, badge scaling polish, and DLC/language text coverage are included.
 [/list]
 
 Vanilla gives you a global stress number in the corner and that's about it. No persistent per-dupe status, no way to spot a suffocating dupe or an imminent breakdown without clicking through menus or hunting someone down on the map. By the time you notice, they're already destroying your oxygen diffusers. This mod fixes that.

@@ -585,6 +585,7 @@ namespace DuplicantStatusBar.UI
                 UpdateRoleItemVisual(i);
             }
             ShowAllDupes();
+            Apply();
         }
 
         private static void Close()
