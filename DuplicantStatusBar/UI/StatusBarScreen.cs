@@ -516,7 +516,7 @@ namespace DuplicantStatusBar.UI
         {
             if (dupeCount <= 0)
             {
-                ApplyEmptyLayout();
+                ApplyEmptyLayout(DupeStatusTracker.ActiveWorldDupeCount > 0);
                 return;
             }
 
@@ -640,42 +640,26 @@ namespace DuplicantStatusBar.UI
             float fullTextMinW = filterFullWidth + gripW + 34f; // button + title + collapse(16) + spacing/margins(18)
             if (filterBtnGO != null && !isCollapsed)
             {
-                var fRT = filterBtnGO.GetComponent<RectTransform>();
                 if (viewW >= fullTextMinW)
                 {
-                    filterBtnGO.SetActive(true);
-                    if (filterTMP != null) filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
-                    fRT.sizeDelta = new Vector2(filterFullWidth, 0f);
-                    if (headerHLG != null)
-                    {
-                        var pad = headerHLG.padding;
-                        headerHLG.padding = new RectOffset((int)(filterFullWidth + 6f), pad.right, pad.top, pad.bottom);
-                    }
+                    ShowFullFilterButton();
                 }
                 else if (viewW >= 100f)
                 {
-                    filterBtnGO.SetActive(true);
-                    if (filterTMP != null) filterTMP.text = "\u25BC";
-                    fRT.sizeDelta = new Vector2(20f, 0f);
-                    if (headerHLG != null)
-                    {
-                        var pad = headerHLG.padding;
-                        headerHLG.padding = new RectOffset(26, pad.right, pad.top, pad.bottom);
-                    }
+                    ShowCompactFilterButton();
                 }
                 else
                 {
-                    filterBtnGO.SetActive(false);
-                    if (headerHLG != null)
-                    {
-                        var pad = headerHLG.padding;
-                        headerHLG.padding = new RectOffset(6, pad.right, pad.top, pad.bottom);
-                    }
+                    HideFilterButton();
                 }
+            }
+            else if (filterBtnGO != null)
+            {
+                HideFilterButton();
             }
         }
 
-        private void ApplyEmptyLayout()
+        private void ApplyEmptyLayout(bool keepFilterAvailable)
         {
             var opts = StatusBarOptions.Instance;
             int size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
@@ -698,10 +682,50 @@ namespace DuplicantStatusBar.UI
                 scrollbarGO.SetActive(false);
             if (scrollViewGO != null)
                 scrollViewGO.SetActive(false);
+            if (keepFilterAvailable && !isCollapsed)
+                ShowFullFilterButton();
+            else
+                HideFilterButton();
+            MarkBarLayoutForRebuild();
+        }
+
+        private void ShowFullFilterButton()
+        {
+            if (filterBtnGO == null) return;
+            var fRT = filterBtnGO.GetComponent<RectTransform>();
+            filterBtnGO.SetActive(true);
+            if (filterTMP != null)
+                filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
+            if (fRT != null)
+                fRT.sizeDelta = new Vector2(filterFullWidth, 0f);
+            if (headerHLG != null)
+            {
+                var pad = headerHLG.padding;
+                headerHLG.padding = new RectOffset((int)(filterFullWidth + 6f), pad.right, pad.top, pad.bottom);
+            }
+        }
+
+        private void ShowCompactFilterButton()
+        {
+            if (filterBtnGO == null) return;
+            var fRT = filterBtnGO.GetComponent<RectTransform>();
+            filterBtnGO.SetActive(true);
+            if (filterTMP != null)
+                filterTMP.text = "\u25BC";
+            if (fRT != null)
+                fRT.sizeDelta = new Vector2(20f, 0f);
+            if (headerHLG != null)
+            {
+                var pad = headerHLG.padding;
+                headerHLG.padding = new RectOffset(26, pad.right, pad.top, pad.bottom);
+            }
+        }
+
+        private void HideFilterButton()
+        {
             if (filterBtnGO != null)
                 filterBtnGO.SetActive(false);
             ResetHeaderFilterPadding();
-            MarkBarLayoutForRebuild();
         }
 
         private void ResetHeaderFilterPadding()
@@ -977,9 +1001,13 @@ namespace DuplicantStatusBar.UI
         private void ToggleCollapse()
         {
             isCollapsed = !isCollapsed;
+            bool hasActiveDupes = DupeStatusTracker.ActiveWorldDupeCount > 0;
             bool showContent = !isCollapsed && lastDupeCount > 0;
             scrollViewGO.SetActive(showContent);
-            if (filterBtnGO != null) filterBtnGO.SetActive(showContent);
+            if (isCollapsed || !hasActiveDupes)
+                HideFilterButton();
+            else
+                UpdateGridLayout(lastDupeCount);
             collapseLabel.text = isCollapsed ? "+" : "\u2212";
             SaveState();
             API.Internal.AlertRegistry.FireBarVisibilityChanged(!isCollapsed);
@@ -1210,9 +1238,15 @@ namespace DuplicantStatusBar.UI
         internal void ResetToDefaults()
         {
             isCollapsed = false;
-            bool hasDupes = lastDupeCount > 0 || DupeStatusTracker.Snapshots.Count > 0;
-            scrollViewGO.SetActive(hasDupes);
-            if (filterBtnGO != null) filterBtnGO.SetActive(hasDupes);
+            bool hasActiveDupes = DupeStatusTracker.ActiveWorldDupeCount > 0;
+            int visibleDupeCount = DupeStatusTracker.Snapshots.Count > 0
+                ? DupeStatusTracker.Snapshots.Count
+                : Mathf.Max(0, lastDupeCount);
+            scrollViewGO.SetActive(visibleDupeCount > 0);
+            if (hasActiveDupes)
+                UpdateGridLayout(visibleDupeCount);
+            else
+                HideFilterButton();
             if (collapseLabel != null) collapseLabel.text = "\u2212";
             if (barPanel != null && canvasRT != null)
             {

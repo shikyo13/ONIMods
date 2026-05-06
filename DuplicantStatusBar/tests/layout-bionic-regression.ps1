@@ -52,7 +52,7 @@ Require-Regex $options '(?s)\[Option\("STRINGS\.DUPLICANTSTATUSBAR\.OPTIONS\.MAX
 $screen = Read-ProjectFile 'UI\StatusBarScreen.cs'
 Require-NotContains $screen 'if (dupeCount <= 0) return;' `
     'Zero-dupe active worlds must compact the bar instead of keeping the previous layout.'
-Require-Contains $screen 'ApplyEmptyLayout();' `
+Require-Contains $screen 'ApplyEmptyLayout(DupeStatusTracker.ActiveWorldDupeCount > 0);' `
     'StatusBarScreen must apply an explicit empty-world layout.'
 Require-Contains $screen 'ApplyColumnLimit' `
     'StatusBarScreen must honor MaxDupesPerRow when computing columns.'
@@ -87,7 +87,7 @@ Require-Contains $screen 'scrollRect.StopMovement();' `
     'Asteroid switches must stop inherited scrolling momentum.'
 Require-Contains $screen 'contentRT.anchoredPosition = Vector2.zero;' `
     'Asteroid switches must return the content viewport to the top.'
-Require-Regex $screen '(?s)private void ApplyEmptyLayout\(\).*?scrollViewLayout\.preferredWidth = 0f;.*?scrollViewLayout\.preferredHeight = 0f;.*?MarkBarLayoutForRebuild\(\);' `
+Require-Regex $screen '(?s)private void ApplyEmptyLayout\(bool keepFilterAvailable\).*?scrollViewLayout\.preferredWidth = 0f;.*?scrollViewLayout\.preferredHeight = 0f;.*?MarkBarLayoutForRebuild\(\);' `
     'Empty active worlds must zero the portrait viewport and force a layout rebuild.'
 Require-Regex $screen '(?s)public void OnPointerUp\(PointerEventData e\).*?screen\.StoreCurrentWorldBoxSize\(\);.*?PlayerPrefs\.SetFloat\(PW, screen\.barWidthPx\);' `
     'Manual resize completion must update the current world size cache before persisting the box size.'

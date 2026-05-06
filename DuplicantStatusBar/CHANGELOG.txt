@@ -1,5 +1,12 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.10.1 - Filter Recovery Fix[/h2]
+[list]
+[*] [b]Fixed all-hidden filter recovery[/b] - Sort/Filter remains visible when filters hide every duplicant, so filters can be undone from the bar
+[*] [b]Fixed popup Reset behavior[/b] - the Sort/Filter Reset button now applies the reset immediately instead of only changing pending choices
+[*] [b]Hardened mod options reset[/b] - Reset Bar Position & Filters clears runtime filter state before refreshing the live bar layout
+[/list]
+
 [h2]v2.10.0 - Skill Points + Stamina[/h2]
 [list]
 [*] [b]Added skill point count badges[/b] - dupes with unspent skill points can show a small count badge on their portrait, with a separate option for the badge

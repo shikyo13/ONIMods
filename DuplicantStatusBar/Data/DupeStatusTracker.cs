@@ -216,12 +216,16 @@ namespace DuplicantStatusBar.Data
         /// <summary>Current frame's dupe snapshots, sorted per user's SortOrder setting.</summary>
         public static IReadOnlyList<DupeSnapshot> Snapshots => snapshots;
 
+        /// <summary>Number of valid live dupes on the active world before portrait filters are applied.</summary>
+        public static int ActiveWorldDupeCount { get; private set; }
+
         /// <summary>
         /// Polls all dupes, computes stress tiers and alert masks, advances stuck/idle timers, and sorts results.
         /// </summary>
         public static void Update()
         {
             snapshots.Clear();
+            ActiveWorldDupeCount = 0;
 
             if (ClusterManager.Instance == null) return;
             if (Components.LiveMinionIdentities.Count == 0) return;
@@ -260,6 +264,7 @@ namespace DuplicantStatusBar.Data
             foreach (var identity in dupes)
             {
                 if (identity == null || identity.gameObject == null) continue;
+                ActiveWorldDupeCount++;
 
                 var go = identity.gameObject;
                 int id = go.GetInstanceID();
@@ -480,8 +485,7 @@ namespace DuplicantStatusBar.Data
                 var allNames = new System.Text.StringBuilder();
                 foreach (var s in snapshots)
                     allNames.Append(allNames.Length > 0 ? ", " : "").Append(s.Name);
-                int totalDupes = dupes != null ? dupes.Count : 0;
-                DSBLog.Log("Filter", $"Pre-filter={totalDupes} post-filter={snapshots.Count}" +
+                DSBLog.Log("Filter", $"Pre-filter={ActiveWorldDupeCount} post-filter={snapshots.Count}" +
                     $" showing=[{allNames}]");
                 if (SortFilterPopup.HiddenDupes.Count > 0)
                     DSBLog.Log("Filter", $"HiddenDupes stored names: [{string.Join(", ", SortFilterPopup.HiddenDupes)}]");
