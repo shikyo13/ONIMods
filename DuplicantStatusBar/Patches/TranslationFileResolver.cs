@@ -46,33 +46,33 @@ namespace DuplicantStatusBar.Patches
             var seen = new HashSet<string>(StringComparer.Ordinal);
             var candidateCodes = new List<string>();
 
-            void Add(string candidate)
-            {
-                if (!string.IsNullOrEmpty(candidate) && seen.Add(candidate))
-                    candidateCodes.Add(candidate);
-            }
-
-            Add(code);
+            AddCandidateCode(candidateCodes, seen, code);
 
             string dashCode = code.Replace('_', '-');
-            Add(dashCode);
-            Add(NormalizeCultureCode(dashCode, '-'));
+            AddCandidateCode(candidateCodes, seen, dashCode);
+            AddCandidateCode(candidateCodes, seen, NormalizeCultureCode(dashCode, '-'));
 
             string underscoreCode = code.Replace('-', '_');
-            Add(underscoreCode);
-            Add(NormalizeCultureCode(dashCode, '_'));
+            AddCandidateCode(candidateCodes, seen, underscoreCode);
+            AddCandidateCode(candidateCodes, seen, NormalizeCultureCode(dashCode, '_'));
 
             int dash = dashCode.IndexOf('-');
             if (dashCode.StartsWith("zh", StringComparison.OrdinalIgnoreCase))
-                Add("zh");
+                AddCandidateCode(candidateCodes, seen, "zh");
 
             if (dashCode.Equals("pt-BR", StringComparison.OrdinalIgnoreCase))
-                Add("pt_BR");
+                AddCandidateCode(candidateCodes, seen, "pt_BR");
 
             if (dash > 0)
-                Add(dashCode.Substring(0, dash).ToLowerInvariant());
+                AddCandidateCode(candidateCodes, seen, dashCode.Substring(0, dash).ToLowerInvariant());
 
             return candidateCodes;
+        }
+
+        private static void AddCandidateCode(List<string> candidateCodes, HashSet<string> seen, string candidate)
+        {
+            if (!string.IsNullOrEmpty(candidate) && seen.Add(candidate))
+                candidateCodes.Add(candidate);
         }
 
         private static string NormalizeCultureCode(string dashCode, char separator)

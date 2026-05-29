@@ -399,8 +399,8 @@ msgid "Incapacitated Alert"
 msgstr "Оповещение: Недееспособен"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
-msgid "Show badge when dupe is incapacitated (bleeding out)."
-msgstr "Показывать значок, когда дупликант недееспособен (истекает кровью)."
+msgid "Show badge when dupe is incapacitated."
+msgstr "Показывать значок, когда дупликант недееспособен."
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
 msgid "Oxygen Tank:"

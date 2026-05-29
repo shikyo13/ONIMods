@@ -3,6 +3,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using DuplicantStatusBar.Config;
+using DuplicantStatusBar.Core;
 using DuplicantStatusBar.Data;
 using DSB = DuplicantStatusBar.Localization.STRINGS.DUPLICANTSTATUSBAR;
 
@@ -139,7 +140,10 @@ namespace DuplicantStatusBar.UI
             else
             {
                 var bc = snap.BreathPercent < 30f ? ColorUtil.ToHtml(ColorUtil.Blue) : ColorUtil.ToHtml(ColorUtil.Green);
-                sb.AppendLine($"{DSB.UI.TOOLTIP_BREATH} <color=#{bc}>{snap.BreathPercent:F0}%</color>");
+                string breath = GameCompatibility.UsesIntegerBreathDisplay && snap.HasBreath
+                    ? $"{snap.BreathAmount:F0}"
+                    : $"{snap.BreathPercent:F0}%";
+                sb.AppendLine($"{DSB.UI.TOOLTIP_BREATH} <color=#{bc}>{breath}</color>");
             }
 
             float tempC = snap.BodyTemperature - 273.15f;
@@ -148,7 +152,13 @@ namespace DuplicantStatusBar.UI
                    : dev < 3.5f ? ColorUtil.ToHtml(ColorUtil.Gold)
                    : dev < 5.5f ? ColorUtil.ToHtml(ColorUtil.Orange)
                    : ColorUtil.ToHtml(ColorUtil.Red);
-            sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} <color=#{tc}>{tempC:F1}\u00B0C</color>");
+            string bodyTemp = GameUtil.GetFormattedTemperature(
+                snap.BodyTemperature,
+                GameUtil.TimeSlice.None,
+                GameUtil.TemperatureInterpretation.Absolute,
+                true,
+                false);
+            sb.AppendLine($"{DSB.UI.TOOLTIP_BODYTEMP} <color=#{tc}>{bodyTemp}</color>");
 
             if (snap.HasStamina)
             {

@@ -242,7 +242,7 @@ namespace DuplicantStatusBar.Localization
                 public static class ALERTINCAPACITATED
                 {
                     public static LocString NAME = "Incapacitated Alert";
-                    public static LocString DESC = "Show badge when dupe is incapacitated (bleeding out).";
+                    public static LocString DESC = "Show badge when dupe is incapacitated.";
                 }
 
                 public static class DEBUGLOGGING

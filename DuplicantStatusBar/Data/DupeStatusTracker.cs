@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using DuplicantStatusBar.API.Internal;
 using DuplicantStatusBar.Config;
@@ -45,6 +46,9 @@ namespace DuplicantStatusBar.Data
         public string Name;
         public float StressPercent;
         public float HealthPercent;
+        public bool HasBreath;
+        public float BreathAmount;
+        public float BreathMax;
         public float BreathPercent;
         public bool HasOxygenTank;
         public float OxygenTankPercent;
@@ -130,6 +134,10 @@ namespace DuplicantStatusBar.Data
         private const float STUCK_THRESHOLD = 10f;
         private const float IDLE_THRESHOLD = 30f;
         private const float POD_CACHE_INTERVAL = 30f;
+        private static bool legacySuffocationStateSearched;
+        private static object legacySuffocationState;
+        private static bool legacySuffocationMethodSearched;
+        private static MethodInfo legacySuffocationMethod;
 
         // Per-dupe component cache — eliminates redundant GetComponent/GetSMI per tick
         private sealed class DupeCache
@@ -299,6 +307,9 @@ namespace DuplicantStatusBar.Data
                 if (cache.Breath != null)
                 {
                     float max = cache.Breath.GetMax();
+                    snap.HasBreath = true;
+                    snap.BreathAmount = cache.Breath.value;
+                    snap.BreathMax = max;
                     snap.BreathPercent = max > 0f ? cache.Breath.value / max * 100f : 100f;
                 }
 
@@ -350,11 +361,10 @@ namespace DuplicantStatusBar.Data
                 snap.IsScalding = cache.ScaldingSMI != null && cache.ScaldingSMI.IsScalding();
                 snap.IsHypothermic = cache.ScaldingSMI != null && cache.ScaldingSMI.IsInsideState(cache.ScaldingSMI.sm.scolding);
 
-                // Suffocating (SM danger state OR breath critically low)
-                snap.IsSuffocating = (cache.SuffocationSMI != null && cache.SuffocationSMI.IsInsideState(cache.SuffocationSMI.sm.noOxygen.suffocating))
-                    || snap.BreathPercent < 30f;
+                // Suffocating (SM danger state, with build-specific low breath fallback)
+                snap.IsSuffocating = IsSuffocating(cache.SuffocationSMI, snap.BreathPercent);
 
-                // Incapacitated (bleeding out — 120s to death)
+                // Incapacitated (health system state)
                 snap.IsIncapacitated = cache.Health != null && cache.Health.IsIncapacitated();
 
                 // Bionic detection
@@ -558,6 +568,86 @@ namespace DuplicantStatusBar.Data
             bionicBatteryAmount = db.Amounts.Get("BionicInternalBattery");
             bionicOilAmount = db.Amounts.Get("BionicOil");
             bionicOxygenTankAmount = db.Amounts.Get("BionicOxygenTank");
+        }
+
+        private static bool IsSuffocating(SuffocationMonitor.Instance smi, float breathPercent)
+        {
+            if (TryIsInsideLegacySuffocationState(smi))
+                return true;
+
+            if (GameCompatibility.UsesIntegerBreathDisplay)
+                return breathPercent <= 0f;
+
+            return breathPercent < 30f;
+        }
+
+        private static bool TryIsInsideLegacySuffocationState(SuffocationMonitor.Instance smi)
+        {
+            if (smi == null) return false;
+
+            try
+            {
+                object state = GetLegacySuffocationState(smi);
+                if (state == null) return false;
+
+                MethodInfo method = GetLegacySuffocationMethod(smi, state);
+                if (method == null) return false;
+
+                object result = method.Invoke(smi, new[] { state });
+                return result is bool inside && inside;
+            }
+            catch (Exception ex)
+            {
+                DSBLog.Log("Compat", $"Legacy suffocation state unavailable: {ex.GetType().Name}");
+                return false;
+            }
+        }
+
+        private static object GetLegacySuffocationState(SuffocationMonitor.Instance smi)
+        {
+            if (legacySuffocationStateSearched)
+                return legacySuffocationState;
+
+            legacySuffocationStateSearched = true;
+            object sm = GetMemberValue(smi, "sm");
+            object noOxygen = GetMemberValue(sm, "noOxygen");
+            legacySuffocationState = GetMemberValue(noOxygen, "suffocating");
+            return legacySuffocationState;
+        }
+
+        private static MethodInfo GetLegacySuffocationMethod(SuffocationMonitor.Instance smi, object state)
+        {
+            if (legacySuffocationMethodSearched)
+                return legacySuffocationMethod;
+
+            legacySuffocationMethodSearched = true;
+            var methods = smi.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            for (int i = 0; i < methods.Length; i++)
+            {
+                var method = methods[i];
+                if (method.Name != "IsInsideState") continue;
+                var parameters = method.GetParameters();
+                if (parameters.Length != 1) continue;
+                if (!parameters[0].ParameterType.IsAssignableFrom(state.GetType())) continue;
+
+                legacySuffocationMethod = method;
+                break;
+            }
+            return legacySuffocationMethod;
+        }
+
+        private static object GetMemberValue(object owner, string memberName)
+        {
+            if (owner == null) return null;
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            Type type = owner.GetType();
+
+            var property = type.GetProperty(memberName, flags);
+            if (property != null)
+                return property.GetValue(owner, null);
+
+            var field = type.GetField(memberName, flags);
+            return field?.GetValue(owner);
         }
 
         private static StressTier ComputeTier(float stress, StatusBarOptions opts)

@@ -399,8 +399,8 @@ msgid "Incapacitated Alert"
 msgstr "Kampfunfähig-Warnung"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
-msgid "Show badge when dupe is incapacitated (bleeding out)."
-msgstr "Abzeichen anzeigen, wenn der Duplikant kampfunfähig ist (verblutet)."
+msgid "Show badge when dupe is incapacitated."
+msgstr "Abzeichen anzeigen, wenn der Duplikant kampfunfähig ist."
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
 msgid "Oxygen Tank:"

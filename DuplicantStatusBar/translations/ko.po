@@ -399,8 +399,8 @@ msgid "Incapacitated Alert"
 msgstr "무력화 경고"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
-msgid "Show badge when dupe is incapacitated (bleeding out)."
-msgstr "복제인이 무력화(출혈)되었을 때 배지를 표시합니다."
+msgid "Show badge when dupe is incapacitated."
+msgstr "복제인이 무력화되었을 때 배지를 표시합니다."
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
 msgid "Oxygen Tank:"

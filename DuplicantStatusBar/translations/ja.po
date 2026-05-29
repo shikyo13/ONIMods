@@ -399,8 +399,8 @@ msgid "Incapacitated Alert"
 msgstr "行動不能アラート"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
-msgid "Show badge when dupe is incapacitated (bleeding out)."
-msgstr "デュプリカントが行動不能 (出血) の時にバッジを表示します。"
+msgid "Show badge when dupe is incapacitated."
+msgstr "デュプリカントが行動不能の時にバッジを表示します。"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
 msgid "Oxygen Tank:"

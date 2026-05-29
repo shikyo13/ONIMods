@@ -446,8 +446,8 @@ msgid "Incapacitated Alert"
 msgstr "丧失行动能力警报"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
-msgid "Show badge when dupe is incapacitated (bleeding out)."
-msgstr "复制人丧失行动能力 (失血) 时显示徽章。"
+msgid "Show badge when dupe is incapacitated."
+msgstr "复制人丧失行动能力时显示徽章。"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
 msgid "Oxygen Tank:"

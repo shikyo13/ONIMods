@@ -399,8 +399,8 @@ msgid "Incapacitated Alert"
 msgstr "Varování vyřazení"
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.OPTIONS.ALERTINCAPACITATED.DESC"
-msgid "Show badge when dupe is incapacitated (bleeding out)."
-msgstr "Zobrazit odznak, když je duplikant vyřazený (krvácí)."
+msgid "Show badge when dupe is incapacitated."
+msgstr "Zobrazit odznak, když je duplikant vyřazený."
 
 msgctxt "STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_OXYGEN_TANK"
 msgid "Oxygen Tank:"

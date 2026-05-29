@@ -880,6 +880,7 @@ namespace DuplicantStatusBar.UI
             // Management screen stuck?
             bool screenOpen = Patches.ManagementMenu_ToggleScreen_Patch.IsScreenOpen;
             DSBLog.Log("Visibility", $"ManagementScreen.IsScreenOpen={screenOpen}");
+            DSBLog.Log("Visibility", $"GameUI.HideUI={DebugHandler.HideUI} ScreenshotMode={DebugHandler.ScreenshotMode} TimelapseMode={DebugHandler.TimelapseMode}");
 
             // Bar panel bounds
             if (barPanel != null)
@@ -903,11 +904,12 @@ namespace DuplicantStatusBar.UI
 
         private void LateUpdate()
         {
-            // Hide bar when any management screen (Research, Skills, etc.) is open
+            // Hide bar when any management screen is open or the game UI is hidden for screenshots.
             bool screenOpen = Patches.ManagementMenu_ToggleScreen_Patch.IsScreenOpen;
+            bool hideForGameUI = DebugHandler.HideUI;
             if (canvasRT != null)
-                canvasRT.gameObject.SetActive(!screenOpen);
-            if (screenOpen) return;
+                canvasRT.gameObject.SetActive(!screenOpen && !hideForGameUI);
+            if (screenOpen || hideForGameUI) return;
 
             // Track resize grip to BarPanel's bottom-right corner
             if (resizeGripRT == null || barPanel == null) return;

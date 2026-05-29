@@ -1,5 +1,19 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.10.3 - Aquatic Compatibility[/h2]
+[list]
+[*] [b]Hardened suffocation detection[/b] - DSB no longer hard-binds to the old suffocation state path and avoids low-breath swimmer false positives on Aquatic builds
+[*] [b]Added Aquatic breath display support[/b] - normal duplicant breath can display as ONI's integer breath amount on Aquatic builds while older builds keep percentage tooltips
+[*] [b]Kept broad DLC compatibility[/b] - release remains a single build for current stable and Aquatic public testing, with no minimum build or DLC requirement changes
+[/list]
+
+[h2]v2.10.2 - Temperature Units + Screenshot Mode[/h2]
+[list]
+[*] [b]Fixed body temperature units[/b] - tooltips now use ONI's game-native temperature formatter, so body temperature follows the main game Celsius, Fahrenheit, or Kelvin setting
+[*] [b]Fixed screenshot mode visibility[/b] - the DSB overlay now hides when the game UI is hidden with Alt+S screenshot mode or timelapse UI hiding
+[*] [b]Hardened translation fallback test compatibility[/b] - locale fallback behavior is unchanged, but the resolver helper now works with the PowerShell regression harness compiler
+[/list]
+
 [h2]v2.10.1 - Filter Recovery Fix[/h2]
 [list]
 [*] [b]Fixed all-hidden filter recovery[/b] - Sort/Filter remains visible when filters hide every duplicant, so filters can be undone from the bar
@@ -197,7 +211,7 @@
 [*] Animated tooltip text: each alert gets per-character color animation with glow
 [*] Overjoyed alerts use smooth rainbow color cycling; other alerts pulse monochromatically
 [*] New AlertEffects system with three animation patterns (Pulse, Heartbeat, Flicker)
-[*] Incapacitated alert: detects dupes bleeding out (120s to death)
+[*] Incapacitated alert: detects dupes flagged as incapacitated by the game health system
 [/list]
 
 [h2]v2.1.3 — Pause-Safe Timers + Distinct Alert Colors[/h2]
