@@ -1,0 +1,24 @@
+Overview
+
+Updated fork of Neavo's Fast Insulated Self Sealing AirLock for current Oxygen Not Included builds.
+
+Features
+
+* Adds a fast manual-style airlock.
+* When set to Automatic or Locked, the door blocks gas, liquid, and heat transfer between its cells.
+* Door opening speed is configurable. Default is 5x a native manual airlock.
+* Supports Base Game and all current gameplay DLC through `supportedContent: ALL`.
+
+Version 0.3.0
+
+* Rebuilt against the June 2026 ONI assemblies.
+* Fixed the current `SimMessages.SetCellProperties` and `ClearCellProperties` API change that crashes old binaries.
+* Uses a unique fork static ID while preserving the saved-game building prefab ID.
+
+Compatibility Notes
+
+Disable the original workshop item before enabling this fork. Both mods register the same building prefab ID, so running both together is not supported.
+
+Known Risk
+
+This update fixes the loader/crash compatibility issue. A third-party fix comment reports carried critters can get stuck in doors; I have not reproduced or claimed that gameplay issue fixed here.
