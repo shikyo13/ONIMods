@@ -1,15 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DuplicantStatusBar.Config;
 using DuplicantStatusBar.Core;
 using DuplicantStatusBar.Data;
-using DSB = DuplicantStatusBar.Localization.STRINGS.DUPLICANTSTATUSBAR;
 
 namespace DuplicantStatusBar.UI
 {
-    public sealed class StatusBarScreen : MonoBehaviour
+    public sealed partial class StatusBarScreen : MonoBehaviour
     {
         internal static StatusBarScreen Instance { get; private set; }
         private RectTransform canvasRT;
@@ -50,7 +48,7 @@ namespace DuplicantStatusBar.UI
         private readonly Dictionary<int, Vector2> worldBoxSizes = new Dictionary<int, Vector2>();
         private int lastActiveWorldId = int.MinValue;
 
-        // Game font (ONI-native, with fallback)
+        // Game font (ONI-native, with localized glyph fallback)
         private static TMPro.TMP_FontAsset _gameFont;
         private static bool _fontSearched;
         internal static TMPro.TMP_FontAsset GameFont
@@ -61,10 +59,157 @@ namespace DuplicantStatusBar.UI
                 if (_fontSearched) return null;
                 _fontSearched = true;
                 var all = Resources.FindObjectsOfTypeAll<TMPro.TMP_FontAsset>();
-                _gameFont = System.Array.Find(all, f => f.name == "GRAYSTROKE REGULAR SDF")
-                         ?? System.Array.Find(all, f => f.name.Contains("NotoSans"));
+                _gameFont = FindLocalizedGameFont(all);
                 return _gameFont;
             }
+        }
+
+        private static TMPro.TMP_FontAsset FindLocalizedGameFont(TMPro.TMP_FontAsset[] all)
+        {
+            if (all == null || all.Length == 0)
+                return null;
+
+            string localizedSample = BuildLocalizedFontSample();
+            var oniFont = System.Array.Find(all, f => f.name == "GRAYSTROKE REGULAR SDF");
+            if (!RequiresFallbackFont(localizedSample) && SupportsText(oniFont, localizedSample))
+                return oniFont;
+
+            string fallbackSample = BuildFallbackFontSample(localizedSample);
+            var localizedFont = GetCurrentLocalizedFont(all);
+            var best = (SupportsText(localizedFont, fallbackSample) ? localizedFont : null)
+                ?? System.Array.Find(all, f => IsNotoSans(f) && SupportsText(f, fallbackSample))
+                ?? System.Array.Find(all, f => SupportsText(f, fallbackSample))
+                ?? (SupportsText(oniFont, localizedSample) ? oniFont : null)
+                ?? localizedFont
+                ?? System.Array.Find(all, f => IsNotoSans(f))
+                ?? oniFont
+                ?? all[0];
+
+            if (DSBLog.Active && best != null)
+                DSBLog.Log("Screen", $"Using TMP font '{best.name}' for localized UI text");
+            return best;
+        }
+
+        private static string BuildLocalizedFontSample()
+        {
+            return string.Concat(
+                (string)Localization.STRINGS.DUPLICANTSTATUSBAR.UI.HEADER,
+                " ",
+                (string)Localization.STRINGS.DUPLICANTSTATUSBAR.UI.POPUP_SORTFILTER,
+                " ",
+                (string)Localization.STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_TASK,
+                " ",
+                (string)Localization.STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_STRESS,
+                " ",
+                (string)Localization.STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_HEALTH,
+                " ",
+                (string)Localization.STRINGS.DUPLICANTSTATUSBAR.UI.TOOLTIP_EQUIPMENT,
+                " ",
+                "Dupes Sort/Filter Task Stress Health Equipment 0123456789");
+        }
+
+        private static string BuildFallbackFontSample(string localizedSample)
+        {
+            string probe = GetLocaleFallbackProbe();
+            return string.IsNullOrEmpty(probe)
+                ? localizedSample
+                : localizedSample + " " + probe;
+        }
+
+        private static string GetLocaleFallbackProbe()
+        {
+            string code = GetCurrentLocaleCode();
+            if (StartsWithLocale(code, "ru"))
+                return GetCyrillicFallbackProbe();
+            if (StartsWithLocale(code, "zh"))
+                return "\u590d\u5236\u4eba \u6392\u5e8f \u7b5b\u9009";
+            if (StartsWithLocale(code, "ja"))
+                return "\u8907\u88fd\u4eba \u4e26\u3079\u66ff\u3048 \u30d5\u30a3\u30eb\u30bf\u30fc";
+            if (StartsWithLocale(code, "ko"))
+                return "\ubcf5\uc81c\uccb4 \uc815\ub82c \ud544\ud130";
+            return "";
+        }
+
+        private static string GetCyrillicFallbackProbe()
+        {
+            return "\u0414\u0443\u043f\u043b\u0438\u043a\u0430\u043d\u0442\u044b " +
+                "\u0421\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u043a\u0430 " +
+                "\u0424\u0438\u043b\u044c\u0442\u0440";
+        }
+
+        private static bool RequiresFallbackFont(string localizedSample)
+        {
+            if (ContainsNonLatinLetters(localizedSample))
+                return true;
+
+            string code = GetCurrentLocaleCode();
+            return StartsWithLocale(code, "ru")
+                || StartsWithLocale(code, "zh")
+                || StartsWithLocale(code, "ja")
+                || StartsWithLocale(code, "ko")
+                || StartsWithLocale(code, "th")
+                || StartsWithLocale(code, "ar")
+                || StartsWithLocale(code, "he");
+        }
+
+        private static bool ContainsNonLatinLetters(string localizedSample)
+        {
+            if (string.IsNullOrEmpty(localizedSample))
+                return false;
+
+            foreach (char c in localizedSample)
+            {
+                if (c > 0x7F && char.IsLetter(c))
+                    return true;
+            }
+            return false;
+        }
+
+        private static TMPro.TMP_FontAsset GetCurrentLocalizedFont(TMPro.TMP_FontAsset[] all)
+        {
+            var font = global::Localization.FontAsset;
+            if (font != null)
+                return font;
+
+            string fontName = global::Localization.GetLocale()?.FontName;
+            if (string.IsNullOrEmpty(fontName))
+                return null;
+
+            return System.Array.Find(all, f => f != null && f.name == fontName);
+        }
+
+        private static string GetCurrentLocaleCode()
+        {
+            string code = global::Localization.GetLocale()?.Code;
+            if (string.IsNullOrEmpty(code))
+                code = global::Localization.GetCurrentLanguageCode();
+            return code ?? "";
+        }
+
+        private static bool StartsWithLocale(string code, string prefix)
+        {
+            return !string.IsNullOrEmpty(code)
+                && code.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsNotoSans(TMPro.TMP_FontAsset font)
+        {
+            return font != null && font.name.Contains("NotoSans");
+        }
+
+        private static bool SupportsText(TMPro.TMP_FontAsset font, string text)
+        {
+            if (font == null || string.IsNullOrEmpty(text))
+                return false;
+
+            foreach (char c in text)
+            {
+                if (char.IsWhiteSpace(c))
+                    continue;
+                if (!font.HasCharacter(c, true, false))
+                    return false;
+            }
+            return true;
         }
 
         private const int MIN_CARD_SIZE = 16;
@@ -156,74 +301,6 @@ namespace DuplicantStatusBar.UI
             return new Vector2(Screen.width / s, Screen.height / s);
         }
 
-        private static int CurrentActiveWorldId()
-        {
-            return ClusterManager.Instance != null
-                ? ClusterManager.Instance.activeWorldId
-                : -1;
-        }
-
-        private void HandleActiveWorldChanged(int currentWorldId)
-        {
-            if (currentWorldId < 0)
-                return;
-
-            if (lastActiveWorldId == int.MinValue)
-            {
-                lastActiveWorldId = currentWorldId;
-                return;
-            }
-
-            if (currentWorldId == lastActiveWorldId)
-                return;
-
-            StoreCurrentWorldBoxSize();
-            int previousWorldId = lastActiveWorldId;
-            lastActiveWorldId = currentWorldId;
-
-            if (worldBoxSizes.TryGetValue(currentWorldId, out Vector2 savedBox))
-            {
-                barWidthPx = savedBox.x;
-                barHeightPx = savedBox.y;
-            }
-            else
-            {
-                barWidthPx = -1f;
-                barHeightPx = -1f;
-            }
-
-            lastDupeCount = -1;
-            forceRefresh = true;
-            ResetScrollForWorldChange();
-            DSBLog.Log("Screen", $"World changed {previousWorldId}->{currentWorldId}; box={barWidthPx:F0}x{barHeightPx:F0}");
-        }
-
-        private void StoreCurrentWorldBoxSize()
-        {
-            if (lastActiveWorldId >= 0)
-                worldBoxSizes[lastActiveWorldId] = new Vector2(barWidthPx, barHeightPx);
-        }
-
-        private void ResetScrollForWorldChange()
-        {
-            if (scrollRect != null)
-            {
-                scrollRect.StopMovement();
-                scrollRect.verticalNormalizedPosition = 1f;
-            }
-            if (contentRT != null)
-                contentRT.anchoredPosition = Vector2.zero;
-            MarkBarLayoutForRebuild();
-        }
-
-        private void MarkBarLayoutForRebuild()
-        {
-            if (contentRT != null)
-                LayoutRebuilder.MarkLayoutForRebuild(contentRT);
-            if (barPanel != null)
-                LayoutRebuilder.MarkLayoutForRebuild(barPanel);
-        }
-
         private void ApplyGameUIScale()
         {
             if (gameCanvasScaler == null)
@@ -235,926 +312,6 @@ namespace DuplicantStatusBar.UI
             {
                 canvasScaler.scaleFactor = scale;
                 lastUIScale = scale;
-            }
-        }
-
-        // ── UI Construction ─────────────────────────────────────
-
-        private void BuildUI()
-        {
-            var opts = StatusBarOptions.Instance;
-            float alpha = opts.BarOpacity / 100f;
-
-            // Canvas (ScreenSpaceOverlay, above game UI)
-            var canvasGO = new GameObject("DSB_Canvas");
-            canvasGO.transform.SetParent(transform, false);
-            var canvas = canvasGO.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;
-
-            canvasScaler = canvasGO.AddComponent<CanvasScaler>();
-            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
-            ApplyGameUIScale();
-
-            canvasGO.AddComponent<GraphicRaycaster>();
-            canvasRT = canvasGO.GetComponent<RectTransform>();
-
-            // Bar panel (dark semi-transparent background)
-            var panelGO = new GameObject("BarPanel");
-            panelGO.transform.SetParent(canvasGO.transform, false);
-            barPanel = panelGO.AddComponent<RectTransform>();
-
-            panelImage = panelGO.AddComponent<Image>();
-            panelImage.sprite = DupePortraitWidget.RoundedRect;
-            panelImage.type = Image.Type.Sliced;
-            panelImage.color = ColorUtil.WithAlpha(ColorUtil.PanelBg, alpha);
-
-            // Mask clips children (header bg) to rounded rect shape
-            panelGO.AddComponent<Mask>().showMaskGraphic = true;
-
-            // Anchor top-left: resize grows rightward + downward only
-            barPanel.anchorMin = new Vector2(0f, 1f);
-            barPanel.anchorMax = new Vector2(0f, 1f);
-            barPanel.pivot = new Vector2(0f, 1f);
-            barPanel.anchoredPosition = new Vector2(0f, -5f);
-
-            // Vertical layout: header row + portrait row
-            var vlg = panelGO.AddComponent<VerticalLayoutGroup>();
-            vlg.padding = new RectOffset(0, 0, 0, 0);
-            vlg.spacing = 0;
-            vlg.childForceExpandWidth = true;
-            vlg.childForceExpandHeight = false;
-            vlg.childAlignment = TextAnchor.UpperCenter;
-
-            panelFitter = panelGO.AddComponent<ContentSizeFitter>();
-            panelFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            BuildHeader(panelGO);
-            BuildContent(panelGO);
-            BuildResizeHandle(canvasGO);
-            DupeTooltip.Init(canvasGO.transform);
-            SortFilterPopup.Init(canvasGO.transform);
-        }
-
-        private void BuildHeader(GameObject parent)
-        {
-            var header = new GameObject("Header");
-            header.transform.SetParent(parent.transform, false);
-            headerRT = header.AddComponent<RectTransform>();
-
-            var headerBg = header.AddComponent<Image>();
-            headerBg.color = ColorUtil.HeaderBg;
-
-            var dragHandler = header.AddComponent<HeaderDragHandler>();
-            dragHandler.screen = this;
-
-            headerHLG = header.AddComponent<HorizontalLayoutGroup>();
-            var hlg = headerHLG;
-            hlg.spacing = 4;
-            hlg.childForceExpandWidth = false;
-            hlg.childForceExpandHeight = false;
-            hlg.childAlignment = TextAnchor.MiddleCenter;
-            hlg.padding = new RectOffset(6, 6, 3, 3);
-
-            var hFit = header.AddComponent<ContentSizeFitter>();
-            hFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            // Bevel — top highlight
-            var topHL = new GameObject("TopHighlight");
-            topHL.transform.SetParent(header.transform, false);
-            var topRT = topHL.AddComponent<RectTransform>();
-            topRT.anchorMin = new Vector2(0f, 1f);
-            topRT.anchorMax = new Vector2(1f, 1f);
-            topRT.pivot = new Vector2(0.5f, 1f);
-            topRT.sizeDelta = new Vector2(0f, 1.5f);
-            var topImg = topHL.AddComponent<Image>();
-            topImg.color = ColorUtil.BevelLight;
-            topImg.raycastTarget = false;
-            topHL.AddComponent<LayoutElement>().ignoreLayout = true;
-
-            // Bevel — bottom shadow
-            var botSH = new GameObject("BottomShadow");
-            botSH.transform.SetParent(header.transform, false);
-            var botRT = botSH.AddComponent<RectTransform>();
-            botRT.anchorMin = new Vector2(0f, 0f);
-            botRT.anchorMax = new Vector2(1f, 0f);
-            botRT.pivot = new Vector2(0.5f, 0f);
-            botRT.sizeDelta = new Vector2(0f, 1.5f);
-            var botImg = botSH.AddComponent<Image>();
-            botImg.color = ColorUtil.BevelShadow;
-            botImg.raycastTarget = false;
-            botSH.AddComponent<LayoutElement>().ignoreLayout = true;
-
-            // Filter popup button (anchored far left, outside HLG flow)
-            filterBtnGO = new GameObject("FilterBtn");
-            var filterGO = filterBtnGO;
-            filterGO.transform.SetParent(header.transform, false);
-
-            var filterBtnImg = filterGO.AddComponent<Image>();
-            filterBtnImg.color = Color.clear;
-
-            var filterRT = filterGO.GetComponent<RectTransform>();
-            filterRT.anchorMin = new Vector2(0f, 0f);
-            filterRT.anchorMax = new Vector2(0f, 1f);
-            filterRT.pivot = new Vector2(0f, 0.5f);
-            filterRT.anchoredPosition = new Vector2(6f, 0f);
-            filterRT.sizeDelta = new Vector2(80f, 0f); // placeholder, resized after text measurement below
-            var filterBtn = filterGO.AddComponent<Button>();
-            filterBtn.onClick.AddListener(() => SortFilterPopup.Toggle(barPanel));
-            filterGO.AddComponent<LayoutElement>().ignoreLayout = true;
-
-            var filterTextGO = new GameObject("Label");
-            filterTextGO.transform.SetParent(filterGO.transform, false);
-            filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
-            filterTMP.fontSize = 13;
-            filterTMP.color = Color.white;
-            if (GameFont != null) filterTMP.font = GameFont;
-            filterTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
-            filterTMP.raycastTarget = false;
-            var ftRT = filterTextGO.GetComponent<RectTransform>();
-            ftRT.anchorMin = Vector2.zero;
-            ftRT.anchorMax = Vector2.one;
-            ftRT.sizeDelta = Vector2.zero;
-
-            // Measure translated text and size button to fit
-            filterFullWidth = MeasureFilterWidth();
-            filterRT.sizeDelta = new Vector2(filterFullWidth, 0f);
-            hlg.padding = new RectOffset((int)(filterFullWidth + 6f), 6, 3, 3);
-
-            // Drag-handle label
-            var grip = new GameObject("Grip");
-            grip.transform.SetParent(header.transform, false);
-            var gripTMP = grip.AddComponent<TMPro.TextMeshProUGUI>();
-            gripTMP.text = DSB.UI.HEADER;
-            gripTMP.fontSize = 13;
-            gripTMP.color = Color.white;
-            if (GameFont != null) gripTMP.font = GameFont;
-            gripTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
-            gripTMP.enableWordWrapping = false;
-            gripTMP.overflowMode = TMPro.TextOverflowModes.Ellipsis;
-            gripTMP.raycastTarget = false;
-            gripLE = grip.AddComponent<LayoutElement>();
-            float titleW = gripTMP.GetPreferredValues((string)DSB.UI.HEADER).x;
-            gripLE.preferredWidth = Mathf.Max(40f, Mathf.Ceil(titleW + 4f));
-            gripLE.preferredHeight = 14;
-
-            // Collapse / expand button
-            var btnGO = new GameObject("CollapseBtn");
-            btnGO.transform.SetParent(header.transform, false);
-            var btnImg = btnGO.AddComponent<Image>();
-            btnImg.color = Color.clear;
-            var btn = btnGO.AddComponent<Button>();
-            btn.onClick.AddListener(ToggleCollapse);
-
-            var btnTextGO = new GameObject("Label");
-            btnTextGO.transform.SetParent(btnGO.transform, false);
-            collapseLabel = btnTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            collapseLabel.text = "\u2212"; // minus sign
-            collapseLabel.fontSize = 14;
-            collapseLabel.color = Color.white;
-            if (GameFont != null) collapseLabel.font = GameFont;
-            collapseLabel.alignment = TMPro.TextAlignmentOptions.Center;
-            collapseLabel.raycastTarget = false;
-
-            var clRT = btnTextGO.GetComponent<RectTransform>();
-            clRT.anchorMin = Vector2.zero;
-            clRT.anchorMax = Vector2.one;
-            clRT.sizeDelta = Vector2.zero;
-
-            var btnLE = btnGO.AddComponent<LayoutElement>();
-            btnLE.preferredWidth = 16;
-            btnLE.preferredHeight = 14;
-        }
-
-        private void BuildContent(GameObject parent)
-        {
-            // ScrollView container
-            scrollViewGO = new GameObject("ScrollView");
-            scrollViewGO.transform.SetParent(parent.transform, false);
-            scrollViewGO.AddComponent<RectTransform>();
-            scrollRect = scrollViewGO.AddComponent<ScrollRect>();
-            scrollViewLayout = scrollViewGO.AddComponent<LayoutElement>();
-
-            // Viewport (clips scrolling content)
-            var viewportGO = new GameObject("Viewport");
-            viewportGO.transform.SetParent(scrollViewGO.transform, false);
-            var viewportRT = viewportGO.AddComponent<RectTransform>();
-            viewportRT.anchorMin = Vector2.zero;
-            viewportRT.anchorMax = Vector2.one;
-            viewportRT.sizeDelta = Vector2.zero;
-            viewportRT.pivot = new Vector2(0f, 1f);
-            var viewportImg = viewportGO.AddComponent<Image>();
-            viewportImg.color = Color.white;  // alpha must be >0 for Mask stencil writes
-            viewportGO.AddComponent<Mask>().showMaskGraphic = false;
-
-            // Content (grid) inside viewport
-            contentArea = new GameObject("Content");
-            contentArea.transform.SetParent(viewportGO.transform, false);
-            contentRT = contentArea.AddComponent<RectTransform>();
-            contentRT.anchorMin = new Vector2(0f, 1f);
-            contentRT.anchorMax = new Vector2(1f, 1f);
-            contentRT.pivot = new Vector2(0.5f, 1f);
-
-            grid = contentArea.AddComponent<GridLayoutGroup>();
-            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            grid.spacing = new Vector2(4, 4);
-            grid.padding = new RectOffset(4, 4, 4, 4);
-            grid.childAlignment = TextAnchor.UpperCenter;
-            grid.constraintCount = 1;
-
-            var fit = contentArea.AddComponent<ContentSizeFitter>();
-            fit.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            // Vertical scrollbar
-            scrollbarGO = new GameObject("VScrollbar");
-            scrollbarGO.transform.SetParent(scrollViewGO.transform, false);
-            var scrollbarRT = scrollbarGO.AddComponent<RectTransform>();
-            scrollbarRT.anchorMin = new Vector2(1f, 0f);
-            scrollbarRT.anchorMax = new Vector2(1f, 1f);
-            scrollbarRT.pivot = new Vector2(1f, 0.5f);
-            scrollbarRT.sizeDelta = new Vector2(10f, 0f);
-
-            var slideArea = new GameObject("SlidingArea");
-            slideArea.transform.SetParent(scrollbarGO.transform, false);
-            var slideRT = slideArea.AddComponent<RectTransform>();
-            slideRT.anchorMin = Vector2.zero;
-            slideRT.anchorMax = Vector2.one;
-            slideRT.sizeDelta = Vector2.zero;
-
-            var handleGO = new GameObject("Handle");
-            handleGO.transform.SetParent(slideArea.transform, false);
-            var handleRT = handleGO.AddComponent<RectTransform>();
-            handleRT.anchorMin = Vector2.zero;
-            handleRT.anchorMax = Vector2.one;
-            handleRT.sizeDelta = Vector2.zero;
-            var handleImg = handleGO.AddComponent<Image>();
-            handleImg.sprite = DupePortraitWidget.RoundedRect;
-            handleImg.type = Image.Type.Sliced;
-            handleImg.color = ColorUtil.ScrollHandle;
-
-            var scrollbar = scrollbarGO.AddComponent<Scrollbar>();
-            scrollbar.handleRect = handleRT;
-            scrollbar.direction = Scrollbar.Direction.BottomToTop;
-            scrollbar.targetGraphic = handleImg;
-
-            // Wire ScrollRect
-            scrollRect.content = contentRT;
-            scrollRect.viewport = viewportRT;
-            scrollRect.verticalScrollbar = scrollbar;
-            scrollRect.horizontal = false;
-            scrollRect.vertical = false;
-            scrollRect.movementType = ScrollRect.MovementType.Clamped;
-            scrollRect.scrollSensitivity = 20f;
-
-            scrollbarGO.SetActive(false);
-        }
-
-        private void UpdateGridLayout(int dupeCount)
-        {
-            if (dupeCount <= 0)
-            {
-                ApplyEmptyLayout(DupeStatusTracker.ActiveWorldDupeCount > 0);
-                return;
-            }
-
-            var opts = StatusBarOptions.Instance;
-            float canvasW = EffectiveCanvasSize().x;
-            if (scrollViewGO != null)
-                scrollViewGO.SetActive(!isCollapsed);
-
-            int size;
-            int cols;
-            bool needsScroll;
-            bool flowVertical;
-
-            bool wConstrained = barWidthPx > 0;
-            bool hConstrained = barHeightPx > 0;
-
-            if (wConstrained && hConstrained)
-            {
-                // BOX MODE: derive card size from bounding box
-                float headerH = headerRT != null ? headerRT.rect.height : 20f;
-                DeriveLayout(barWidthPx, barHeightPx - headerH, dupeCount,
-                    out size, out cols, out needsScroll, out flowVertical);
-                cols = ApplyColumnLimit(cols, dupeCount, opts);
-            }
-            else if (wConstrained)
-            {
-                // WIDTH-ONLY: PortraitSize cards, derive cols from width
-                size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
-                int cellW = size + 10;
-                int fitCols = Mathf.Max(1, Mathf.FloorToInt((barWidthPx - 8 + 4) / (cellW + 4)));
-                cols = ApplyColumnLimit(Mathf.Clamp(fitCols, 1, dupeCount), dupeCount, opts);
-                needsScroll = false;
-                flowVertical = false;
-            }
-            else if (hConstrained)
-            {
-                // HEIGHT-ONLY: PortraitSize cards, derive visible rows from height
-                size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
-                int cellH = size + 22;
-                float headerH = headerRT != null ? headerRT.rect.height : 20f;
-                float contentH = barHeightPx - headerH;
-                int cardSzTmp = size + 4;
-                float badgeTmp = Mathf.Max(9f, cardSzTmp * 0.28f);
-                int padTopTmp = Mathf.Max(4, Mathf.CeilToInt(badgeTmp * 0.35f));
-                int visibleRows = Mathf.Max(1, Mathf.FloorToInt(
-                    (contentH - padTopTmp - 4 + 4) / (cellH + 4)));
-                cols = Mathf.CeilToInt((float)dupeCount / visibleRows);
-                // Cap columns by canvas width
-                int cellW = size + 10;
-                float layoutW = GetMaxAutoWidth(canvasW, opts);
-                int maxFitCols = Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (cellW + 4)));
-                cols = ApplyColumnLimit(Mathf.Clamp(cols, 1, Mathf.Min(maxFitCols, dupeCount)), dupeCount, opts);
-                int actualRows = Mathf.CeilToInt((float)dupeCount / cols);
-                needsScroll = actualRows > visibleRows;
-                flowVertical = false;
-            }
-            else
-            {
-                // AUTO MODE: use PortraitSize, fit canvas width, show all rows
-                size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
-                int totalW_auto = size + 10;
-                float layoutW = GetMaxAutoWidth(canvasW, opts);
-                int fitCols = Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (totalW_auto + 4)));
-                cols = ApplyColumnLimit(Mathf.Min(fitCols, dupeCount), dupeCount, opts);
-                needsScroll = false;
-                flowVertical = false;
-            }
-
-            // Apply to grid
-            lastComputedSize = size;
-            int totalW = size + 10;
-            int totalH = size + 22;
-            grid.cellSize = new Vector2(totalW, totalH);
-
-            int cardSz = size + 4;
-            float badgeSize = Mathf.Max(9f, cardSz * 0.28f);
-            int badgeOverflow = Mathf.CeilToInt(badgeSize * 0.35f);
-            grid.padding = new RectOffset(4, 4, Mathf.Max(4, badgeOverflow), 4);
-
-            grid.constraintCount = Mathf.Max(1, cols);
-            int rows = Mathf.CeilToInt((float)dupeCount / cols);
-
-            // Flow direction
-            grid.startAxis = flowVertical
-                ? GridLayoutGroup.Axis.Vertical
-                : GridLayoutGroup.Axis.Horizontal;
-
-            // Viewport dimensions
-            int spacing = (int)grid.spacing.y;
-            int hSpacing = (int)grid.spacing.x;
-
-            int displayRows = rows;
-            if (hConstrained)
-            {
-                int fitRows = Mathf.Max(1, Mathf.FloorToInt(
-                    (barHeightPx - (headerRT != null ? headerRT.rect.height : 20f)
-                     - grid.padding.top - grid.padding.bottom + spacing) / (totalH + spacing)));
-                if (rows > fitRows || needsScroll)
-                {
-                    displayRows = Mathf.Min(rows, fitRows);
-                    needsScroll = rows > displayRows;
-                }
-            }
-            displayRows = ApplyRowLimit(displayRows, rows, opts, ref needsScroll,
-                !hConstrained);
-
-            float viewH = displayRows * (totalH + spacing) - spacing
-                         + grid.padding.top + grid.padding.bottom;
-            float viewW = cols * totalW + Mathf.Max(0, cols - 1) * hSpacing
-                        + grid.padding.left + grid.padding.right;
-            if (needsScroll) viewW += 12f;
-
-            scrollViewLayout.preferredHeight = Mathf.Max(0, viewH);
-            scrollViewLayout.preferredWidth = viewW;
-            scrollRect.vertical = needsScroll;
-            scrollbarGO.SetActive(needsScroll);
-
-            // Filter button: full text -> compact arrow -> hidden
-            // Full text needs room for the measured button width + title + margins
-            float gripW = gripLE != null ? gripLE.preferredWidth : 40f;
-            float fullTextMinW = filterFullWidth + gripW + 34f; // button + title + collapse(16) + spacing/margins(18)
-            if (filterBtnGO != null && !isCollapsed)
-            {
-                if (viewW >= fullTextMinW)
-                {
-                    ShowFullFilterButton();
-                }
-                else if (viewW >= 100f)
-                {
-                    ShowCompactFilterButton();
-                }
-                else
-                {
-                    HideFilterButton();
-                }
-            }
-            else if (filterBtnGO != null)
-            {
-                HideFilterButton();
-            }
-        }
-
-        private void ApplyEmptyLayout(bool keepFilterAvailable)
-        {
-            var opts = StatusBarOptions.Instance;
-            int size = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
-            lastComputedSize = size;
-
-            if (grid != null)
-            {
-                grid.cellSize = new Vector2(size + 10, size + 22);
-                grid.constraintCount = 1;
-                grid.startAxis = GridLayoutGroup.Axis.Horizontal;
-            }
-            if (scrollViewLayout != null)
-            {
-                scrollViewLayout.preferredWidth = 0f;
-                scrollViewLayout.preferredHeight = 0f;
-            }
-            if (scrollRect != null)
-                scrollRect.vertical = false;
-            if (scrollbarGO != null)
-                scrollbarGO.SetActive(false);
-            if (scrollViewGO != null)
-                scrollViewGO.SetActive(false);
-            if (keepFilterAvailable && !isCollapsed)
-                ShowFullFilterButton();
-            else
-                HideFilterButton();
-            MarkBarLayoutForRebuild();
-        }
-
-        private void ShowFullFilterButton()
-        {
-            if (filterBtnGO == null) return;
-            var fRT = filterBtnGO.GetComponent<RectTransform>();
-            filterBtnGO.SetActive(true);
-            if (filterTMP != null)
-                filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
-            if (fRT != null)
-                fRT.sizeDelta = new Vector2(filterFullWidth, 0f);
-            if (headerHLG != null)
-            {
-                var pad = headerHLG.padding;
-                headerHLG.padding = new RectOffset((int)(filterFullWidth + 6f), pad.right, pad.top, pad.bottom);
-            }
-        }
-
-        private void ShowCompactFilterButton()
-        {
-            if (filterBtnGO == null) return;
-            var fRT = filterBtnGO.GetComponent<RectTransform>();
-            filterBtnGO.SetActive(true);
-            if (filterTMP != null)
-                filterTMP.text = "\u25BC";
-            if (fRT != null)
-                fRT.sizeDelta = new Vector2(20f, 0f);
-            if (headerHLG != null)
-            {
-                var pad = headerHLG.padding;
-                headerHLG.padding = new RectOffset(26, pad.right, pad.top, pad.bottom);
-            }
-        }
-
-        private void HideFilterButton()
-        {
-            if (filterBtnGO != null)
-                filterBtnGO.SetActive(false);
-            ResetHeaderFilterPadding();
-        }
-
-        private void ResetHeaderFilterPadding()
-        {
-            if (headerHLG == null) return;
-            var pad = headerHLG.padding;
-            headerHLG.padding = new RectOffset(6, pad.right, pad.top, pad.bottom);
-        }
-
-        private static int ApplyColumnLimit(int cols, int dupeCount, StatusBarOptions opts)
-        {
-            int maxDupes = Mathf.Max(1, dupeCount);
-            int limited = Mathf.Clamp(cols, 1, maxDupes);
-            if (opts.MaxDupesPerRow > 0)
-                limited = Mathf.Min(limited, Mathf.Clamp(opts.MaxDupesPerRow, 1, 100));
-            return Mathf.Clamp(limited, 1, maxDupes);
-        }
-
-        private static int ApplyRowLimit(int displayRows, int totalRows,
-            StatusBarOptions opts, ref bool needsScroll, bool honorMaxRows)
-        {
-            int limitedRows = Mathf.Max(1, displayRows);
-            if (honorMaxRows && opts.MaxBarRows > 0)
-            {
-                int maxRows = Mathf.Clamp(opts.MaxBarRows, 1, 20);
-                if (limitedRows > maxRows)
-                    limitedRows = maxRows;
-                if (totalRows > maxRows)
-                    needsScroll = true;
-            }
-            return limitedRows;
-        }
-
-        private static float GetMaxAutoWidth(float canvasW, StatusBarOptions opts)
-        {
-            int percent = Mathf.Clamp(opts.MaxBarWidth, 10, 100);
-            float minWidth = MIN_CARD_SIZE + 10 + 8;
-            return Mathf.Max(minWidth, canvasW * percent / 100f);
-        }
-
-        private static void DeriveLayout(float W, float H, int N,
-            out int size, out int cols, out bool needsScroll, out bool flowVertical)
-        {
-            const int PAD_LR = 8, SPACING = 4;
-            const int CARD_W_OH = 10, CARD_H_OH = 22;
-            const int MAX_BOX_SIZE = 256;
-
-            float A = W - PAD_LR + SPACING;
-            float B0 = H - 8 + SPACING;
-
-            // Quadratic: find column count where width and height constraints balance.
-            // From sizeFromW = sizeFromH => B0*c^2 - 12*N*c - A*N = 0
-            float cIdeal = 1f;
-            if (B0 > 0f)
-            {
-                float disc = 36f * N * N + A * B0 * N;
-                cIdeal = (6f * N + Mathf.Sqrt(Mathf.Max(0f, disc))) / B0;
-            }
-
-            int cLo = Mathf.Clamp(Mathf.FloorToInt(cIdeal), 1, N);
-            int cHi = Mathf.Clamp(Mathf.CeilToInt(cIdeal), 1, N);
-
-            int bestSize = -1, bestCols = 1;
-
-            // Evaluate floor/ceil of ideal + boundary guards (1 and N)
-            for (int pass = 0; pass < 4; pass++)
-            {
-                int c = pass == 0 ? 1 : pass == 1 ? cLo : pass == 2 ? cHi : N;
-                int r = Mathf.CeilToInt((float)N / c);
-
-                float sizeFromW = A / c - SPACING - CARD_W_OH;
-
-                // First pass: baseline padding
-                float cellH = B0 / r - SPACING;
-                int s = Mathf.FloorToInt(Mathf.Min(sizeFromW, cellH - CARD_H_OH));
-                s = Mathf.Clamp(s, MIN_CARD_SIZE, MAX_BOX_SIZE);
-
-                // Badge overflow correction
-                float badge = Mathf.Max(9f, (s + 4) * 0.28f);
-                int padTop = Mathf.Max(4, Mathf.CeilToInt(badge * 0.35f));
-                float B2 = H - padTop - 4 + SPACING;
-                float cellH2 = B2 / r - SPACING;
-                s = Mathf.FloorToInt(Mathf.Clamp(
-                    Mathf.Min(sizeFromW, cellH2 - CARD_H_OH), MIN_CARD_SIZE, MAX_BOX_SIZE));
-
-                if (s >= bestSize)
-                {
-                    bestSize = s;
-                    bestCols = c;
-                }
-            }
-
-            if (bestSize < MIN_CARD_SIZE)
-            {
-                bestSize = MIN_CARD_SIZE;
-                float cellW_min = MIN_CARD_SIZE + CARD_W_OH + SPACING;
-                bestCols = Mathf.Clamp(
-                    Mathf.FloorToInt((W - PAD_LR + SPACING) / cellW_min), 1, N);
-                needsScroll = true;
-            }
-            else
-            {
-                needsScroll = false;
-            }
-
-            size = bestSize;
-            cols = bestCols;
-            int rows = Mathf.CeilToInt((float)N / cols);
-            flowVertical = rows > cols;
-        }
-
-        private void BuildResizeHandle(GameObject canvasGO)
-        {
-            // Parent is Canvas (NOT BarPanel) to avoid VLG interference.
-            // Position tracked in LateUpdate.
-            var gripGO = new GameObject("ResizeGrip");
-            gripGO.transform.SetParent(canvasGO.transform, false);
-            resizeGripRT = gripGO.AddComponent<RectTransform>();
-
-            resizeGripRT.pivot = new Vector2(1f, 0f);
-            resizeGripRT.sizeDelta = new Vector2(16f, 16f);
-
-            var gripImg = gripGO.AddComponent<Image>();
-            gripImg.sprite = MakeResizeGripSprite(32);
-            gripImg.color = Color.white;
-            gripImg.raycastTarget = true;
-
-            var handle = gripGO.AddComponent<ResizeHandle>();
-            handle.screen = this;
-        }
-
-        private void LogVisibilityDiagnostic()
-        {
-            DSBLog.Log("Visibility", "--- diagnostic start ---");
-
-            // Canvas state
-            var canvasGO = canvasRT != null ? canvasRT.gameObject : null;
-            var canvas = canvasGO != null ? canvasGO.GetComponent<Canvas>() : null;
-            DSBLog.Log("Visibility", $"Canvas GO active={canvasGO?.activeSelf} Canvas enabled={canvas?.enabled} sortOrder={canvas?.sortingOrder}");
-            var ecs = EffectiveCanvasSize();
-            DSBLog.Log("Visibility", $"Canvas raw rect={canvasRT?.rect.size} effective={ecs} scale={canvasScaler?.scaleFactor}");
-
-            // Parent chain - check if anything above us is disabled
-            var t = canvasGO != null ? canvasGO.transform.parent : null;
-            while (t != null)
-            {
-                if (!t.gameObject.activeSelf)
-                    DSBLog.Log("Visibility", $"INACTIVE PARENT: {t.name}");
-                t = t.parent;
-            }
-
-            // Management screen stuck?
-            bool screenOpen = Patches.ManagementMenu_ToggleScreen_Patch.IsScreenOpen;
-            DSBLog.Log("Visibility", $"ManagementScreen.IsScreenOpen={screenOpen}");
-            DSBLog.Log("Visibility", $"GameUI.HideUI={DebugHandler.HideUI} ScreenshotMode={DebugHandler.ScreenshotMode} TimelapseMode={DebugHandler.TimelapseMode}");
-
-            // Bar panel bounds
-            if (barPanel != null)
-            {
-                var corners = new Vector3[4];
-                barPanel.GetWorldCorners(corners);
-                DSBLog.Log("Visibility", $"BarPanel rect={barPanel.rect.size} anchoredPos={barPanel.anchoredPosition}");
-                DSBLog.Log("Visibility", $"BarPanel world corners: BL=({corners[0].x:F0},{corners[0].y:F0}) TR=({corners[2].x:F0},{corners[2].y:F0})");
-            }
-
-            // Scan all ScreenSpaceOverlay canvases for sort order conflicts
-            var allCanvases = FindObjectsOfType<Canvas>();
-            foreach (var c in allCanvases)
-            {
-                if (c.renderMode == RenderMode.ScreenSpaceOverlay && c.sortingOrder >= 90)
-                    DSBLog.Log("Visibility", $"Overlay canvas: \"{c.gameObject.name}\" sortOrder={c.sortingOrder} active={c.gameObject.activeInHierarchy}");
-            }
-
-            DSBLog.Log("Visibility", "--- diagnostic end ---");
-        }
-
-        private void LateUpdate()
-        {
-            // Hide bar when any management screen is open or the game UI is hidden for screenshots.
-            bool screenOpen = Patches.ManagementMenu_ToggleScreen_Patch.IsScreenOpen;
-            bool hideForGameUI = DebugHandler.HideUI;
-            if (canvasRT != null)
-                canvasRT.gameObject.SetActive(!screenOpen && !hideForGameUI);
-            if (screenOpen || hideForGameUI) return;
-
-            // Track resize grip to BarPanel's bottom-right corner
-            if (resizeGripRT == null || barPanel == null) return;
-
-            if (isCollapsed)
-            {
-                resizeGripRT.gameObject.SetActive(false);
-                return;
-            }
-
-            if (lastDupeCount <= 0)
-            {
-                resizeGripRT.gameObject.SetActive(false);
-                return;
-            }
-
-            resizeGripRT.gameObject.SetActive(true);
-            Vector3[] corners = new Vector3[4];
-            barPanel.GetWorldCorners(corners);
-            resizeGripRT.position = corners[3];
-        }
-
-        private static Sprite MakeResizeGripSprite(int sz)
-        {
-            var tex = new Texture2D(sz, sz, TextureFormat.RGBA32, false);
-            var pixels = new Color32[sz * sz];
-
-            // Two / lines near bottom-right corner.
-            // In texture space (y=0 bottom): / lines follow x - y = constant.
-            // Bottom-right corner is (sz-1, 0) where x-y = sz-1.
-            float c1 = sz * 0.7f;   // shorter line, closer to corner
-            float c2 = sz * 0.35f;  // longer line, further from corner
-            float hw = 1.2f;        // half-width for anti-aliasing
-
-            for (int y = 0; y < sz; y++)
-            {
-                for (int x = 0; x < sz; x++)
-                {
-                    float diag = x - y;
-                    float d1 = Mathf.Abs(diag - c1);
-                    float d2 = Mathf.Abs(diag - c2);
-                    float a = Mathf.Max(
-                        Mathf.Clamp01(1f - d1 / hw),
-                        Mathf.Clamp01(1f - d2 / hw));
-
-                    // Clip: keep 2px margin on all edges
-                    if (x < 2 || x > sz - 3 || y < 2 || y > sz - 3)
-                        a = 0f;
-
-                    pixels[y * sz + x] = new Color32(180, 180, 180,
-                        (byte)(a * 220));
-                }
-            }
-
-            tex.SetPixels32(pixels);
-            tex.Apply();
-            return Sprite.Create(tex,
-                new Rect(0, 0, sz, sz), new Vector2(1f, 0f));
-        }
-
-        // ── Collapse ────────────────────────────────────────────
-
-        private static void LoadFilterIcon(Image target)
-        {
-            string path = DuplicantStatusBarMod.ModPath;
-            if (string.IsNullOrEmpty(path)) return;
-            string file = System.IO.Path.Combine(path, "funnel.png");
-            if (!System.IO.File.Exists(file)) return;
-            var bytes = System.IO.File.ReadAllBytes(file);
-            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            if (!Core.ImageConversionHelper.LoadImage(tex, bytes)) return;
-
-            // Invert: dark pixels → white opaque, light pixels → transparent
-            var pixels = tex.GetPixels32();
-            for (int i = 0; i < pixels.Length; i++)
-            {
-                var p = pixels[i];
-                float lum = (p.r + p.g + p.b) / (3f * 255f);
-                byte alpha = (byte)((1f - lum) * 255f);
-                pixels[i] = new Color32(255, 255, 255, alpha);
-            }
-            tex.SetPixels32(pixels);
-            tex.Apply();
-            tex.filterMode = FilterMode.Bilinear;
-
-            target.sprite = Sprite.Create(tex,
-                new Rect(0, 0, tex.width, tex.height),
-                new Vector2(0.5f, 0.5f));
-        }
-
-        private void ToggleCollapse()
-        {
-            isCollapsed = !isCollapsed;
-            bool hasActiveDupes = DupeStatusTracker.ActiveWorldDupeCount > 0;
-            bool showContent = !isCollapsed && lastDupeCount > 0;
-            scrollViewGO.SetActive(showContent);
-            if (isCollapsed || !hasActiveDupes)
-                HideFilterButton();
-            else
-                UpdateGridLayout(lastDupeCount);
-            collapseLabel.text = isCollapsed ? "+" : "\u2212";
-            SaveState();
-            API.Internal.AlertRegistry.FireBarVisibilityChanged(!isCollapsed);
-        }
-
-        // ── Drag (EventSystem-driven) ─────────────────────────────
-
-        private sealed class HeaderDragHandler : MonoBehaviour,
-            IPointerDownHandler, IDragHandler, IEndDragHandler
-        {
-            internal StatusBarScreen screen;
-            private Vector2 dragStartLocal;
-            private Vector2 dragStartAnchored;
-
-            public void OnPointerDown(PointerEventData e)
-            {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    screen.canvasRT, e.position, null, out dragStartLocal);
-                dragStartAnchored = screen.barPanel.anchoredPosition;
-            }
-
-            public void OnDrag(PointerEventData e)
-            {
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    screen.canvasRT, e.position, null, out Vector2 current);
-                screen.barPanel.anchoredPosition =
-                    dragStartAnchored + (current - dragStartLocal);
-            }
-
-            public void OnEndDrag(PointerEventData e)
-            {
-                screen.ClampPanelPosition();
-                screen.SaveState();
-            }
-        }
-
-        // ── Resize (EventSystem-driven) ──────────────────────────
-
-        private sealed class ResizeHandle : MonoBehaviour,
-            IPointerDownHandler, IDragHandler, IPointerUpHandler
-        {
-            internal StatusBarScreen screen;
-            private float startY;
-            private float startBarHeightPx;
-            private float startX;
-            private float startBarWidthPx;
-            private bool xActivated;
-            private bool yActivated;
-            private const float DEAD_ZONE = 5f;
-
-            public void OnPointerDown(PointerEventData e)
-            {
-                startY = e.position.y;
-                startX = e.position.x;
-                startBarWidthPx = screen.barWidthPx;
-                startBarHeightPx = screen.barHeightPx;
-                xActivated = false;
-                yActivated = false;
-                screen.isDraggingResize = true;
-                if (screen.panelFitter != null)
-                {
-                    screen.panelFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-                    screen.panelFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
-                }
-            }
-
-            public void OnDrag(PointerEventData e)
-            {
-                var ecz = screen.EffectiveCanvasSize();
-                float canvasW = ecz.x;
-                float canvasH = ecz.y;
-                float panelLeft = screen.barPanel.anchoredPosition.x;
-                float panelTop  = -screen.barPanel.anchoredPosition.y;
-
-                float sf = screen.canvasScaler != null ? screen.canvasScaler.scaleFactor : 1f;
-                float deltaX = (e.position.x - startX) / sf;
-                float deltaY = (startY - e.position.y) / sf;
-
-                // Sticky dead zone: once activated, stays active for this drag
-                if (!xActivated && Mathf.Abs(deltaX) > DEAD_ZONE) xActivated = true;
-                if (!yActivated && Mathf.Abs(deltaY) > DEAD_ZONE) yActivated = true;
-
-                float minW = MIN_CARD_SIZE + 10 + 8;
-                float maxW = Mathf.Max(minW, canvasW - panelLeft);
-                float minH = MIN_CARD_SIZE + 22 + 8;
-                float maxH = Mathf.Max(minH, canvasH - panelTop);
-
-                // Only update activated axes; preserve current value (may be -1) otherwise
-                float newW, newH;
-                if (xActivated)
-                {
-                    float baseW = startBarWidthPx > 0
-                        ? startBarWidthPx : screen.GetCurrentBoxWidth();
-                    newW = Mathf.Clamp(baseW + deltaX, minW, maxW);
-                }
-                else
-                {
-                    newW = screen.barWidthPx;
-                }
-
-                if (yActivated)
-                {
-                    float baseH = startBarHeightPx > 0
-                        ? startBarHeightPx : screen.GetCurrentBoxHeight();
-                    newH = Mathf.Clamp(baseH + deltaY, minH, maxH);
-                }
-                else
-                {
-                    newH = screen.barHeightPx;
-                }
-
-                if (!Mathf.Approximately(newW, screen.barWidthPx) ||
-                    !Mathf.Approximately(newH, screen.barHeightPx))
-                {
-                    screen.barWidthPx = newW;
-                    screen.barHeightPx = newH;
-                    screen.forceRefresh = true;
-                }
-
-                // Direct panel sizing (CSF is disabled during drag)
-                if (screen.scrollViewLayout != null && screen.lastDupeCount > 0)
-                {
-                    screen.ComputeContentPreferredSizes(newW, newH,
-                        out float cW, out float cH);
-                    screen.scrollViewLayout.preferredWidth = cW;
-                    screen.scrollViewLayout.preferredHeight = Mathf.Max(0, cH);
-
-                    float headerH = screen.headerRT != null ? screen.headerRT.rect.height : 20f;
-                    screen.barPanel.sizeDelta = new Vector2(cW, cH + headerH);
-                }
-            }
-
-            public void OnPointerUp(PointerEventData e)
-            {
-                screen.isDraggingResize = false;
-                if (screen.panelFitter != null)
-                {
-                    screen.panelFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-                    screen.panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-                }
-                screen.ClampPanelPosition();
-                screen.StoreCurrentWorldBoxSize();
-                PlayerPrefs.SetFloat(PW, screen.barWidthPx);
-                PlayerPrefs.SetFloat(PH, screen.barHeightPx);
-                PlayerPrefs.Save();
             }
         }
 
@@ -1258,131 +415,6 @@ namespace DuplicantStatusBar.UI
             barWidthPx = -1f;
             barHeightPx = -1f;
             forceRefresh = true;
-        }
-
-        internal void ComputeContentPreferredSizes(float constraintW, float constraintH,
-            out float contentW, out float contentH)
-        {
-            int N = lastDupeCount;
-            if (N <= 0)
-            {
-                contentW = 0f;
-                contentH = 0f;
-                return;
-            }
-
-            float headerH = headerRT != null ? headerRT.rect.height : 20f;
-            var opts = StatusBarOptions.Instance;
-            float canvasW = EffectiveCanvasSize().x;
-
-            bool wCon = constraintW > 0;
-            bool hCon = constraintH > 0;
-            int sz, c;
-            bool scroll;
-
-            if (wCon && hCon)
-            {
-                // Box mode
-                DeriveLayout(constraintW, constraintH - headerH, N,
-                    out sz, out c, out scroll, out _);
-                c = ApplyColumnLimit(c, N, opts);
-            }
-            else if (wCon)
-            {
-                // Width-only
-                sz = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
-                int cellW = sz + 10;
-                c = Mathf.Clamp(
-                    Mathf.Max(1, Mathf.FloorToInt((constraintW - 8 + 4) / (cellW + 4))),
-                    1, N);
-                c = ApplyColumnLimit(c, N, opts);
-                scroll = false;
-            }
-            else if (hCon)
-            {
-                // Height-only
-                sz = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
-                int cellH = sz + 22;
-                int cardSzTmp = sz + 4;
-                float badgeTmp = Mathf.Max(9f, cardSzTmp * 0.28f);
-                int padTopTmp = Mathf.Max(4, Mathf.CeilToInt(badgeTmp * 0.35f));
-                int visRows = Mathf.Max(1, Mathf.FloorToInt(
-                    (constraintH - headerH - padTopTmp - 4 + 4) / (cellH + 4)));
-                c = Mathf.CeilToInt((float)N / visRows);
-                int cellW = sz + 10;
-                float layoutW = GetMaxAutoWidth(canvasW, opts);
-                int maxFit = Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (cellW + 4)));
-                c = Mathf.Clamp(c, 1, Mathf.Min(maxFit, N));
-                c = ApplyColumnLimit(c, N, opts);
-                int actualRows = Mathf.CeilToInt((float)N / c);
-                scroll = actualRows > visRows;
-            }
-            else
-            {
-                // Auto
-                sz = Mathf.Clamp(opts.PortraitSize, MIN_CARD_SIZE, 96);
-                int cellW = sz + 10;
-                float layoutW = GetMaxAutoWidth(canvasW, opts);
-                c = Mathf.Min(
-                    Mathf.Max(1, Mathf.FloorToInt((layoutW - 8 + 4) / (cellW + 4))),
-                    N);
-                c = ApplyColumnLimit(c, N, opts);
-                scroll = false;
-            }
-
-            int tW = sz + 10, tH = sz + 22;
-            int r = Mathf.CeilToInt((float)N / c);
-            int cardSz2 = sz + 4;
-            float badge = Mathf.Max(9f, cardSz2 * 0.28f);
-            int padTop = Mathf.Max(4, Mathf.CeilToInt(badge * 0.35f));
-
-            int displayR = r;
-            if (hCon)
-            {
-                int cellH = sz + 22;
-                int fitRows = Mathf.Max(1, Mathf.FloorToInt(
-                    (constraintH - headerH - padTop - 4 + 4) / (cellH + 4)));
-                if (r > fitRows || scroll)
-                {
-                    displayR = Mathf.Min(r, fitRows);
-                    scroll = r > displayR;
-                }
-            }
-            displayR = ApplyRowLimit(displayR, r, opts, ref scroll, !hCon);
-
-            contentW = c * tW + Mathf.Max(0, c - 1) * 4 + 4 + 4;
-            if (scroll) contentW += 12f;
-            contentH = displayR * (tH + 4) - 4 + padTop + 4;
-        }
-
-        internal float GetCurrentBoxWidth()
-        {
-            return scrollViewLayout != null ? scrollViewLayout.preferredWidth : 200f;
-        }
-
-        internal float GetCurrentBoxHeight()
-        {
-            return scrollViewLayout != null
-                ? scrollViewLayout.preferredHeight + (headerRT != null ? headerRT.rect.height : 20f)
-                : 100f;
-        }
-
-        private float MeasureFilterWidth()
-        {
-            if (filterTMP == null) return 80f;
-            float textW = filterTMP.GetPreferredValues((string)DSB.UI.POPUP_SORTFILTER).x;
-            return Mathf.Max(40f, Mathf.Ceil(textW + 8f));
-        }
-
-        private void ClampPanelPosition()
-        {
-            if (barPanel == null || canvasRT == null) return;
-            var cv  = EffectiveCanvasSize();
-            var sz  = barPanel.rect.size;
-            var pos = barPanel.anchoredPosition;
-            pos.x = Mathf.Clamp(pos.x, 0f, Mathf.Max(0f, cv.x - sz.x));
-            pos.y = Mathf.Clamp(pos.y, -(cv.y - 20f), 0f);
-            barPanel.anchoredPosition = pos;
         }
 
         // ── Persistence ─────────────────────────────────────────

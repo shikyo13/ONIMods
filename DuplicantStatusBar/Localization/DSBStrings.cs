@@ -22,6 +22,11 @@ namespace DuplicantStatusBar.Localization
                 public static LocString TOOLTIP_BATTERY = "Battery:";
                 public static LocString TOOLTIP_GUNK = "Gunk:";
                 public static LocString TOOLTIP_GEAR_OIL = "Gear Oil:";
+                public static LocString TOOLTIP_EQUIPMENT = "Equipment:";
+                public static LocString TOOLTIP_EQUIPMENT_SUIT = "Suit";
+                public static LocString TOOLTIP_EQUIPMENT_OUTFIT = "Outfit";
+                public static LocString TOOLTIP_EQUIPMENT_SHOES = "Shoes";
+                public static LocString TOOLTIP_EQUIPMENT_NONE = "none";
                 public static LocString POPUP_SORTBY = "Sort By";
                 public static LocString POPUP_FILTER = "Filter";
                 public static LocString POPUP_APPLY = "Apply";
@@ -141,6 +146,18 @@ namespace DuplicantStatusBar.Localization
                 {
                     public static LocString NAME = "Skill Points In Tooltip";
                     public static LocString DESC = "Show unspent skill points in the dupe hover tooltip.";
+                }
+
+                public static class SHOWSUITEQUIPMENTBADGE
+                {
+                    public static LocString NAME = "Suit Equipment Badge";
+                    public static LocString DESC = "Show a small portrait marker when a dupe is actively wearing a suit-slot item.";
+                }
+
+                public static class SHOWEQUIPMENTTOOLTIP
+                {
+                    public static LocString NAME = "Equipment In Tooltip";
+                    public static LocString DESC = "Show actively equipped suit, outfit, and shoes in the dupe hover tooltip.";
                 }
 
                 public static class CALMTHRESHOLD

@@ -50,6 +50,10 @@ Require-Regex $options '(?s)\[Option\("STRINGS\.DUPLICANTSTATUSBAR\.OPTIONS\.MAX
     'MaxBarRows must be exposed as a PLib option with a sane limit.'
 
 $screen = Read-ProjectFile 'UI\StatusBarScreen.cs'
+foreach ($screenPart in 'UI\StatusBarScreen.Worlds.cs', 'UI\StatusBarScreen.Layout.cs',
+    'UI\StatusBarScreen.Building.cs', 'UI\StatusBarScreen.Visibility.cs', 'UI\StatusBarScreen.DragResize.cs') {
+    $screen += "`n" + (Read-ProjectFile $screenPart)
+}
 Require-NotContains $screen 'if (dupeCount <= 0) return;' `
     'Zero-dupe active worlds must compact the bar instead of keeping the previous layout.'
 Require-Contains $screen 'ApplyEmptyLayout(DupeStatusTracker.ActiveWorldDupeCount > 0);' `
@@ -99,6 +103,16 @@ Require-Contains $tracker 'HasOxygenTank' `
     'Dupe snapshots must track whether bionic oxygen tank data was available.'
 Require-Contains $tracker 'BionicOxygenTank' `
     'DupeStatusTracker must read the ONI bionic oxygen tank amount.'
+Require-Contains $tracker 'bionicGunkAmount' `
+    'DupeStatusTracker must cache the ONI bionic gunk amount separately from bionic oil.'
+Require-Contains $tracker 'BionicGunk' `
+    'DupeStatusTracker must read the ONI BionicGunk amount for real gunk percentage.'
+Require-Regex $tracker '(?s)cache\.BionicGunk\s*=\s*bionicGunkAmount\?\.Lookup\(go\)' `
+    'DupeStatusTracker must look up the BionicGunk amount instance for bionic dupes.'
+Require-Regex $tracker '(?s)if \(cache\.BionicGunk != null\).*?snap\.GunkPercent = max > 0f \? cache\.BionicGunk\.value / max \* 100f : 0f;' `
+    'Bionic gunk tooltip percentage must come from actual BionicGunk amount value divided by max.'
+Require-NotContains $tracker 'snap.GunkPercent = (1f - oilPct) * 100f;' `
+    'Bionic gunk percentage must not be derived from inverse gear oil percentage.'
 
 $tooltip = Read-ProjectFile 'UI\DupeTooltip.cs'
 Require-Contains $tooltip 'TOOLTIP_OXYGEN_TANK' `

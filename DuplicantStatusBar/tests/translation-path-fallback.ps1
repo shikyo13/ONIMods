@@ -6,6 +6,7 @@ $ErrorActionPreference = 'Stop'
 
 $resolverPath = Join-Path $ProjectDir 'Patches\TranslationFileResolver.cs'
 $patchPath = Join-Path $ProjectDir 'Patches\TranslationPatch.cs'
+$screenPath = Join-Path $ProjectDir 'UI\StatusBarScreen.cs'
 $translationsDir = Join-Path $ProjectDir 'translations'
 $workshopDescriptionPath = Join-Path $ProjectDir 'workshop-description.txt'
 $workshopTitlePath = Join-Path $ProjectDir 'workshop-title.txt'
@@ -140,6 +141,38 @@ if ($workshopDescription -notmatch 'Bionic Booster') {
 }
 if ($workshopDescription -notmatch 'Prehistoric Planet') {
     throw "Workshop description must explicitly mention Prehistoric Planet compatibility"
+}
+
+$screenSource = Get-Content -LiteralPath $screenPath -Raw
+if ($screenSource -notmatch 'FindLocalizedGameFont') {
+    throw "StatusBarScreen must use localized font selection instead of a hard-coded single font."
+}
+if ($screenSource -notmatch 'BuildLocalizedFontSample') {
+    throw "StatusBarScreen must build the font probe from the active localized UI text."
+}
+if ($screenSource -notmatch 'GetCyrillicFallbackProbe') {
+    throw "StatusBarScreen must keep a Cyrillic fallback probe available for Russian text."
+}
+if ($screenSource -match '(?s)string localizedSample = string\.Concat\(.*?\\u0414\\u0443\\u043f\\u043b\\u0438\\u043a\\u0430\\u043d\\u0442\\u044b') {
+    throw "StatusBarScreen must not force Cyrillic into the normal localized sample for Latin locales."
+}
+if ($screenSource -notmatch 'SupportsText\(oniFont, localizedSample\)') {
+    throw "StatusBarScreen must keep ONI's native font when it supports the active localized UI text."
+}
+if ($screenSource -notmatch 'RequiresFallbackFont\(localizedSample\)') {
+    throw "StatusBarScreen must only force a fallback font for localized samples that need it."
+}
+if ($screenSource -notmatch 'SupportsText\(f, fallbackSample\)') {
+    throw "StatusBarScreen font selection must verify glyph coverage for localized UI text."
+}
+if ($screenSource -notmatch 'IsNotoSans\(f\) && SupportsText\(f, fallbackSample\)') {
+    throw "StatusBarScreen should prefer NotoSans only when it can render the fallback UI sample."
+}
+if ($screenSource -notmatch '\\u0414\\u0443\\u043f\\u043b\\u0438\\u043a\\u0430\\u043d\\u0442\\u044b') {
+    throw "StatusBarScreen font probe must include Cyrillic coverage for Russian UI text."
+}
+if ($screenSource -match 'GRAYSTROKE REGULAR SDF"\)\s*\?\?\s*System\.Array\.Find\(all, f => f\.name\.Contains\("NotoSans"\)\)') {
+    throw "StatusBarScreen must not prefer GRAYSTROKE before checking localized NotoSans glyph coverage."
 }
 
 Write-Output 'translation path fallback checks passed'

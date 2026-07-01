@@ -24,7 +24,7 @@ function Require-Regex([string]$Source, [string]$Pattern, [string]$Message) {
     }
 }
 
-$screen = Read-ProjectFile 'UI\StatusBarScreen.cs'
+$screen = Read-ProjectFile 'UI\StatusBarScreen.Visibility.cs'
 
 Require-Contains $screen 'DebugHandler.HideUI' `
     'The status bar must respect the game UI hide state used by Alt+S screenshot mode.'

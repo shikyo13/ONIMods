@@ -10,7 +10,7 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 | BuildThrough | `Core/BuildThroughMod.cs` | Initial commit |
 | OniProfiler | `Core/OniProfilerMod.cs` | Active  - see `OniProfiler/HANDOVER.md` for architecture |
 | GCBudget | `Core/GCBudgetMod.cs` | POC, alloc-gated gen0 GC collections |
-| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.10.0 - persistent dupe status HUD, skill point badges, stamina tooltip, bionic support, extensibility API |
+| DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.10.4 - persistent dupe status HUD, skill point badges, stamina tooltip, bionic support, extensibility API. Aquatic release verified; localized text font fallback fixed |
 
 ## ReplaceStuff Module Map
 
@@ -103,4 +103,9 @@ Track game updates that break mod behavior here.
 
 | Date | Game Build | What Broke | Fix |
 |-|-|-|-|
-| (none yet) | | | |
+| 2026-06-10 | U59-736385 (public_testing, The Big Splash/Aquatic) | Nothing in repo mods. All 5 verified: clean builds, 45/45 patch targets present, DSB live-validated (gate Build=736385 IntegerBreath=True). Third-party Better Automation Overlay broke (TypeLoadException, `ElementEntry` removed) and was auto-disabled by the game | None needed. Tools: `tools/check-patch-targets.ps1`, `DuplicantStatusBar/tests/compare-memberrefs.ps1` |
+
+## Update-Compat Tooling
+
+- `tools/check-patch-targets.ps1 -AssemblyPath <Assembly-CSharp.dll> -Pairs "Type::Method","Outer/Nested::Method","Type::#field"` - metadata-level check that Harmony string targets exist after a game update.
+- `DuplicantStatusBar/tests/compare-memberrefs.ps1 -OldDll <old build> -NewDll <new build>` - proves binary backwards compat: identical external MemberRef sets between a mod DLL built against old vs new game assemblies. Keep a known-good DLL per release (see `DuplicantStatusBar/debug/beta-compat/`).

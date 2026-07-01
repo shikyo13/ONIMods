@@ -25,6 +25,8 @@ namespace DuplicantStatusBar.UI
         private TextMeshProUGUI[] badgeSymbols = new TextMeshProUGUI[MAX_BADGES];
         private Image skillPointBadge;
         private TextMeshProUGUI skillPointText;
+        private Image equipmentBadge;
+        private TextMeshProUGUI equipmentBadgeText;
         private TextMeshProUGUI nameLabel;
         private LayoutElement rootLayout;
         private LayoutElement cardLayout;
@@ -213,6 +215,27 @@ namespace DuplicantStatusBar.UI
             if (StatusBarScreen.GameFont != null) skillPointText.font = StatusBarScreen.GameFont;
             Stretch(skillPointText.rectTransform);
 
+            equipmentBadge = AddImage(cardGO.transform, "EquipmentBadge");
+            equipmentBadge.sprite = Circle;
+            equipmentBadge.type = Image.Type.Simple;
+            equipmentBadge.color = ColorUtil.Hex(ColorUtil.Blue);
+            equipmentBadge.raycastTarget = false;
+            var ebrt = equipmentBadge.rectTransform;
+            ebrt.anchorMin = new Vector2(1f, 0f);
+            ebrt.anchorMax = new Vector2(1f, 0f);
+            ebrt.pivot = new Vector2(0.5f, 0.5f);
+            equipmentBadge.gameObject.SetActive(false);
+
+            equipmentBadgeText = AddText(equipmentBadge.transform, "Sym");
+            equipmentBadgeText.text = "S";
+            equipmentBadgeText.fontSize = 7f;
+            equipmentBadgeText.color = ColorUtil.DarkBase;
+            equipmentBadgeText.alignment = TextAlignmentOptions.Center;
+            equipmentBadgeText.fontStyle = FontStyles.Bold;
+            equipmentBadgeText.raycastTarget = false;
+            if (StatusBarScreen.GameFont != null) equipmentBadgeText.font = StatusBarScreen.GameFont;
+            Stretch(equipmentBadgeText.rectTransform);
+
             // ── Name label (below card) ───────────────────
             nameLabel = AddText(transform, "Name");
             nameLabel.fontSize = 12;
@@ -336,6 +359,7 @@ namespace DuplicantStatusBar.UI
             // Multi-badge with per-alert hysteresis
             UpdateBadges(snapshot.AlertMask, snapshot.CustomAlerts);
             UpdateSkillPointBadge(snapshot.AvailableSkillPoints, cardSz);
+            UpdateEquipmentBadge(snapshot, cardSz);
 
             // Resize
             rootLayout.preferredWidth = totalW;
@@ -383,6 +407,24 @@ namespace DuplicantStatusBar.UI
 
             float scale = text.Length <= 1 ? 0.62f : text.Length == 2 ? 0.48f : 0.34f;
             skillPointText.fontSize = Mathf.Max(6f, badgeSize * scale);
+        }
+
+        private void UpdateEquipmentBadge(DupeSnapshot snapshot, int cardSz)
+        {
+            bool show = StatusBarOptions.Instance.ShowSuitEquipmentBadge && snapshot.HasEquippedSuit;
+            equipmentBadge.gameObject.SetActive(show);
+            if (!show) return;
+
+            if (equipmentBadgeText.text != "S")
+                equipmentBadgeText.text = "S";
+
+            float badgeSize = Mathf.Clamp(
+                ALERT_BADGE_MIN_SIZE + Mathf.Max(0f, cardSz - 20f) * 0.20f * ALERT_BADGE_GROWTH_RATE,
+                ALERT_BADGE_MIN_SIZE, ALERT_BADGE_MAX_SIZE);
+            var rt = equipmentBadge.rectTransform;
+            rt.sizeDelta = new Vector2(badgeSize, badgeSize);
+            rt.anchoredPosition = new Vector2(-badgeSize * 0.58f, badgeSize * 0.58f);
+            equipmentBadgeText.fontSize = Mathf.Max(6f, badgeSize * 0.58f);
         }
 
         private void DestroyPortraitSprite()

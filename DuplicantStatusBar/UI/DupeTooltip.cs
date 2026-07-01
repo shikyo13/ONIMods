@@ -121,6 +121,7 @@ namespace DuplicantStatusBar.UI
                 var spc = ColorUtil.ToHtml(ColorUtil.Gold);
                 sb.AppendLine($"{DSB.UI.TOOLTIP_SKILLPOINTS} <color=#{spc}>{snap.AvailableSkillPoints} {DSB.UI.TOOLTIP_SKILLPOINTS_AVAILABLE}</color>");
             }
+            AppendEquipmentLines(snap);
             sb.AppendLine();
 
             var sc = ColorUtility.ToHtmlStringRGB(DupePortraitWidget.TierColor(snap.Tier));
@@ -282,6 +283,28 @@ namespace DuplicantStatusBar.UI
             if (ttCorners[0].y < 0f) pos.y -= ttCorners[0].y;
             if (ttCorners[2].y > Screen.height) pos.y -= (ttCorners[2].y - Screen.height);
             tooltipRT.position = pos;
+        }
+
+        private static void AppendEquipmentLines(DupeSnapshot snap)
+        {
+            if (!StatusBarOptions.Instance.ShowEquipmentInTooltip)
+                return;
+
+            if (!snap.HasEquipment)
+                return;
+
+            var valueColor = ColorUtil.ToHtml(ColorUtil.Blue);
+            AppendEquipmentPartLine((string)DSB.UI.TOOLTIP_EQUIPMENT_SUIT, snap.EquippedSuitName, valueColor);
+            AppendEquipmentPartLine((string)DSB.UI.TOOLTIP_EQUIPMENT_OUTFIT, snap.EquippedOutfitName, valueColor);
+            AppendEquipmentPartLine((string)DSB.UI.TOOLTIP_EQUIPMENT_SHOES, snap.EquippedShoesName, valueColor);
+        }
+
+        private static void AppendEquipmentPartLine(string label, string value, string color)
+        {
+            if (string.IsNullOrEmpty(value))
+                return;
+
+            sb.AppendLine($"{label}: <color=#{color}>{value}</color>");
         }
 
         public static void Hide()

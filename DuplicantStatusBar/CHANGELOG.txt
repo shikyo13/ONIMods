@@ -1,10 +1,21 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.10.4 - Cyrillic Text + Suit Equipment Display[/h2]
+[list]
+[*] [b]Fixed bionic gunk tooltip percentages[/b] - Gunk now reads ONI's actual BionicGunk amount instead of being estimated from inverse gear oil, so status bar tooltips match the game's bionic gunk value
+[*] [b]Fixed Cyrillic/Russian text rendering[/b] - DSB now keeps the normal ONI font for Latin text, but switches to a TMP font with Cyrillic glyph coverage when the active game locale needs it, fixing blank Russian names, labels, popup text, and tooltips
+[*] [b]Added suit equipment indicator[/b] - dupes wearing Atmo or Oxygen suits can show a small portrait suit indicator, making it easier to spot suited dupes from the status bar
+[*] [b]Added equipment info to the tooltip box[/b] - hover tooltips can now show equipped suit, outfit, and shoes using the real ONI equipment assignment state
+[*] [b]Cleaned up tooltip gear layout[/b] - gear now appears as direct Suit, Outfit, and Shoes lines without an extra generic Equipment label
+[*] [b]Kept prior Aquatic compatibility[/b] - includes the v2.10.3 Aquatic breath display and suffocation hardening
+[/list]
+
 [h2]v2.10.3 - Aquatic Compatibility[/h2]
 [list]
 [*] [b]Hardened suffocation detection[/b] - DSB no longer hard-binds to the old suffocation state path and avoids low-breath swimmer false positives on Aquatic builds
 [*] [b]Added Aquatic breath display support[/b] - normal duplicant breath can display as ONI's integer breath amount on Aquatic builds while older builds keep percentage tooltips
-[*] [b]Kept broad DLC compatibility[/b] - release remains a single build for current stable and Aquatic public testing, with no minimum build or DLC requirement changes
+[*] [b]Verified for the Aquatic release[/b] - checked against ONI build 23668350 with all DSB regression checks passing
+[*] [b]Kept broad DLC compatibility[/b] - release remains a single build for public and Aquatic-era builds, with no minimum build or DLC requirement changes
 [/list]
 
 [h2]v2.10.2 - Temperature Units + Screenshot Mode[/h2]

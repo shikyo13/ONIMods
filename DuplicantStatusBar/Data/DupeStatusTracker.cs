@@ -60,6 +60,9 @@ namespace DuplicantStatusBar.Data
         public AlertType HighestAlert;
         public uint AlertMask;
         public string ChoreDescription;
+        public string EquippedSuitName;
+        public string EquippedOutfitName;
+        public string EquippedShoesName;
         public KSelectable Selectable;
         public MinionIdentity Identity;
         public bool IsDiseased;
@@ -91,6 +94,13 @@ namespace DuplicantStatusBar.Data
         /// <summary>Tests whether a specific alert is active in this snapshot's bitmask.</summary>
         public bool HasAlert(AlertType a) => a != AlertType.None && (AlertMask & (uint)(1 << (int)a)) != 0;
 
+        public bool HasEquippedSuit => !string.IsNullOrEmpty(EquippedSuitName);
+
+        public bool HasEquipment =>
+            HasEquippedSuit ||
+            !string.IsNullOrEmpty(EquippedOutfitName) ||
+            !string.IsNullOrEmpty(EquippedShoesName);
+
         /// <summary>Priority-ordered alert types. First match in this array becomes HighestAlert.</summary>
         public static readonly AlertType[] AlertPriority = {
             AlertType.Incapacitated, AlertType.Suffocating, AlertType.LowHP,
@@ -119,7 +129,12 @@ namespace DuplicantStatusBar.Data
         private static Klei.AI.Amount staminaAmount;
         private static Klei.AI.Amount bionicBatteryAmount;
         private static Klei.AI.Amount bionicOilAmount;
+        private static Klei.AI.Amount bionicGunkAmount;
         private static Klei.AI.Amount bionicOxygenTankAmount;
+        private static AssignableSlot suitSlot;
+        private static AssignableSlot outfitSlot;
+        private static AssignableSlot shoesSlot;
+        private static bool equipmentSlotsSearched;
 
         // Stuck/Idle detection state
         private static bool firstTick = true;
@@ -149,6 +164,7 @@ namespace DuplicantStatusBar.Data
             public Health Health;
             public Navigator Navigator;
             public Klei.AI.Sicknesses Sicknesses;
+            public Equipment Equipment;
 
             public JoyBehaviourMonitor.Instance JoySMI;
             public CalorieMonitor.Instance CalorieSMI;
@@ -167,6 +183,7 @@ namespace DuplicantStatusBar.Data
             public Klei.AI.AmountInstance Stamina;
             public Klei.AI.AmountInstance BionicBattery;
             public Klei.AI.AmountInstance BionicOil;
+            public Klei.AI.AmountInstance BionicGunk;
             public Klei.AI.AmountInstance BionicOxygenTank;
 
             public bool IsBionic;
@@ -214,6 +231,7 @@ namespace DuplicantStatusBar.Data
             {
                 cache.BionicBattery = bionicBatteryAmount?.Lookup(go);
                 cache.BionicOil = bionicOilAmount?.Lookup(go);
+                cache.BionicGunk = bionicGunkAmount?.Lookup(go);
                 cache.BionicOxygenTank = bionicOxygenTankAmount?.Lookup(go);
             }
 
@@ -277,6 +295,7 @@ namespace DuplicantStatusBar.Data
                 var go = identity.gameObject;
                 int id = go.GetInstanceID();
                 var cache = GetOrCreateCache(id, go);
+                RefreshEquipmentCache(identity, cache);
 
                 var snap = new DupeSnapshot
                 {
@@ -335,6 +354,8 @@ namespace DuplicantStatusBar.Data
                         snap.ChoreDescription = chore.choreType.Name;
                 }
 
+                PopulateEquipment(ref snap, cache);
+
                 // Disease
                 snap.IsDiseased = cache.Sicknesses != null && cache.Sicknesses.IsInfected();
 
@@ -386,9 +407,13 @@ namespace DuplicantStatusBar.Data
                     {
                         float oilPct = cache.OilSMI.CurrentOilPercentage;
                         snap.GearOilPercent = oilPct * 100f;
-                        snap.GunkPercent = (1f - oilPct) * 100f;
                         snap.IsLowGearOil = oilPct <= 0.2f;
                         snap.IsGrindingGears = cache.OilSMI.CurrentOilMass <= 0f;
+                    }
+                    if (cache.BionicGunk != null)
+                    {
+                        float max = cache.BionicGunk.GetMax();
+                        snap.GunkPercent = max > 0f ? cache.BionicGunk.value / max * 100f : 0f;
                     }
                     if (cache.BionicOxygenTank != null)
                     {
@@ -567,6 +592,7 @@ namespace DuplicantStatusBar.Data
             staminaAmount = db.Amounts.Stamina;
             bionicBatteryAmount = db.Amounts.Get("BionicInternalBattery");
             bionicOilAmount = db.Amounts.Get("BionicOil");
+            bionicGunkAmount = db.Amounts.Get("BionicGunk");
             bionicOxygenTankAmount = db.Amounts.Get("BionicOxygenTank");
         }
 
@@ -648,6 +674,78 @@ namespace DuplicantStatusBar.Data
 
             var field = type.GetField(memberName, flags);
             return field?.GetValue(owner);
+        }
+
+        private static void RefreshEquipmentCache(MinionIdentity identity, DupeCache cache)
+        {
+            if (identity == null || cache == null || cache.Equipment != null)
+                return;
+
+            if (identity.assignableProxy == null)
+                return;
+
+            var proxy = identity.assignableProxy.Get();
+            if (proxy != null)
+                cache.Equipment = proxy.GetComponent<Equipment>();
+        }
+
+        private static void PopulateEquipment(ref DupeSnapshot snap, DupeCache cache)
+        {
+            if (cache?.Equipment == null)
+                return;
+
+            EnsureEquipmentSlots();
+            snap.EquippedSuitName = GetEquippedEquipmentName(cache.Equipment, suitSlot);
+            snap.EquippedOutfitName = GetEquippedEquipmentName(cache.Equipment, outfitSlot);
+            snap.EquippedShoesName = GetEquippedEquipmentName(cache.Equipment, shoesSlot);
+        }
+
+        private static void EnsureEquipmentSlots()
+        {
+            if (equipmentSlotsSearched)
+                return;
+
+            equipmentSlotsSearched = true;
+            suitSlot = ResolveAssignableSlot("Suit");
+            outfitSlot = ResolveAssignableSlot("Outfit");
+            shoesSlot = ResolveAssignableSlot("Shoes");
+        }
+
+        private static AssignableSlot ResolveAssignableSlot(string slotId)
+        {
+            var slots = Db.Get()?.AssignableSlots?.resources;
+            if (slots == null)
+                return null;
+
+            for (int i = 0; i < slots.Count; i++)
+            {
+                var slot = slots[i];
+                if (slot != null && string.Equals(slot.Id, slotId, StringComparison.Ordinal))
+                    return slot;
+            }
+            return null;
+        }
+
+        private static string GetEquippedEquipmentName(Equipment equipment, AssignableSlot slot)
+        {
+            if (equipment == null || slot == null)
+                return null;
+
+            try
+            {
+                var slotInstance = equipment.GetSlot(slot);
+                var equippable = slotInstance?.assignable as Equippable;
+                if (equippable == null || !equippable.isEquipped)
+                    return null;
+
+                string name = equippable.def.Name;
+                return string.IsNullOrEmpty(name) ? equippable.def.Id : name;
+            }
+            catch (Exception ex)
+            {
+                DSBLog.Log("Equipment", $"Unable to read equipped item: {ex.GetType().Name}");
+                return null;
+            }
         }
 
         private static StressTier ComputeTier(float stress, StatusBarOptions opts)

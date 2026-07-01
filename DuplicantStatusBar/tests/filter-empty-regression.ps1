@@ -49,6 +49,10 @@ Require-Regex $tracker '(?s)foreach \(var identity in dupes\).*?if \(identity ==
     'ActiveWorldDupeCount must count valid active-world dupes before portrait filters are applied.'
 
 $screen = Read-ProjectFile 'UI\StatusBarScreen.cs'
+foreach ($screenPart in 'UI\StatusBarScreen.Worlds.cs', 'UI\StatusBarScreen.Layout.cs',
+    'UI\StatusBarScreen.Building.cs', 'UI\StatusBarScreen.Visibility.cs', 'UI\StatusBarScreen.DragResize.cs') {
+    $screen += "`n" + (Read-ProjectFile $screenPart)
+}
 Require-Regex $screen 'ApplyEmptyLayout\(DupeStatusTracker\.ActiveWorldDupeCount > 0\);' `
     'Zero visible portraits must distinguish filtered-empty from truly empty active worlds.'
 Require-Regex $screen '(?s)private void ApplyEmptyLayout\(bool keepFilterAvailable\).*?scrollViewLayout\.preferredWidth = 0f;.*?scrollViewLayout\.preferredHeight = 0f;.*?if \(keepFilterAvailable && !isCollapsed\).*?ShowFullFilterButton\(\);.*?else.*?HideFilterButton\(\);.*?MarkBarLayoutForRebuild\(\);' `

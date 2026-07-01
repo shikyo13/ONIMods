@@ -114,9 +114,9 @@ Require-Contains $strings 'SHOWSKILLPOINTSTOOLTIP' `
     'Localization strings must include the ShowSkillPointsInTooltip option.'
 
 $project = Read-ProjectFile 'DuplicantStatusBar.csproj'
-Require-Contains $project '<AssemblyVersion>2.10.3.0</AssemblyVersion>' `
-    'AssemblyVersion must be bumped to 2.10.3.0.'
-Require-Contains $project '<FileVersion>2.10.3.0</FileVersion>' `
-    'FileVersion must be bumped to 2.10.3.0.'
+Require-Contains $project '<AssemblyVersion>2.10.4.0</AssemblyVersion>' `
+    'AssemblyVersion must be bumped to 2.10.4.0.'
+Require-Contains $project '<FileVersion>2.10.4.0</FileVersion>' `
+    'FileVersion must be bumped to 2.10.4.0.'
 
 Write-Output 'skill and stamina regression checks passed'
