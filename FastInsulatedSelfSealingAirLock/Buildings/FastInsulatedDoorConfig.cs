@@ -33,7 +33,7 @@ namespace FastInsulatedSelfSealingAirLock
             def.IsFoundation = true;
             def.TileLayer = ObjectLayer.FoundationTile;
             def.AudioCategory = "Metal";
-            def.PermittedRotations = PermittedRotations.Unrotatable;
+            def.PermittedRotations = PermittedRotations.R90;
             def.SceneLayer = Grid.SceneLayer.TileMain;
             def.ForegroundLayer = Grid.SceneLayer.InteriorWall;
 

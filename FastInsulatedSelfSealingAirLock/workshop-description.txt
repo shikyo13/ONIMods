@@ -9,6 +9,10 @@ Features
 * Door opening speed is configurable. Default is 5x a native manual airlock.
 * Supports Base Game and all current gameplay DLC through `supportedContent: ALL`.
 
+Version 0.3.1
+
+* Fixed completed-door spawn crashes in U59 by restoring the vanilla door rotation setting, which ensures ONI adds the Rotatable component that Door.OnSpawn now dereferences.
+
 Version 0.3.0
 
 * Rebuilt against the June 2026 ONI assemblies.
