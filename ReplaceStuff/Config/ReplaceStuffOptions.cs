@@ -4,7 +4,8 @@ using PeterHan.PLib.Options;
 namespace ReplaceStuff.Config
 {
     [JsonObject(MemberSerialization.OptIn)]
-    [ModInfo("Replace Stuff", "https://github.com/yourusername/ReplaceStuff")]
+    [ConfigFile("ReplaceStuff.json", false, true)]
+    [ModInfo("https://github.com/shikyo13/ONIMods/tree/master/ReplaceStuff")]
     [RestartRequired]
     public sealed class ReplaceStuffOptions : SingletonOptions<ReplaceStuffOptions>
     {

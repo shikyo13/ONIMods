@@ -1,17 +1,11 @@
-[h1]ReplaceStuff — Changelog[/h1]
+[h1]Replace Stuff - Changelog[/h1]
 
-[h2]v2.1 — Vanilla-Integrated Replacement[/h2]
+[h2]v1.0.0 - Initial Workshop Release[/h2]
 [list]
-[*] Complete rewrite: piggybacks on vanilla's tile replacement system instead of custom state machine
-[*] 7 replacement groups covering 14 vanilla buildings (beds, doors, generators, storage, toilets, wash stations)
-[*] Multi-cell tile cleanup with material refund for buildings over tiles
-[*] Soft modded-door compatibility (Fast Insulated Self Sealing Airlock Continued)
-[*] "Replacing X → Y" tooltip on hover
+[*] Vanilla-integrated replacement flow for same-footprint buildings
+[*] 7 replacement groups covering beds, doors, generators, storage, toilets, and wash stations
+[*] Multi-cell tile cleanup with material refund when replacing buildings over tiles
+[*] Soft modded-door compatibility for Fast Insulated Self-Sealing Airlock
+[*] "Replacing X -> Y" tooltip on hover
 [*] PLib options integration with EnableBuildings toggle
-[/list]
-
-[h2]v1.0 — Initial Release[/h2]
-[list]
-[*] Custom replacement system with tracker, ghost manager, and deconstruct→build chaining
-[*] Basic furniture replacement support
 [/list]

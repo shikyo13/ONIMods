@@ -28,7 +28,7 @@ namespace ReplaceStuff.Patches
                 int anchorCell = Grid.PosToCell(__instance.transform.GetPosition());
                 int[] cells = building.PlacementCells;
 
-                // Single-cell building — vanilla already handled it
+                // Single-cell building, vanilla already handled it
                 if (cells.Length <= 1)
                     return;
 

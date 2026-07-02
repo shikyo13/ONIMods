@@ -8,7 +8,7 @@ namespace ReplaceStuff.Patches
     ///
     /// With ReplacementLayer set permanently to ReplacementTravelTube, vanilla's
     /// TryBuild gate passes natively. However, vanilla's IsValidReplaceLocation
-    /// doesn't check CanReplace — so without this postfix, the build preview
+    /// doesn't check CanReplace, so without this postfix, the build preview
     /// would show green for ANY furniture on ANY other furniture (e.g. Bed on Door).
     ///
     /// This postfix rejects replacements where CanReplace fails (wrong group tag).
