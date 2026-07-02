@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <AssemblyTitle>Fast Insulated Self Sealing AirLock Continued</AssemblyTitle>
-    <Description>Community continuation of Neavo's Fast Insulated Self Sealing AirLock for current Oxygen Not Included DLC builds.</Description>
+    <AssemblyTitle>Fast Insulated Self Sealing Airlock Continued</AssemblyTitle>
+    <Description>Community continuation of Neavo's Fast Insulated Self Sealing Airlock for current Oxygen Not Included DLC builds.</Description>
     <Authors>ZeroTheAbsolute</Authors>
-    <RootNamespace>FastInsulatedSelfSealingAirLock</RootNamespace>
+    <RootNamespace>FastInsulatedSelfSealingAirlockContinued</RootNamespace>
     <AssemblyVersion>0.3.2.0</AssemblyVersion>
     <FileVersion>0.3.2.0</FileVersion>
     <LangVersion>8.0</LangVersion>
@@ -57,13 +57,13 @@
 
   <Target Name="DeployMod" AfterTargets="ILRepacking" Condition="'$(Configuration)' == 'Release'">
     <PropertyGroup>
-      <ModDeploy>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded\mods\dev\FastInsulatedSelfSealingAirLock\</ModDeploy>
+      <ModDeploy>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded\mods\dev\FastInsulatedSelfSealingAirlockContinued\</ModDeploy>
     </PropertyGroup>
     <MakeDir Directories="$(ModDeploy)" />
     <Delete Files="$(ModDeploy)PLib.*" TreatErrorsAsWarnings="true" />
     <Delete Files="$(ModDeploy)workshop-description.*" TreatErrorsAsWarnings="true" />
     <ItemGroup>
-      <ModDll Include="$(OutputPath)FastInsulatedSelfSealingAirLock.dll" />
+      <ModDll Include="$(OutputPath)FastInsulatedSelfSealingAirlockContinued.dll" />
       <ModMeta Include="$(ProjectDir)mod.yaml;$(ProjectDir)mod_info.yaml;$(ProjectDir)config.json;$(ProjectDir)NOTICE.md" />
       <ModPreview Include="$(ProjectDir)preview.gif" Condition="Exists('$(ProjectDir)preview.gif')" />
       <ModAnim Include="$(ProjectDir)anim\**\*.*" />

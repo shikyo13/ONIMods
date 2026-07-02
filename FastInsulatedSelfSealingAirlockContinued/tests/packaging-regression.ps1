@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 $projectDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$projectFile = Join-Path $projectDir 'FastInsulatedSelfSealingAirLock.csproj'
+$projectFile = Join-Path $projectDir 'FastInsulatedSelfSealingAirlockContinued.csproj'
 
 if (-not (Test-Path -LiteralPath $projectFile)) {
     throw "Missing project file at $projectFile"

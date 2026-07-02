@@ -1,4 +1,4 @@
-namespace FastInsulatedSelfSealingAirLock
+namespace FastInsulatedSelfSealingAirlockContinued
 {
     internal static class AirlockConstants
     {

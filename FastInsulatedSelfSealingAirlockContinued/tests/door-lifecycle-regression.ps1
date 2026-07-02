@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 $projectDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$dll = Join-Path $projectDir 'bin\Release\FastInsulatedSelfSealingAirLock.dll'
+$dll = Join-Path $projectDir 'bin\Release\FastInsulatedSelfSealingAirlockContinued.dll'
 
 if (-not (Test-Path -LiteralPath $dll)) {
     throw "Missing Release DLL at $dll. Build the project first."
@@ -21,11 +21,11 @@ function Get-DecompiledType([string] $typeName) {
     return $output -join "`n"
 }
 
-$doorPatches = Get-DecompiledType 'FastInsulatedSelfSealingAirLock.DoorSetSimStatePatch'
-$doorPatches += "`n" + (Get-DecompiledType 'FastInsulatedSelfSealingAirLock.DoorOnSpawnPatch')
-$doorPatches += "`n" + (Get-DecompiledType 'FastInsulatedSelfSealingAirLock.DoorCleanUpPatch')
-$helpers = Get-DecompiledType 'FastInsulatedSelfSealingAirLock.DoorPatchHelpers'
-$animPatch = Get-DecompiledType 'FastInsulatedSelfSealingAirLock.DoorAnimPatch'
+$doorPatches = Get-DecompiledType 'FastInsulatedSelfSealingAirlockContinued.DoorSetSimStatePatch'
+$doorPatches += "`n" + (Get-DecompiledType 'FastInsulatedSelfSealingAirlockContinued.DoorOnSpawnPatch')
+$doorPatches += "`n" + (Get-DecompiledType 'FastInsulatedSelfSealingAirlockContinued.DoorCleanUpPatch')
+$helpers = Get-DecompiledType 'FastInsulatedSelfSealingAirlockContinued.DoorPatchHelpers'
+$animPatch = Get-DecompiledType 'FastInsulatedSelfSealingAirlockContinued.DoorAnimPatch'
 
 if ($doorPatches -notmatch 'void Postfix\(Door __instance, IList<int> cells\)') {
     throw 'Door.SetSimState patch must be a postfix so vanilla sim work runs before self-sealing state is re-applied.'

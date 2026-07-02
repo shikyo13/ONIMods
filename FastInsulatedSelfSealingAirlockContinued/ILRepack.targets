@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <InputAssemblies Include="$(WorkingDirectory)\FastInsulatedSelfSealingAirLock.dll" />
+      <InputAssemblies Include="$(WorkingDirectory)\FastInsulatedSelfSealingAirlockContinued.dll" />
       <InputAssemblies Include="$(WorkingDirectory)\PLib*.dll" />
     </ItemGroup>
 
@@ -16,6 +16,6 @@
       InputAssemblies="@(InputAssemblies)"
       TargetKind="Dll"
       LibraryPath="$(GameManaged)"
-      OutputFile="$(WorkingDirectory)\FastInsulatedSelfSealingAirLock.dll" />
+      OutputFile="$(WorkingDirectory)\FastInsulatedSelfSealingAirlockContinued.dll" />
   </Target>
 </Project>

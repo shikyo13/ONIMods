@@ -10,7 +10,7 @@ ReplaceStuff fixes this by hooking into the game's built-in tile replacement sys
 Buildings can only replace others with the same footprint:
 [list]
 [*] [b]Beds[/b] (2x2) — Cot ↔ Comfy Bed
-[*] [b]Doors[/b] (1x2) — Manual Airlock ↔ Mechanized Airlock ↔ Pneumatic Door (+ Fast Insulated Self Sealing AirLock mod)
+[*] [b]Doors[/b] (1x2) — Manual Airlock ↔ Mechanized Airlock ↔ Pneumatic Door (+ Fast Insulated Self Sealing Airlock Continued mod)
 [*] [b]Generators 2x2[/b] — Manual Generator ↔ Wood Burner
 [*] [b]Generators 4x3[/b] — Hydrogen Generator ↔ Natural Gas Generator
 [*] [b]Storage[/b] (1x2) — Storage Bin ↔ Smart Storage Bin
@@ -24,7 +24,7 @@ Buildings can only replace others with the same footprint:
 [*] [b]Material refund[/b] — materials from the old building are returned automatically
 [*] [b]"Replacing X → Y" tooltip[/b] — hover over the placement ghost to see exactly what's being replaced
 [*] [b]Multi-cell cleanup[/b] — correctly handles buildings that span multiple tile cells
-[*] [b]Modded door support[/b] — compatible with Fast Insulated Self Sealing AirLock (auto-detected, no config needed)
+[*] [b]Modded door support[/b] — compatible with Fast Insulated Self Sealing Airlock Continued (auto-detected, no config needed)
 [*] [b]Configurable[/b] — toggle building replacement on/off via PLib mod options
 [/list]
 

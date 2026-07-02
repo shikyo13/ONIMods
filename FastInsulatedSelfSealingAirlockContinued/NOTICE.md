@@ -1,4 +1,4 @@
-# Fast Insulated Self Sealing AirLock Continued
+# Fast Insulated Self Sealing Airlock Continued
 
 This is a community continuation of Neavo's Steam Workshop mod "Fast Insulated Self Sealing AirLock" for Oxygen Not Included.
 
@@ -16,7 +16,7 @@ No explicit license file or source repository was found for Neavo's original mod
 
 Tuna's source repository is public at https://github.com/mrcyclo/ONIInsulatedSelfSealingAirLock, but no license file was found there.
 
-This continuation preserves the original building prefab ID for save compatibility, uses a distinct mod static ID, and credits the known authors and references. If an original author requests changes, credit adjustments, or removal, this continuation should be updated accordingly.
+This continuation preserves the original building prefab ID for save compatibility, uses the distinct `FastInsulatedSelfSealingAirlockContinued` mod static ID, and credits the known authors and references. If an original author requests changes, credit adjustments, or removal, this continuation should be updated accordingly.
 
 ## Save Compatibility
 

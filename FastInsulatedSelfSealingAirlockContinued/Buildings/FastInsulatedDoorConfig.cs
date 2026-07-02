@@ -2,7 +2,7 @@ using PeterHan.PLib.Options;
 using TUNING;
 using UnityEngine;
 
-namespace FastInsulatedSelfSealingAirLock
+namespace FastInsulatedSelfSealingAirlockContinued
 {
     internal sealed class FastInsulatedDoorConfig : IBuildingConfig
     {

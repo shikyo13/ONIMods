@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 $projectDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-$dll = Join-Path $projectDir 'bin\Release\FastInsulatedSelfSealingAirLock.dll'
+$dll = Join-Path $projectDir 'bin\Release\FastInsulatedSelfSealingAirlockContinued.dll'
 
 if (-not (Test-Path -LiteralPath $dll)) {
     throw "Missing Release DLL at $dll. Build the project first."

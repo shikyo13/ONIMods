@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 
-namespace FastInsulatedSelfSealingAirLock
+namespace FastInsulatedSelfSealingAirlockContinued
 {
     internal static class DoorPatchHelpers
     {

@@ -1,4 +1,4 @@
-namespace FastInsulatedSelfSealingAirLock
+namespace FastInsulatedSelfSealingAirlockContinued
 {
     public static class ModStrings
     {

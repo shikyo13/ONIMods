@@ -5,7 +5,7 @@
 [*] Complete rewrite: piggybacks on vanilla's tile replacement system instead of custom state machine
 [*] 7 replacement groups covering 14 vanilla buildings (beds, doors, generators, storage, toilets, wash stations)
 [*] Multi-cell tile cleanup with material refund for buildings over tiles
-[*] Soft modded-door compatibility (Fast Insulated Self Sealing AirLock)
+[*] Soft modded-door compatibility (Fast Insulated Self Sealing Airlock Continued)
 [*] "Replacing X → Y" tooltip on hover
 [*] PLib options integration with EnableBuildings toggle
 [/list]

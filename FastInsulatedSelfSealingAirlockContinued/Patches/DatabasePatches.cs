@@ -1,6 +1,6 @@
 using HarmonyLib;
 
-namespace FastInsulatedSelfSealingAirLock
+namespace FastInsulatedSelfSealingAirlockContinued
 {
     [HarmonyPatch(typeof(Db), nameof(Db.Initialize))]
     public static class DatabasePatches

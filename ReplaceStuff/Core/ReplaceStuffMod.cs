@@ -27,9 +27,9 @@ namespace ReplaceStuff.Core
 
         private static void PatchModdedDoors(Harmony harmony)
         {
-            // Fast Insulated Self Sealing AirLock (Workshop ID 3231839363)
-            // 1x2 door — fits the Door replacement group
-            TryPatchDoor(harmony, "FastInsulatedSelfSealingAirLock.Door");
+            // Fast Insulated Self Sealing Airlock Continued
+            // 1x2 door - fits the Door replacement group
+            TryPatchDoor(harmony, "FastInsulatedSelfSealingAirlockContinued.FastInsulatedDoorConfig");
         }
 
         private static void TryPatchDoor(Harmony harmony, string typeName)

@@ -4,9 +4,9 @@ using PeterHan.PLib.Core;
 using PeterHan.PLib.Database;
 using PeterHan.PLib.Options;
 
-namespace FastInsulatedSelfSealingAirLock
+namespace FastInsulatedSelfSealingAirlockContinued
 {
-    public sealed class FastInsulatedSelfSealingAirLockMod : UserMod2
+    public sealed class FastInsulatedSelfSealingAirlockContinuedMod : UserMod2
     {
         public override void OnLoad(Harmony harmony)
         {

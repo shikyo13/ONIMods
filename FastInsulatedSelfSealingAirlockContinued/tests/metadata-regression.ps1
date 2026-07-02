@@ -63,11 +63,15 @@ if ($minimumBuild -lt 737790) {
     throw "minimumSupportedBuild must be at least 737790 for the June 2026 SimMessages API change. Found $minimumBuild."
 }
 
-if ($yaml -notmatch '(?m)^staticID:\s*zerotheabsolute\.FastInsulatedSelfSealingAirLock\s*$') {
-    throw 'mod.yaml must use this continuation staticID to avoid impersonating the original workshop item.'
+if ($yaml -notmatch '(?m)^staticID:\s*FastInsulatedSelfSealingAirlockContinued\s*$') {
+    throw 'mod.yaml must use the FastInsulatedSelfSealingAirlockContinued continuation staticID.'
 }
 
-if ($yaml -notmatch '(?m)^title:\s*"Fast Insulated Self Sealing AirLock Continued"\s*$') {
+if ($yaml -match '(?m)^staticID:\s*(zerotheabsolute\.)?FastInsulatedSelfSealingAirLock\s*$') {
+    throw 'mod.yaml must not use the old FastInsulatedSelfSealingAirLock staticID.'
+}
+
+if ($yaml -notmatch '(?m)^title:\s*"Fast Insulated Self Sealing Airlock Continued"\s*$') {
     throw 'mod.yaml title must clearly identify this as the continued version.'
 }
 

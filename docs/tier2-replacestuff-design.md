@@ -41,7 +41,7 @@ Enables one-click replacement of same-footprint furniture buildings (e.g., Cot �
 Soft-patches third-party mods at runtime:
 - `AccessTools.TypeByName("Namespace.ClassName")`  - returns null if assembly not loaded
 - Manual `harmony.Patch(method, postfix: ...)` for runtime patching
-- Supported: **Fast Insulated Self Sealing AirLock** (Workshop 3231839363, class `FastInsulatedSelfSealingAirLock.Door`, 1×2)
+- Supported: **Fast Insulated Self Sealing Airlock Continued** (class `FastInsulatedSelfSealingAirlockContinued.FastInsulatedDoorConfig`, 1×2)
 
 ## Multi-Cell Tile Cleanup
 → `Patches/ConstructionPatches.cs`

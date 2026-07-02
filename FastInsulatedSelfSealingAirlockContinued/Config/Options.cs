@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using PeterHan.PLib.Options;
 
-namespace FastInsulatedSelfSealingAirLock
+namespace FastInsulatedSelfSealingAirlockContinued
 {
     [RestartRequired]
     [JsonObject(MemberSerialization.OptIn)]
