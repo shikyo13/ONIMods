@@ -10,7 +10,7 @@ namespace FastInsulatedSelfSealingAirLock
 
         public static class Building
         {
-            public static LocString NAME = "Fast Insulated Self Sealing AirLock";
+            public static LocString NAME = "Fast Insulated Self-Sealing Airlock";
             public static LocString EFFECT = "When set to AUTO or LOCKED, the airlock can be completely isolated from gas, liquid and temperature exchanges on both sides of the airlock.";
             public static LocString DESC = "Nothing special, just SUPER FAST!";
         }

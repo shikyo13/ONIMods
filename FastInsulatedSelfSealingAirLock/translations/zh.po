@@ -19,7 +19,7 @@ msgid "The multiplier base is the speed of the game's native Manual Airlock."
 msgstr "以游戏原生的手动气闸的速度为基数。"
 
 msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.NAME"
-msgid "Fast Insulated Self Sealing AirLock"
+msgid "Fast Insulated Self-Sealing Airlock"
 msgstr "快速密封隔热气闸"
 
 msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.EFFECT"
