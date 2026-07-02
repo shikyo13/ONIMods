@@ -1,8 +1,12 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
-[h2]v2.10.4 - Cyrillic Text + Suit Equipment Display[/h2]
+[h2]v2.10.5 - Bionic Gunk Tooltip Fix[/h2]
 [list]
 [*] [b]Fixed bionic gunk tooltip percentages[/b] - Gunk now reads ONI's actual BionicGunk amount instead of being estimated from inverse gear oil, so status bar tooltips match the game's bionic gunk value
+[/list]
+
+[h2]v2.10.4 - Cyrillic Text + Suit Equipment Display[/h2]
+[list]
 [*] [b]Fixed Cyrillic/Russian text rendering[/b] - DSB now keeps the normal ONI font for Latin text, but switches to a TMP font with Cyrillic glyph coverage when the active game locale needs it, fixing blank Russian names, labels, popup text, and tooltips
 [*] [b]Added suit equipment indicator[/b] - dupes wearing Atmo or Oxygen suits can show a small portrait suit indicator, making it easier to spot suited dupes from the status bar
 [*] [b]Added equipment info to the tooltip box[/b] - hover tooltips can now show equipped suit, outfit, and shoes using the real ONI equipment assignment state

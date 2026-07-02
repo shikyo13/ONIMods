@@ -1,7 +1,7 @@
 [h1]Duplicant Status Bar - All DLC Status HUD[/h1]
 A persistent bar at the top of your screen showing every duplicant on the current asteroid with the ability to click to focus. Think RimWorld's colonist bar, but for ONI. Does not break steam achievements.
 
-[h2]Latest Update - v2.10.4[/h2]
+[h2]Latest Update - v2.10.5[/h2]
 [list]
 [*] [b]Bionic gunk tooltip fix[/b] - Gunk now reads ONI's actual BionicGunk amount instead of being estimated from inverse gear oil, so status bar tooltips match the game's bionic gunk value.
 [*] [b]Equipment visibility[/b] - dupes wearing Atmo or Oxygen suits can show a small portrait badge, and hover tooltips can list equipped suit, outfit, and shoes.
