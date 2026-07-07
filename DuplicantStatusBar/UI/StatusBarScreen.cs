@@ -50,18 +50,629 @@ namespace DuplicantStatusBar.UI
 
         // Game font (ONI-native, with localized glyph fallback)
         private static TMPro.TMP_FontAsset _gameFont;
+        private static TMPro.TMP_FontAsset[] _fontAssets;
         private static bool _fontSearched;
+        private static bool _fontDiagnosticsLogged;
+        private static readonly HashSet<string> _textRenderDiagnosticsLogged =
+            new HashSet<string>();
+        private static System.Reflection.MethodInfo _forceMeshUpdate;
+        private static bool _forceMeshSearched;
         internal static TMPro.TMP_FontAsset GameFont
         {
             get
             {
-                if (_gameFont != null) return _gameFont;
-                if (_fontSearched) return null;
-                _fontSearched = true;
-                var all = Resources.FindObjectsOfTypeAll<TMPro.TMP_FontAsset>();
-                _gameFont = FindLocalizedGameFont(all);
+                EnsureFontCache();
                 return _gameFont;
             }
+        }
+
+        internal static TMPro.TMP_FontAsset FontForText(string text)
+        {
+            EnsureFontCache();
+
+            var gameFont = _gameFont;
+            if (gameFont != null)
+                return gameFont;
+
+            var all = _fontAssets;
+            if (all == null || all.Length == 0)
+                return null;
+
+            return GetCurrentLocalizedFont(all)
+                ?? TMPro.TMP_Settings.defaultFontAsset
+                ?? GetFirstTmpSettingsFallbackFont()
+                ?? all[0];
+        }
+
+        internal static void ApplyFontForText(TMPro.TMP_Text tmp, string text)
+        {
+            if (tmp == null)
+                return;
+
+            var font = FontForText(text);
+            if (font != null && !ReferenceEquals(tmp.font, font))
+                tmp.font = font;
+        }
+
+        private static TMPro.TMP_FontAsset FindDirectFallbackFontForText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return null;
+
+            EnsureFontCache();
+            var all = _fontAssets;
+            var gameFont = _gameFont;
+
+            var localizedFont = GetCurrentLocalizedFont(all);
+            if (SupportsDirectFallback(localizedFont, gameFont, text))
+                return localizedFont;
+            if (SupportsDirectFallback(TMPro.TMP_Settings.defaultFontAsset, gameFont, text))
+                return TMPro.TMP_Settings.defaultFontAsset;
+
+            var tmpFallback = FindDirectFallbackInFonts(TMPro.TMP_Settings.fallbackFontAssets, gameFont, text);
+            if (tmpFallback != null)
+                return tmpFallback;
+
+            var primaryFallback = FindDirectFallbackInFonts(
+                gameFont?.fallbackFontAssetTable, gameFont, text);
+            if (primaryFallback != null)
+                return primaryFallback;
+
+            if (all != null)
+            {
+                for (int i = 0; i < all.Length; i++)
+                {
+                    var font = all[i];
+                    if (IsNotoSans(font) && SupportsDirectFallback(font, gameFont, text))
+                        return font;
+                }
+
+                for (int i = 0; i < all.Length; i++)
+                {
+                    var font = all[i];
+                    if (SupportsDirectFallback(font, gameFont, text))
+                        return font;
+                }
+            }
+
+            return null;
+        }
+
+        private static TMPro.TMP_FontAsset FindDirectFallbackInFonts(
+            IEnumerable<TMPro.TMP_FontAsset> fonts,
+            TMPro.TMP_FontAsset primaryFont,
+            string text)
+        {
+            if (fonts == null)
+                return null;
+
+            foreach (var font in fonts)
+            {
+                if (SupportsDirectFallback(font, primaryFont, text))
+                    return font;
+            }
+
+            return null;
+        }
+
+        private static bool SupportsDirectFallback(
+            TMPro.TMP_FontAsset candidate,
+            TMPro.TMP_FontAsset primaryFont,
+            string text)
+        {
+            return candidate != null &&
+                !ReferenceEquals(candidate, primaryFont) &&
+                SupportsText(candidate, text, false);
+        }
+
+        internal static string BuildTextRenderDiagnostic(TMPro.TMP_Text tmp, string text)
+        {
+            EnsureFontCache();
+
+            var font = tmp != null ? tmp.font : FontForText(text);
+            return $"primaryFont={FontAssetName(font)}" +
+                $" supportsText={SupportsText(font, text)}" +
+                $" supportsTextDirect={SupportsText(font, text, false)}" +
+                $" directFallbackFont={FontAssetName(FindDirectFallbackFontForText(text))}" +
+                $" fallbackFonts={BuildFallbackFontSummary(font)}" +
+                $" tmpSettingsFallbackFonts={BuildTmpSettingsFallbackSummary()}";
+        }
+
+        internal static void LogTextRenderDiagnostics(
+            string context,
+            TMPro.TextMeshProUGUI label,
+            string text)
+        {
+            if (!DSBLog.Active || label == null)
+                return;
+
+            string scriptClass = ClassifyDiagnosticScript(text);
+            if (scriptClass == "Ascii")
+                return;
+
+            string diagnosticContext = string.IsNullOrEmpty(context) ? "Text" : context;
+            string onceKey = diagnosticContext + ":" + scriptClass;
+            if (_textRenderDiagnosticsLogged.Contains(onceKey))
+                return;
+            _textRenderDiagnosticsLogged.Add(onceKey);
+
+            Vector2 textPreferred = Vector2.zero;
+            try { textPreferred = label.GetPreferredValues(text ?? ""); } catch { }
+            SafeForceMeshUpdate(label);
+
+            Rect rect = label.rectTransform != null ? label.rectTransform.rect : default(Rect);
+            DSBLog.Log("Font",
+                $"textRenderDiagnostic context={diagnosticContext}" +
+                $" script={scriptClass}" +
+                $" {BuildTextRenderDiagnostic(label, text)}" +
+                $" textLength={(text != null ? text.Length : 0)}" +
+                $" component={label.GetType().FullName}" +
+                $" textObjectPath={BuildTransformPath(label.transform)}" +
+                $" activeSelf={label.gameObject.activeSelf}" +
+                $" activeInHierarchy={label.gameObject.activeInHierarchy}" +
+                $" enabled={label.enabled}" +
+                $" maskable={label.maskable}" +
+                $" canvasCull={(label.canvasRenderer != null && label.canvasRenderer.cull)}" +
+                $" cullTransparentMesh={(label.canvasRenderer != null && label.canvasRenderer.cullTransparentMesh)}" +
+                $" richText={label.richText}" +
+                $" fontStyle={label.fontStyle}" +
+                $" alignment={label.alignment}" +
+                $" verticalAlignment={label.verticalAlignment}" +
+                $" textWrapping={label.textWrappingMode}" +
+                $" overflow={label.overflowMode}" +
+                $" fontSize={label.fontSize:F1}" +
+                $" tmpPreferred={textPreferred.x:F1}x{textPreferred.y:F1}" +
+                $" rect={rect.width:F1}x{rect.height:F1}" +
+                $" rectTransform={BuildRectTransformSummary(label.rectTransform)}" +
+                $" worldCorners={BuildWorldCornerSummary(label.rectTransform)}" +
+                $" canvas={BuildCanvasSummary(label)}" +
+                $" stencilDepth={BuildStencilDepth(label.transform)}" +
+                $" masks={BuildMaskChain(label.transform)}" +
+                $" canvasRenderer={BuildCanvasRendererSummary(label.canvasRenderer)}" +
+                $" fontSharedMaterial={MaterialSummary(label.fontSharedMaterial)}" +
+                $" materialForRendering={MaterialSummary(label.materialForRendering)}" +
+                $" materialProps={ShaderPropertySummary(label.materialForRendering)}" +
+                $" materialSlots={BuildMaterialSlotSummary(label.textInfo)}" +
+                $" charDetails={BuildCharacterDetails(label.textInfo)}" +
+                $" mesh={BuildMeshSummary(label.textInfo)}" +
+                $" subMeshes={BuildSubMeshSummary(label)}");
+        }
+
+        private static string ClassifyDiagnosticScript(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "Ascii";
+
+            bool latinExtended = false;
+            bool nonAsciiLetter = false;
+            bool otherNonAscii = false;
+            foreach (char c in text)
+            {
+                if (c <= 0x7F)
+                    continue;
+
+                int code = c;
+                if ((code >= 0x4E00 && code <= 0x9FFF) ||
+                    (code >= 0x3400 && code <= 0x4DBF) ||
+                    (code >= 0x3040 && code <= 0x30FF) ||
+                    (code >= 0xAC00 && code <= 0xD7AF))
+                    return "CJK";
+                if (code >= 0x0400 && code <= 0x052F)
+                    return "Cyrillic";
+                if ((code >= 0x00C0 && code <= 0x024F) ||
+                    (code >= 0x1E00 && code <= 0x1EFF))
+                    latinExtended = true;
+                else if (char.IsLetter(c))
+                    nonAsciiLetter = true;
+                else
+                    otherNonAscii = true;
+            }
+
+            if (latinExtended)
+                return "LatinExtended";
+            if (nonAsciiLetter)
+                return "NonAsciiLetter";
+            return otherNonAscii ? "OtherNonAscii" : "Ascii";
+        }
+
+        private static void SafeForceMeshUpdate(TMPro.TMP_Text label)
+        {
+            if (label == null)
+                return;
+
+            try
+            {
+                if (!_forceMeshSearched)
+                {
+                    _forceMeshSearched = true;
+                    _forceMeshUpdate = typeof(TMPro.TMP_Text).GetMethod("ForceMeshUpdate",
+                        new[] { typeof(bool), typeof(bool) })
+                        ?? typeof(TMPro.TMP_Text).GetMethod("ForceMeshUpdate",
+                            new[] { typeof(bool) })
+                        ?? typeof(TMPro.TMP_Text).GetMethod("ForceMeshUpdate",
+                            System.Type.EmptyTypes);
+                }
+
+                if (_forceMeshUpdate == null)
+                    return;
+
+                var parameters = _forceMeshUpdate.GetParameters();
+                object[] args = parameters.Length == 2
+                    ? new object[] { false, false }
+                    : parameters.Length == 1
+                        ? new object[] { false }
+                        : null;
+                _forceMeshUpdate.Invoke(label, args);
+            }
+            catch
+            {
+            }
+        }
+
+        private static string BuildTransformPath(Transform transform)
+        {
+            if (transform == null)
+                return "none";
+
+            var parts = new List<string>();
+            var current = transform;
+            while (current != null)
+            {
+                parts.Add(current.name);
+                current = current.parent;
+            }
+            parts.Reverse();
+            return string.Join("/", parts.ToArray());
+        }
+
+        private static string BuildRectTransformSummary(RectTransform rt)
+        {
+            if (rt == null)
+                return "none";
+
+            return $"anchorMin={Vector2Summary(rt.anchorMin)}" +
+                $"/anchorMax={Vector2Summary(rt.anchorMax)}" +
+                $"/pivot={Vector2Summary(rt.pivot)}" +
+                $"/anchored={Vector2Summary(rt.anchoredPosition)}" +
+                $"/sizeDelta={Vector2Summary(rt.sizeDelta)}" +
+                $"/localScale={Vector3Summary(rt.localScale)}" +
+                $"/lossyScale={Vector3Summary(rt.lossyScale)}";
+        }
+
+        private static string BuildWorldCornerSummary(RectTransform rt)
+        {
+            if (rt == null)
+                return "none";
+
+            var corners = new Vector3[4];
+            rt.GetWorldCorners(corners);
+            return "bl=" + Vector3Summary(corners[0]) +
+                "/tl=" + Vector3Summary(corners[1]) +
+                "/tr=" + Vector3Summary(corners[2]) +
+                "/br=" + Vector3Summary(corners[3]);
+        }
+
+        private static string BuildCanvasSummary(TMPro.TextMeshProUGUI label)
+        {
+            if (label == null)
+                return "none";
+
+            var canvas = label.GetComponentInParent<Canvas>();
+            if (canvas == null)
+                return "none";
+
+            var root = canvas.rootCanvas;
+            return $"name={canvas.name}" +
+                $"/root={(root != null ? root.name : "none")}" +
+                $"/renderMode={canvas.renderMode}" +
+                $"/sortingLayer={canvas.sortingLayerID}" +
+                $"/sortingOrder={canvas.sortingOrder}" +
+                $"/overrideSorting={canvas.overrideSorting}" +
+                $"/scaleFactor={canvas.scaleFactor:F3}" +
+                $"/pixelPerfect={canvas.pixelPerfect}" +
+                $"/worldCamera={(canvas.worldCamera != null ? canvas.worldCamera.name : "none")}";
+        }
+
+        private static int BuildStencilDepth(Transform transform)
+        {
+            if (transform == null)
+                return -1;
+
+            try
+            {
+                var stopAfter = MaskUtilities.FindRootSortOverrideCanvas(transform);
+                return MaskUtilities.GetStencilDepth(transform, stopAfter);
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        private static string BuildMaskChain(Transform transform)
+        {
+            if (transform == null)
+                return "0[]";
+
+            var sb = new System.Text.StringBuilder();
+            int count = 0;
+            var current = transform;
+            while (current != null)
+            {
+                var mask = current.GetComponent<Mask>();
+                var rectMask = current.GetComponent<RectMask2D>();
+                if (mask != null || rectMask != null)
+                {
+                    if (count > 0)
+                        sb.Append(", ");
+                    sb.Append(current.name);
+                    if (mask != null)
+                        sb.Append(":Mask(show=").Append(mask.showMaskGraphic)
+                            .Append("/enabled=").Append(mask.enabled)
+                            .Append("/active=").Append(mask.IsActive()).Append(")");
+                    if (rectMask != null)
+                        sb.Append(":RectMask2D(enabled=").Append(rectMask.enabled)
+                            .Append("/active=").Append(rectMask.IsActive()).Append(")");
+                    count++;
+                }
+                current = current.parent;
+            }
+
+            return count + "[" + sb + "]";
+        }
+
+        private static string BuildCanvasRendererSummary(CanvasRenderer renderer)
+        {
+            if (renderer == null)
+                return "none";
+
+            string material0 = "none";
+            try { material0 = MaterialName(renderer.GetMaterial()); } catch { }
+            Color color = Color.white;
+            try { color = renderer.GetColor(); } catch { }
+
+            return $"cull={renderer.cull}" +
+                $"/cullTransparentMesh={renderer.cullTransparentMesh}" +
+                $"/hasRectClipping={renderer.hasRectClipping}" +
+                $"/materialCount={renderer.materialCount}" +
+                $"/material0={material0}" +
+                $"/absoluteDepth={renderer.absoluteDepth}" +
+                $"/relativeDepth={renderer.relativeDepth}" +
+                $"/alpha={renderer.GetAlpha():F3}" +
+                $"/inheritedAlpha={renderer.GetInheritedAlpha():F3}" +
+                $"/color={ColorSummary(color)}";
+        }
+
+        private static string BuildMaterialSlotSummary(TMPro.TMP_TextInfo textInfo)
+        {
+            var meshes = textInfo?.meshInfo;
+            if (meshes == null || meshes.Length == 0)
+                return "0[]";
+
+            var sb = new System.Text.StringBuilder();
+            int count = System.Math.Min(meshes.Length, 8);
+            for (int i = 0; i < count; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                var mesh = meshes[i].mesh;
+                var bounds = mesh != null ? mesh.bounds : default(Bounds);
+                sb.Append(i)
+                    .Append(":material=").Append(MaterialName(meshes[i].material))
+                    .Append("/vertexCount=").Append(meshes[i].vertexCount)
+                    .Append("/meshVerts=").Append(mesh != null ? mesh.vertexCount : 0)
+                    .Append("/bounds=").Append(BoundsSummary(bounds))
+                    .Append("/firstAlpha=").Append(FirstMeshAlpha(meshes[i]));
+            }
+            if (meshes.Length > count)
+                sb.Append(", ...");
+            return meshes.Length + "[" + sb + "]";
+        }
+
+        private static string BuildCharacterDetails(TMPro.TMP_TextInfo textInfo)
+        {
+            if (textInfo == null || textInfo.characterCount == 0)
+                return "0[]";
+
+            var sb = new System.Text.StringBuilder();
+            int count = System.Math.Min(textInfo.characterCount, 16);
+            for (int i = 0; i < count; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                var info = textInfo.characterInfo[i];
+                sb.Append(i)
+                    .Append(":U+").Append(((int)info.character).ToString("X4"))
+                    .Append("/visible=").Append(info.isVisible)
+                    .Append("/mat=").Append(info.materialReferenceIndex)
+                    .Append("/font=").Append(FontAssetName(info.fontAsset))
+                    .Append("/material=").Append(MaterialName(info.material))
+                    .Append("/vertex=").Append(info.vertexIndex)
+                    .Append("/point=").Append(info.pointSize.ToString("F1"))
+                    .Append("/scale=").Append(info.scale.ToString("F3"))
+                    .Append("/origin=").Append(info.origin.ToString("F1"))
+                    .Append("/xAdvance=").Append(info.xAdvance.ToString("F1"))
+                    .Append("/asc=").Append(info.ascender.ToString("F1"))
+                    .Append("/desc=").Append(info.descender.ToString("F1"))
+                    .Append("/color=").Append(Color32Summary(info.color))
+                    .Append("/bl=").Append(Vector3Summary(info.bottomLeft))
+                    .Append("/tr=").Append(Vector3Summary(info.topRight));
+            }
+            if (textInfo.characterCount > count)
+                sb.Append(", ...");
+            return textInfo.characterCount + "[" + sb + "]";
+        }
+
+        private static string BuildMeshSummary(TMPro.TMP_TextInfo textInfo)
+        {
+            var meshes = textInfo?.meshInfo;
+            if (meshes == null || meshes.Length == 0)
+                return "0[]";
+
+            var sb = new System.Text.StringBuilder();
+            int count = System.Math.Min(meshes.Length, 8);
+            for (int i = 0; i < count; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                var colors = meshes[i].colors32;
+                int alpha = colors != null && colors.Length > 0 ? colors[0].a : -1;
+                sb.Append(i)
+                    .Append(":verts=").Append(meshes[i].vertexCount)
+                    .Append("/colors=").Append(colors != null ? colors.Length : 0)
+                    .Append("/a0=").Append(alpha);
+            }
+            if (meshes.Length > count)
+                sb.Append(", ...");
+            return meshes.Length + "[" + sb + "]";
+        }
+
+        private static string BuildSubMeshSummary(TMPro.TextMeshProUGUI label)
+        {
+            if (label == null)
+                return "0[]";
+
+            var subMeshes = label.GetComponentsInChildren<TMPro.TMP_SubMeshUI>(true);
+            if (subMeshes == null || subMeshes.Length == 0)
+                return "0[]";
+
+            var sb = new System.Text.StringBuilder();
+            int count = System.Math.Min(subMeshes.Length, 8);
+            for (int i = 0; i < count; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                var sub = subMeshes[i];
+                var mesh = sub != null ? sub.mesh : null;
+                sb.Append(i)
+                    .Append(":name=").Append(sub != null ? sub.name : "none")
+                    .Append("/path=").Append(sub != null ? BuildTransformPath(sub.transform) : "none")
+                    .Append("/active=").Append(sub != null && sub.gameObject.activeInHierarchy)
+                    .Append("/enabled=").Append(sub != null && sub.enabled)
+                    .Append("/maskable=").Append(sub != null && sub.maskable)
+                    .Append("/font=").Append(sub != null ? FontAssetName(sub.fontAsset) : "none")
+                    .Append("/sprite=").Append(sub != null && sub.spriteAsset != null ? sub.spriteAsset.name : "none")
+                    .Append("/sharedMaterial=").Append(sub != null ? MaterialSummary(sub.sharedMaterial) : "none")
+                    .Append("/fallbackMaterial=").Append(sub != null ? MaterialSummary(sub.fallbackMaterial) : "none")
+                    .Append("/fallbackSourceMaterial=").Append(sub != null ? MaterialSummary(sub.fallbackSourceMaterial) : "none")
+                    .Append("/materialForRendering=").Append(sub != null ? MaterialSummary(sub.materialForRendering) : "none")
+                    .Append("/materialProps=").Append(sub != null ? ShaderPropertySummary(sub.materialForRendering) : "none")
+                    .Append("/canvasRenderer=").Append(sub != null ? BuildCanvasRendererSummary(sub.canvasRenderer) : "none")
+                    .Append("/meshVerts=").Append(mesh != null ? mesh.vertexCount : 0)
+                    .Append("/meshBounds=").Append(mesh != null ? BoundsSummary(mesh.bounds) : "none")
+                    .Append("/rect=").Append(sub != null ? BuildRectTransformSummary(sub.rectTransform) : "none")
+                    .Append("/worldCorners=").Append(sub != null ? BuildWorldCornerSummary(sub.rectTransform) : "none")
+                    .Append("/stencilDepth=").Append(sub != null ? BuildStencilDepth(sub.transform) : -1);
+            }
+            if (subMeshes.Length > count)
+                sb.Append(", ...");
+            return subMeshes.Length + "[" + sb + "]";
+        }
+
+        private static int FirstMeshAlpha(TMPro.TMP_MeshInfo meshInfo)
+        {
+            var colors = meshInfo.colors32;
+            return colors != null && colors.Length > 0 ? colors[0].a : -1;
+        }
+
+        private static string MaterialSummary(Material material)
+        {
+            if (material == null)
+                return "none";
+
+            string shader = material.shader != null ? material.shader.name : "none";
+            string texture = "none";
+            try
+            {
+                var mainTexture = material.mainTexture;
+                texture = mainTexture != null ? mainTexture.name : "none";
+            }
+            catch
+            {
+            }
+            return MaterialName(material) +
+                $"/shader={shader}" +
+                $"/queue={material.renderQueue}" +
+                $"/mainTex={texture}";
+        }
+
+        private static string MaterialName(Material material)
+        {
+            return material != null ? material.name : "none";
+        }
+
+        private static string ShaderPropertySummary(Material material)
+        {
+            if (material == null)
+                return "none";
+
+            var sb = new System.Text.StringBuilder();
+            AppendMaterialFloat(sb, material, "_Stencil");
+            AppendMaterialFloat(sb, material, "_StencilComp");
+            AppendMaterialFloat(sb, material, "_StencilOp");
+            AppendMaterialFloat(sb, material, "_StencilWriteMask");
+            AppendMaterialFloat(sb, material, "_StencilReadMask");
+            AppendMaterialFloat(sb, material, "_ColorMask");
+            AppendMaterialFloat(sb, material, "_CullMode");
+            AppendMaterialFloat(sb, material, "_GradientScale");
+            AppendMaterialFloat(sb, material, "_ScaleX");
+            AppendMaterialFloat(sb, material, "_ScaleY");
+            AppendMaterialFloat(sb, material, "_TextureWidth");
+            AppendMaterialFloat(sb, material, "_TextureHeight");
+            AppendMaterialFloat(sb, material, "_FaceDilate");
+            AppendMaterialFloat(sb, material, "_OutlineWidth");
+            return sb.Length > 0 ? sb.ToString() : "0[]";
+        }
+
+        private static void AppendMaterialFloat(
+            System.Text.StringBuilder sb,
+            Material material,
+            string property)
+        {
+            if (material == null || !material.HasProperty(property))
+                return;
+
+            if (sb.Length > 0)
+                sb.Append("/");
+            float value = 0f;
+            try { value = material.GetFloat(property); } catch { }
+            sb.Append(property).Append("=").Append(value.ToString("F3"));
+        }
+
+        private static string BoundsSummary(Bounds bounds)
+        {
+            return "center=" + Vector3Summary(bounds.center) +
+                "/size=" + Vector3Summary(bounds.size);
+        }
+
+        private static string ColorSummary(Color color)
+        {
+            return $"({color.r:F3},{color.g:F3},{color.b:F3},{color.a:F3})";
+        }
+
+        private static string Color32Summary(Color32 color)
+        {
+            return $"({color.r},{color.g},{color.b},{color.a})";
+        }
+
+        private static string Vector2Summary(Vector2 value)
+        {
+            return $"({value.x:F1},{value.y:F1})";
+        }
+
+        private static string Vector3Summary(Vector3 value)
+        {
+            return $"({value.x:F1},{value.y:F1},{value.z:F1})";
+        }
+
+        private static void EnsureFontCache()
+        {
+            if (_fontSearched)
+                return;
+
+            _fontSearched = true;
+            _fontAssets = Resources.FindObjectsOfTypeAll<TMPro.TMP_FontAsset>();
+            _gameFont = FindLocalizedGameFont(_fontAssets);
         }
 
         private static TMPro.TMP_FontAsset FindLocalizedGameFont(TMPro.TMP_FontAsset[] all)
@@ -71,8 +682,18 @@ namespace DuplicantStatusBar.UI
 
             string localizedSample = BuildLocalizedFontSample();
             var oniFont = System.Array.Find(all, f => f.name == "GRAYSTROKE REGULAR SDF");
-            if (!RequiresFallbackFont(localizedSample) && SupportsText(oniFont, localizedSample))
+            if (oniFont != null)
+            {
+                bool localizedTextAlreadySupported =
+                    !RequiresFallbackFont(localizedSample) &&
+                    SupportsText(oniFont, localizedSample);
+                EnsureGameFontFallbacks(oniFont, all);
+                if (DSBLog.Active)
+                    DSBLog.Log("Screen", $"Using TMP font '{oniFont.name}' with localized fallback fonts" +
+                        $" localizedSupported={localizedTextAlreadySupported}");
+                LogFontSetupSummary(oniFont, all);
                 return oniFont;
+            }
 
             string fallbackSample = BuildFallbackFontSample(localizedSample);
             var localizedFont = GetCurrentLocalizedFont(all);
@@ -87,7 +708,169 @@ namespace DuplicantStatusBar.UI
 
             if (DSBLog.Active && best != null)
                 DSBLog.Log("Screen", $"Using TMP font '{best.name}' for localized UI text");
+            LogFontSetupSummary(best, all);
             return best;
+        }
+
+        private static void EnsureGameFontFallbacks(
+            TMPro.TMP_FontAsset oniFont, TMPro.TMP_FontAsset[] all)
+        {
+            if (oniFont == null || all == null || all.Length == 0)
+                return;
+
+            var fallbackTable = oniFont.fallbackFontAssetTable;
+            if (fallbackTable == null)
+            {
+                fallbackTable = new List<TMPro.TMP_FontAsset>();
+                oniFont.fallbackFontAssetTable = fallbackTable;
+            }
+
+            string fallbackSample = BuildDynamicTextFallbackSample();
+            TryAddRuntimeFallbackFont(oniFont, TMPro.TMP_Settings.defaultFontAsset);
+            TryAddRuntimeFallbackFont(oniFont, global::Localization.FontAsset);
+            TryAddRuntimeFallbackFont(oniFont, GetCurrentLocalizedFont(all));
+            AddTmpSettingsFallbackFonts(oniFont);
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                var font = all[i];
+                if (IsNotoSans(font))
+                    TryAddFallbackFont(oniFont, font, fallbackSample);
+            }
+
+            for (int i = 0; i < all.Length; i++)
+                TryAddFallbackFont(oniFont, all[i], fallbackSample);
+        }
+
+        private static void AddTmpSettingsFallbackFonts(TMPro.TMP_FontAsset primaryFont)
+        {
+            var fallbacks = TMPro.TMP_Settings.fallbackFontAssets;
+            if (fallbacks == null)
+                return;
+
+            for (int i = 0; i < fallbacks.Count; i++)
+                TryAddRuntimeFallbackFont(primaryFont, fallbacks[i]);
+        }
+
+        private static void TryAddRuntimeFallbackFont(
+            TMPro.TMP_FontAsset primaryFont,
+            TMPro.TMP_FontAsset candidate)
+        {
+            TryAddFallbackFont(primaryFont, candidate, null, false);
+        }
+
+        private static void TryAddFallbackFont(
+            TMPro.TMP_FontAsset primaryFont,
+            TMPro.TMP_FontAsset candidate,
+            string fallbackSample)
+        {
+            TryAddFallbackFont(primaryFont, candidate, fallbackSample, true);
+        }
+
+        private static void TryAddFallbackFont(
+            TMPro.TMP_FontAsset primaryFont,
+            TMPro.TMP_FontAsset candidate,
+            string fallbackSample,
+            bool requireProbeSupport)
+        {
+            if (primaryFont == null || candidate == null || ReferenceEquals(primaryFont, candidate))
+                return;
+
+            var fallbackTable = primaryFont.fallbackFontAssetTable;
+            if (fallbackTable == null || fallbackTable.Contains(candidate))
+                return;
+
+            if (requireProbeSupport && !SupportsDynamicFallbackText(candidate, fallbackSample))
+                return;
+
+            fallbackTable.Add(candidate);
+        }
+
+        private static void LogFontSetupSummary(
+            TMPro.TMP_FontAsset primaryFont, TMPro.TMP_FontAsset[] all)
+        {
+            if (!DSBLog.Active || _fontDiagnosticsLogged)
+                return;
+
+            _fontDiagnosticsLogged = true;
+            var locale = global::Localization.GetLocale();
+            string activeLocale = GetCurrentLocaleCode();
+            string localeFontName = locale?.FontName ?? "none";
+            string localizationFont = FontAssetName(global::Localization.FontAsset);
+            string selectedLocaleFont = FontAssetName(GetCurrentLocalizedFont(all));
+            int loadedFontAssets = all != null ? all.Length : 0;
+            string fallbackFonts = BuildFallbackFontSummary(primaryFont);
+            string tmpSettingsFallbackFonts = BuildTmpSettingsFallbackSummary();
+            string sampleNames = BuildSampleNameSupportSummary(primaryFont);
+
+            DSBLog.Log("Font", $"activeLocale={activeLocale}" +
+                $" localeFontName={localeFontName}" +
+                $" Localization.FontAsset={localizationFont}" +
+                $" selectedLocaleFont={selectedLocaleFont}" +
+                $" primaryFont={FontAssetName(primaryFont)}" +
+                $" loadedFontAssets={loadedFontAssets}" +
+                $" tmpSettingsFallbackFonts={tmpSettingsFallbackFonts}" +
+                $" fallbackFonts={fallbackFonts}" +
+                $" sampleNames={sampleNames}");
+        }
+
+        private static string BuildFallbackFontSummary(TMPro.TMP_FontAsset primaryFont)
+        {
+            var fallbacks = primaryFont?.fallbackFontAssetTable;
+            if (fallbacks == null || fallbacks.Count == 0)
+                return "0[]";
+
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < fallbacks.Count; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                sb.Append(FontAssetName(fallbacks[i]));
+            }
+
+            return fallbacks.Count + "[" + sb + "]";
+        }
+
+        private static string BuildTmpSettingsFallbackSummary()
+        {
+            var fallbacks = TMPro.TMP_Settings.fallbackFontAssets;
+            if (fallbacks == null || fallbacks.Count == 0)
+                return "0[]";
+
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < fallbacks.Count; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                sb.Append(FontAssetName(fallbacks[i]));
+            }
+
+            return fallbacks.Count + "[" + sb + "]";
+        }
+
+        private static TMPro.TMP_FontAsset GetFirstTmpSettingsFallbackFont()
+        {
+            var fallbacks = TMPro.TMP_Settings.fallbackFontAssets;
+            return fallbacks != null && fallbacks.Count > 0 ? fallbacks[0] : null;
+        }
+
+        private static string BuildSampleNameSupportSummary(TMPro.TMP_FontAsset primaryFont)
+        {
+            return "EnglishName=" + SupportsText(primaryFont, "Ada") +
+                ", CzechName=" + SupportsText(primaryFont, "Ada " + GetCzechNameFallbackProbe()) +
+                ", GermanName=" + SupportsText(primaryFont, "Ada " + GetGermanNameFallbackProbe()) +
+                ", SpanishName=" + SupportsText(primaryFont, "Ada " + GetSpanishNameFallbackProbe()) +
+                ", FrenchName=" + SupportsText(primaryFont, "Ada " + GetFrenchNameFallbackProbe()) +
+                ", PortugueseName=" + SupportsText(primaryFont, "Ada " + GetPortugueseNameFallbackProbe()) +
+                ", RussianName=" + SupportsText(primaryFont, "Ada " + GetRussianNameFallbackProbe()) +
+                ", ChineseName=" + SupportsText(primaryFont, "Ada " + GetChineseNameFallbackProbe()) +
+                ", JapaneseName=" + SupportsText(primaryFont, "Ada " + GetJapaneseNameFallbackProbe()) +
+                ", KoreanName=" + SupportsText(primaryFont, "Ada " + GetKoreanNameFallbackProbe());
+        }
+
+        private static string FontAssetName(TMPro.TMP_FontAsset font)
+        {
+            return font != null ? font.name : "none";
         }
 
         private static string BuildLocalizedFontSample()
@@ -116,18 +899,144 @@ namespace DuplicantStatusBar.UI
                 : localizedSample + " " + probe;
         }
 
+        private static string BuildDynamicTextFallbackSample()
+        {
+            return string.Concat(
+                BuildFallbackFontSample(BuildLocalizedFontSample()),
+                " ",
+                BuildSupportedLocalizationFallbackSample(),
+                " ",
+                BuildSupportedNameFallbackSample());
+        }
+
+        private static string BuildSupportedLocalizationFallbackSample()
+        {
+            return string.Concat(
+                GetLatinExtendedFallbackProbe(),
+                " ",
+                GetCyrillicFallbackProbe(),
+                " ",
+                GetChineseFallbackProbe(),
+                " ",
+                GetJapaneseFallbackProbe(),
+                " ",
+                GetKoreanFallbackProbe());
+        }
+
+        private static string BuildSupportedNameFallbackSample()
+        {
+            return string.Concat(
+                "Ada ",
+                GetCzechNameFallbackProbe(),
+                " ",
+                GetGermanNameFallbackProbe(),
+                " ",
+                GetSpanishNameFallbackProbe(),
+                " ",
+                GetFrenchNameFallbackProbe(),
+                " ",
+                GetPortugueseNameFallbackProbe(),
+                " ",
+                GetRussianNameFallbackProbe(),
+                " ",
+                GetChineseNameFallbackProbe(),
+                " ",
+                GetJapaneseNameFallbackProbe(),
+                " ",
+                GetKoreanNameFallbackProbe());
+        }
+
         private static string GetLocaleFallbackProbe()
         {
             string code = GetCurrentLocaleCode();
+            if (StartsWithLocale(code, "cs"))
+                return GetCzechFallbackProbe();
+            if (StartsWithLocale(code, "de"))
+                return GetGermanFallbackProbe();
+            if (StartsWithLocale(code, "es"))
+                return GetSpanishFallbackProbe();
+            if (StartsWithLocale(code, "fr"))
+                return GetFrenchFallbackProbe();
+            if (StartsWithLocale(code, "pt"))
+                return GetPortugueseFallbackProbe();
             if (StartsWithLocale(code, "ru"))
                 return GetCyrillicFallbackProbe();
             if (StartsWithLocale(code, "zh"))
-                return "\u590d\u5236\u4eba \u6392\u5e8f \u7b5b\u9009";
+                return GetChineseFallbackProbe();
             if (StartsWithLocale(code, "ja"))
-                return "\u8907\u88fd\u4eba \u4e26\u3079\u66ff\u3048 \u30d5\u30a3\u30eb\u30bf\u30fc";
+                return GetJapaneseFallbackProbe();
             if (StartsWithLocale(code, "ko"))
-                return "\ubcf5\uc81c\uccb4 \uc815\ub82c \ud544\ud130";
+                return GetKoreanFallbackProbe();
             return "";
+        }
+
+        private static string GetLatinExtendedFallbackProbe()
+        {
+            return string.Concat(
+                GetCzechFallbackProbe(),
+                " ",
+                GetGermanFallbackProbe(),
+                " ",
+                GetSpanishFallbackProbe(),
+                " ",
+                GetFrenchFallbackProbe(),
+                " ",
+                GetPortugueseFallbackProbe());
+        }
+
+        private static string GetCzechFallbackProbe()
+        {
+            return "\u010c\u010d \u010e\u010f \u011a\u011b \u0147\u0148 " +
+                "\u0158\u0159 \u0160\u0161 \u0164\u0165 \u016e\u016f \u017d\u017e";
+        }
+
+        private static string GetCzechNameFallbackProbe()
+        {
+            return "Ji\u0159\u00ed \u0160\u00e1rka Dvo\u0159\u00e1k \u0158\u00edha";
+        }
+
+        private static string GetGermanFallbackProbe()
+        {
+            return "\u00c4\u00d6\u00dc \u00e4\u00f6\u00fc \u00df";
+        }
+
+        private static string GetGermanNameFallbackProbe()
+        {
+            return "J\u00fcrgen M\u00fcller Gro\u00df";
+        }
+
+        private static string GetSpanishFallbackProbe()
+        {
+            return "\u00c1\u00c9\u00cd\u00d3\u00da \u00e1\u00e9\u00ed\u00f3\u00fa " +
+                "\u00dc\u00fc \u00d1\u00f1";
+        }
+
+        private static string GetSpanishNameFallbackProbe()
+        {
+            return "Jos\u00e9 Mar\u00eda N\u00fa\u00f1ez";
+        }
+
+        private static string GetFrenchFallbackProbe()
+        {
+            return "\u00c0\u00c2\u00c7\u00c9\u00c8\u00ca\u00cb\u00ce\u00cf\u00d4\u00d9\u00db\u00dc " +
+                "\u00e0\u00e2\u00e7\u00e9\u00e8\u00ea\u00eb\u00ee\u00ef\u00f4\u00f9\u00fb\u00fc " +
+                "\u00c6\u00e6 \u0152\u0153";
+        }
+
+        private static string GetFrenchNameFallbackProbe()
+        {
+            return "\u00c9lodie Fran\u00e7ois C\u0153ur";
+        }
+
+        private static string GetPortugueseFallbackProbe()
+        {
+            return "\u00c1\u00c2\u00c3\u00c0\u00c7\u00c9\u00ca\u00cd\u00d3\u00d4\u00d5\u00da " +
+                "\u00e1\u00e2\u00e3\u00e0\u00e7\u00e9\u00ea\u00ed\u00f3\u00f4\u00f5\u00fa";
+        }
+
+        private static string GetPortugueseNameFallbackProbe()
+        {
+            return "Jo\u00e3o Andr\u00e9 Gon\u00e7alves";
         }
 
         private static string GetCyrillicFallbackProbe()
@@ -137,13 +1046,53 @@ namespace DuplicantStatusBar.UI
                 "\u0424\u0438\u043b\u044c\u0442\u0440";
         }
 
+        private static string GetRussianNameFallbackProbe()
+        {
+            return "\u0418\u0432\u0430\u043d \u041e\u043b\u044c\u0433\u0430 \u0410\u0434\u0430";
+        }
+
+        private static string GetChineseFallbackProbe()
+        {
+            return "\u590d\u5236\u4eba \u6392\u5e8f \u7b5b\u9009";
+        }
+
+        private static string GetChineseNameFallbackProbe()
+        {
+            return "\u738b \u5c0f\u660e \u674e\u5a1c \u5f20\u4f1f";
+        }
+
+        private static string GetJapaneseFallbackProbe()
+        {
+            return "\u8907\u88fd\u4eba \u4e26\u3079\u66ff\u3048 \u30d5\u30a3\u30eb\u30bf\u30fc";
+        }
+
+        private static string GetJapaneseNameFallbackProbe()
+        {
+            return "\u5c71\u7530\u592a\u90ce \u82b1\u5b50 \u3055\u304f\u3089 \u30ab\u30ca";
+        }
+
+        private static string GetKoreanFallbackProbe()
+        {
+            return "\ubcf5\uc81c\uccb4 \uc815\ub82c \ud544\ud130";
+        }
+
+        private static string GetKoreanNameFallbackProbe()
+        {
+            return "\uae40\ubbfc\uc900 \uc11c\uc5f0 \uc9c0\ud6c8";
+        }
+
         private static bool RequiresFallbackFont(string localizedSample)
         {
             if (ContainsNonLatinLetters(localizedSample))
                 return true;
 
             string code = GetCurrentLocaleCode();
-            return StartsWithLocale(code, "ru")
+            return StartsWithLocale(code, "cs")
+                || StartsWithLocale(code, "de")
+                || StartsWithLocale(code, "es")
+                || StartsWithLocale(code, "fr")
+                || StartsWithLocale(code, "pt")
+                || StartsWithLocale(code, "ru")
                 || StartsWithLocale(code, "zh")
                 || StartsWithLocale(code, "ja")
                 || StartsWithLocale(code, "ko")
@@ -167,15 +1116,27 @@ namespace DuplicantStatusBar.UI
 
         private static TMPro.TMP_FontAsset GetCurrentLocalizedFont(TMPro.TMP_FontAsset[] all)
         {
-            var font = global::Localization.FontAsset;
-            if (font != null)
-                return font;
+            var font = FindLocaleFontByName(all) ?? global::Localization.FontAsset;
+            return font;
+        }
 
+        private static TMPro.TMP_FontAsset FindLocaleFontByName(TMPro.TMP_FontAsset[] all)
+        {
             string fontName = global::Localization.GetLocale()?.FontName;
-            if (string.IsNullOrEmpty(fontName))
+            if (all == null || string.IsNullOrEmpty(fontName))
                 return null;
 
-            return System.Array.Find(all, f => f != null && f.name == fontName);
+            return System.Array.Find(all, f => FontNameMatches(f, fontName));
+        }
+
+        private static bool FontNameMatches(TMPro.TMP_FontAsset font, string fontName)
+        {
+            if (font == null || string.IsNullOrEmpty(fontName))
+                return false;
+
+            return string.Equals(font.name, fontName, System.StringComparison.OrdinalIgnoreCase)
+                || font.name.StartsWith(fontName, System.StringComparison.OrdinalIgnoreCase)
+                || font.name.IndexOf(fontName, System.StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static string GetCurrentLocaleCode()
@@ -199,6 +1160,11 @@ namespace DuplicantStatusBar.UI
 
         private static bool SupportsText(TMPro.TMP_FontAsset font, string text)
         {
+            return SupportsText(font, text, true);
+        }
+
+        private static bool SupportsText(TMPro.TMP_FontAsset font, string text, bool searchFallbacks)
+        {
             if (font == null || string.IsNullOrEmpty(text))
                 return false;
 
@@ -206,10 +1172,34 @@ namespace DuplicantStatusBar.UI
             {
                 if (char.IsWhiteSpace(c))
                     continue;
-                if (!font.HasCharacter(c, true, false))
+                if (!font.HasCharacter(c, searchFallbacks, false))
                     return false;
             }
             return true;
+        }
+
+        private static bool SupportsDynamicFallbackText(
+            TMPro.TMP_FontAsset font, string fallbackSample)
+        {
+            return SupportsText(font, fallbackSample)
+                || SupportsText(font, GetCzechFallbackProbe())
+                || SupportsText(font, GetCzechNameFallbackProbe())
+                || SupportsText(font, GetGermanFallbackProbe())
+                || SupportsText(font, GetGermanNameFallbackProbe())
+                || SupportsText(font, GetSpanishFallbackProbe())
+                || SupportsText(font, GetSpanishNameFallbackProbe())
+                || SupportsText(font, GetFrenchFallbackProbe())
+                || SupportsText(font, GetFrenchNameFallbackProbe())
+                || SupportsText(font, GetPortugueseFallbackProbe())
+                || SupportsText(font, GetPortugueseNameFallbackProbe())
+                || SupportsText(font, GetCyrillicFallbackProbe())
+                || SupportsText(font, GetRussianNameFallbackProbe())
+                || SupportsText(font, GetChineseFallbackProbe())
+                || SupportsText(font, GetChineseNameFallbackProbe())
+                || SupportsText(font, GetJapaneseFallbackProbe())
+                || SupportsText(font, GetJapaneseNameFallbackProbe())
+                || SupportsText(font, GetKoreanFallbackProbe())
+                || SupportsText(font, GetKoreanNameFallbackProbe());
         }
 
         private const int MIN_CARD_SIZE = 16;

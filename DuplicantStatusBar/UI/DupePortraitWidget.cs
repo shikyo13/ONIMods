@@ -59,6 +59,8 @@ namespace DuplicantStatusBar.UI
         private int rainbowTexSize;
         private float rainbowPulse;
         private const int RAINBOW_CORNER = 8;
+        private static LocText locTextTemplate;
+        private static bool locTextTemplateSearched;
 
         private uint heldMask;
         private uint currentAlertMask;
@@ -82,7 +84,7 @@ namespace DuplicantStatusBar.UI
         {
             int cardSz = size + 4;
             int totalW = size + 10;
-            int totalH = size + 22;
+            int totalH = size + 26;
 
             // Root: vertical layout (card on top, name below)
             var vlg = gameObject.AddComponent<VerticalLayoutGroup>();
@@ -237,17 +239,19 @@ namespace DuplicantStatusBar.UI
             Stretch(equipmentBadgeText.rectTransform);
 
             // ── Name label (below card) ───────────────────
-            nameLabel = AddText(transform, "Name");
+            nameLabel = AddLocText(transform, "Name");
             nameLabel.fontSize = 12;
             nameLabel.color = ColorUtil.TextPrimary;
             if (StatusBarScreen.GameFont != null) nameLabel.font = StatusBarScreen.GameFont;
             nameLabel.alignment = TextAlignmentOptions.Center;
-            nameLabel.enableWordWrapping = false;
-            nameLabel.overflowMode = TextOverflowModes.Ellipsis;
+            nameLabel.verticalAlignment = VerticalAlignmentOptions.Middle;
+            nameLabel.textWrappingMode = TextWrappingModes.NoWrap;
+            nameLabel.overflowMode = TextOverflowModes.Truncate;
             nameLabel.raycastTarget = false;
-            nameLayout = nameLabel.gameObject.AddComponent<LayoutElement>();
+            nameLayout = nameLabel.gameObject.GetComponent<LayoutElement>()
+                ?? nameLabel.gameObject.AddComponent<LayoutElement>();
             nameLayout.preferredWidth = totalW;
-            nameLayout.preferredHeight = 14;
+            nameLayout.preferredHeight = 20;
         }
 
         public void SetSnapshot(DupeSnapshot snapshot, int size)
@@ -256,7 +260,7 @@ namespace DuplicantStatusBar.UI
 
             int cardSz = size + 4;
             int totalW = size + 10;
-            int totalH = size + 22;
+            int totalH = size + 26;
 
             // Show portrait or initials based on card size
             bool usePortrait = StatusBarOptions.Instance.DisplayMode == DisplayMode.Portraits
@@ -308,6 +312,7 @@ namespace DuplicantStatusBar.UI
                 var initials = !string.IsNullOrEmpty(snapshot.Name)
                     ? snapshot.Name.Substring(0, Math.Min(2, snapshot.Name.Length))
                     : "?";
+                StatusBarScreen.ApplyFontForText(initialText, initials);
                 if (initialText.text != initials)
                     initialText.text = initials;
                 initialText.fontSize = size * 0.5f;
@@ -315,8 +320,10 @@ namespace DuplicantStatusBar.UI
 
             // Name below card
             var displayName = snapshot.Name ?? "???";
+            StatusBarScreen.ApplyFontForText(nameLabel, displayName);
             if (nameLabel.text != displayName)
                 nameLabel.text = displayName;
+            StatusBarScreen.LogTextRenderDiagnostics("PortraitName", nameLabel, displayName);
 
             // Overjoyed → rainbow border (set here, applied in Update; gated by option)
             isOverjoyed = snapshot.IsOverjoyed && StatusBarOptions.Instance.AlertOverjoyed;
@@ -821,6 +828,104 @@ namespace DuplicantStatusBar.UI
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
             return go.AddComponent<TextMeshProUGUI>();
+        }
+
+        private static TextMeshProUGUI AddLocText(Transform parent, string name)
+        {
+            var template = FindLocTextTemplate();
+            if (template != null)
+            {
+                var clone = Util.KInstantiateUI(template.gameObject,
+                    parent != null ? parent.gameObject : null, false);
+                if (clone != null)
+                {
+                    clone.name = name;
+                    var clonedText = clone.GetComponent<LocText>();
+                    if (clonedText != null)
+                    {
+                        ConfigureDynamicLocText(clonedText);
+                        clone.SetActive(true);
+                        return clonedText;
+                    }
+                    Destroy(clone);
+                }
+            }
+
+            var go = new GameObject(name);
+            go.SetActive(false);
+            go.transform.SetParent(parent, false);
+            var text = go.AddComponent<LocText>();
+            ConfigureDynamicLocText(text);
+            go.SetActive(true);
+            return text;
+        }
+
+        private static void ConfigureDynamicLocText(LocText text)
+        {
+            if (text == null)
+                return;
+
+            text.key = "";
+            text.allowOverride = true;
+            text.staticLayout = true;
+            text.AllowLinks = false;
+            text.raycastTarget = false;
+            text.text = "";
+            var rt = text.rectTransform;
+            if (rt != null)
+            {
+                rt.localScale = Vector3.one;
+                rt.anchoredPosition3D = Vector3.zero;
+                rt.sizeDelta = Vector2.zero;
+            }
+        }
+
+        private static LocText FindLocTextTemplate()
+        {
+            if (locTextTemplateSearched)
+                return locTextTemplate;
+
+            locTextTemplateSearched = true;
+            var labels = Resources.FindObjectsOfTypeAll<LocText>();
+            if (labels == null || labels.Length == 0)
+                return null;
+
+            for (int i = 0; i < labels.Length; i++)
+            {
+                var label = labels[i];
+                if (IsUsableLocTextTemplate(label))
+                {
+                    locTextTemplate = label;
+                    return locTextTemplate;
+                }
+            }
+
+            return null;
+        }
+
+        private static bool IsUsableLocTextTemplate(LocText label)
+        {
+            if (label == null || label.gameObject == null)
+                return false;
+            if (label.GetComponentInParent<DupePortraitWidget>() != null)
+                return false;
+            if (HasParentNamed(label.transform, "DSB_Canvas"))
+                return false;
+            if (label.GetComponent<Button>() != null)
+                return false;
+            return label.GetComponent<RectTransform>() != null;
+        }
+
+        private static bool HasParentNamed(Transform transform, string name)
+        {
+            var current = transform;
+            while (current != null)
+            {
+                if (current.name == name)
+                    return true;
+                current = current.parent;
+            }
+            return false;
         }
 
         /// <summary>Stretch to fill parent. Positive = grow beyond parent, negative = shrink inward.</summary>

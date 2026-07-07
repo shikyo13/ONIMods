@@ -136,10 +136,11 @@ namespace DuplicantStatusBar.UI
             var filterTextGO = new GameObject("Label");
             filterTextGO.transform.SetParent(filterGO.transform, false);
             filterTMP = filterTextGO.AddComponent<TMPro.TextMeshProUGUI>();
-            filterTMP.text = (string)DSB.UI.POPUP_SORTFILTER;
+            string filterText = (string)DSB.UI.POPUP_SORTFILTER;
+            ApplyFontForText(filterTMP, filterText);
+            filterTMP.text = filterText;
             filterTMP.fontSize = 13;
             filterTMP.color = Color.white;
-            if (GameFont != null) filterTMP.font = GameFont;
             filterTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             filterTMP.raycastTarget = false;
             var ftRT = filterTextGO.GetComponent<RectTransform>();
@@ -156,10 +157,11 @@ namespace DuplicantStatusBar.UI
             var grip = new GameObject("Grip");
             grip.transform.SetParent(header.transform, false);
             var gripTMP = grip.AddComponent<TMPro.TextMeshProUGUI>();
-            gripTMP.text = DSB.UI.HEADER;
+            string headerText = DSB.UI.HEADER;
+            ApplyFontForText(gripTMP, headerText);
+            gripTMP.text = headerText;
             gripTMP.fontSize = 13;
             gripTMP.color = Color.white;
-            if (GameFont != null) gripTMP.font = GameFont;
             gripTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
             gripTMP.enableWordWrapping = false;
             gripTMP.overflowMode = TMPro.TextOverflowModes.Ellipsis;

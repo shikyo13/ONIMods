@@ -1,12 +1,13 @@
 [h1]Duplicant Status Bar - All DLC Status HUD[/h1]
 A persistent bar at the top of your screen showing every duplicant on the current asteroid with the ability to click to focus. Think RimWorld's colonist bar, but for ONI. Does not break steam achievements.
 
-[h2]Latest Update - v2.10.5[/h2]
+[h2]Latest Update - v2.10.8[/h2]
 [list]
+[*] [b]Chinese portrait name rendering[/b] - field diagnostics showed Chinese portrait names were not being hidden by the mask; TMP was generating zero vertices because the 16px portrait label was shorter than the CJK fallback font's 17.8px preferred height. Portrait name labels now allocate 20px, with the widget height increased by the same 4px.
+[*] [b]Non-Latin font fallback diagnostics[/b] - dupe names, initials, tooltips, and filter popup rows keep the ONI font as primary and use ONI's active TMP fallback chain, including selected-language and language-pack fonts, with per-character font/material assignment, TMP submesh, fallback material, stencil, mask, canvas, and CanvasRenderer culling diagnostics still available.
 [*] [b]Bionic gunk tooltip fix[/b] - Gunk now reads ONI's actual BionicGunk amount instead of being estimated from inverse gear oil, so status bar tooltips match the game's bionic gunk value.
 [*] [b]Equipment visibility[/b] - dupes wearing Atmo or Oxygen suits can show a small portrait badge, and hover tooltips can list equipped suit, outfit, and shoes.
 [*] [b]Cleaner equipment tooltips[/b] - equipped gear appears as individual suit, outfit, and shoes lines without an extra Equipment label.
-[*] [b]Localized text rendering fix[/b] - DSB now chooses a font with glyph coverage for localized UI strings, fixing blank Russian/Cyrillic labels, names, popup text, and tooltips.
 [*] [b]Aquatic compatibility[/b] - verified against ONI build 23668350, with suffocation detection guarded against Klei state-machine changes and low-breath swimmer false positives on Aquatic builds.
 [*] [b]Breath display compatibility[/b] - normal duplicant breath uses ONI's integer breath display on Aquatic builds while older builds keep percentage tooltips.
 [*] [b]Recent fixes included[/b] - temperature units, screenshot mode hiding, filter recovery, reset behavior, skill point badges, stamina tooltips, badge scaling polish, and DLC/language text coverage are included.

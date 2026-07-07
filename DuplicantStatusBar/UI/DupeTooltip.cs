@@ -218,8 +218,10 @@ namespace DuplicantStatusBar.UI
                 if (slot >= MAX_ALERT_SLOTS) break;
                 if (!snap.HasAlert(alert)) continue;
 
+                string alertLabel = AlertLabel(alert);
                 alertTexts[slot].gameObject.SetActive(true);
-                alertTexts[slot].text = AlertLabel(alert);
+                StatusBarScreen.ApplyFontForText(alertTexts[slot], alertLabel);
+                alertTexts[slot].text = alertLabel;
                 activeAlertTypes[slot] = alert;
                 alertTimers[slot] = 0f;
 
@@ -238,8 +240,10 @@ namespace DuplicantStatusBar.UI
                     {
                         if (slot >= MAX_ALERT_SLOTS) break;
                         var hx = ColorUtility.ToHtmlStringRGB(reg.BaseColor);
+                        string customLabel = $"<color=#{hx}>{reg.DisplayName}</color>";
                         alertTexts[slot].gameObject.SetActive(true);
-                        alertTexts[slot].text = $"<color=#{hx}>{reg.DisplayName}</color>";
+                        StatusBarScreen.ApplyFontForText(alertTexts[slot], customLabel);
+                        alertTexts[slot].text = customLabel;
                         activeAlertTypes[slot] = AlertType.None;
                         alertTimers[slot] = 0f;
                         slot++;
@@ -260,7 +264,10 @@ namespace DuplicantStatusBar.UI
             API.Internal.AlertRegistry.InvokeTooltipHooks(
                 new API.Experimental.TooltipContext(snap, sb, activeAlertCount));
 
-            tooltipText.text = sb.ToString();
+            string tooltip = sb.ToString();
+            StatusBarScreen.ApplyFontForText(tooltipText, tooltip);
+            tooltipText.text = tooltip;
+            StatusBarScreen.LogTextRenderDiagnostics("Tooltip", tooltipText, tooltip);
 
             // Enable animation driver if any alert is active
             driverComponent.enabled = activeAlertCount > 0;

@@ -1,5 +1,24 @@
 [h1]Duplicant Status Bar - Changelog[/h1]
 
+[h2]v2.10.8 - CJK Portrait Name Rendering Fix[/h2]
+[list]
+[*] [b]Fixed Chinese portrait names rendering blank under portrait cards[/b] - Field diagnostics showed the Chinese portrait name had TMP preferred height 17.8px inside a 16px label, causing TMP to generate zero characters and zero vertices for the portrait label while the tooltip rendered the same name normally; portrait name labels now allocate 20px and the widget height grows by the same 4px
+[*] [b]Kept ONI's runtime font design intact[/b] - DSB keeps ONI's normal UI font as primary and uses selected-language or language-pack fonts only through the runtime fallback chain; it does not swap a text component's primary font based on Chinese, Cyrillic, accented, or other non-Latin characters
+[*] [b]Kept deeper text diagnostics available[/b] - Debug Logging can record matching portrait-name and tooltip renderer dumps, including object hierarchy, canvas, mask chain, stencil depth, world corners, per-character font/material assignment, TMP submeshes, fallback materials, shader properties, and CanvasRenderer culling state
+[/list]
+
+[h2]v2.10.7 - Runtime Font Fallback Diagnostics[/h2]
+[list]
+[*] [b]Improved Chinese and other non-Latin font fallback handling[/b] - DSB keeps ONI's normal UI font as the primary font and attaches ONI's active TMP runtime fallback chain, including selected-language and language-pack fonts, so DSB names, initials, tooltips, popup labels, and header labels can use the same font support as in-game menus while preserving mixed English/Latin names
+[*] [b]Removed risky localized primary-font swapping[/b] - DSB no longer changes a text component's primary font based on the current string contents; non-Latin glyphs render through the attached fallback chain instead, preventing the all-name blanking regression seen in v2.10.4
+[*] [b]Improved font diagnostics[/b] - Debug Logging now records the active locale, selected locale font, ONI primary font, TMP settings fallback fonts, attached fallback fonts, loaded font count, and mixed-script sample-name support once per session
+[/list]
+
+[h2]v2.10.6 - Mixed-Language Name Rendering Fix[/h2]
+[list]
+[*] [b]Fixed mixed-language dupe names under portraits[/b] - DSB now keeps ONI's native font as the primary font and attaches localized TMP fallback fonts for missing glyphs, so English names continue using the game font while all bundled localization character sets can render instead of blanking labels
+[/list]
+
 [h2]v2.10.5 - Bionic Gunk Tooltip Fix[/h2]
 [list]
 [*] [b]Fixed bionic gunk tooltip percentages[/b] - Gunk now reads ONI's actual BionicGunk amount instead of being estimated from inverse gear oil, so status bar tooltips match the game's bionic gunk value
