@@ -7,10 +7,31 @@ namespace FastInsulatedSelfSealingAirLock
 {
     internal static class DoorPatchHelpers
     {
+        private static readonly HashSet<string> DoorRemoteOverrideFallbackPrefabIds = new HashSet<string>(StringComparer.Ordinal)
+        {
+            AirlockConstants.BuildingId,
+            "Door",
+            "ManualPressureDoor",
+            "PressureDoor",
+            "BunkerDoor",
+            "WoodenDoor",
+            "InsulatedDoor",
+            "GravitasDoor",
+            "POIFacilityDoor",
+            "POIDlc2ShowroomDoor",
+            "POIDoorInternal"
+        };
+
         public static bool IsFastAirlockDoor(Door door)
         {
             var prefabId = door?.GetComponent<KPrefabID>();
             return prefabId != null && prefabId.PrefabTag == AirlockConstants.BuildingId;
+        }
+
+        public static bool ShouldUseDoorRemoteOverrideFallback(Door door)
+        {
+            var prefabId = door?.GetComponent<KPrefabID>();
+            return prefabId != null && DoorRemoteOverrideFallbackPrefabIds.Contains(prefabId.PrefabTag.ToString());
         }
 
         public static bool IsFastAirlockPrimaryElement(PrimaryElement primaryElement)
@@ -97,7 +118,6 @@ namespace FastInsulatedSelfSealingAirLock
             catch (Exception ex)
             {
                 DoorDiagnostics.LogPatchException("ApplySelfSealingState." + phase, door, ex);
-                throw;
             }
 
             DoorDiagnostics.LogSelfSealingApplication(phase + ".after", door, cells, allowTransmission);
@@ -147,7 +167,14 @@ namespace FastInsulatedSelfSealingAirLock
     {
         public static void Postfix(PrimaryElement primary_element, ref float __result)
         {
-            DoorPatchHelpers.RepairInvalidTemperatureRead(primary_element, ref __result, "StructureTemperature.OnGetTemperature");
+            try
+            {
+                DoorPatchHelpers.RepairInvalidTemperatureRead(primary_element, ref __result, "StructureTemperature.OnGetTemperature");
+            }
+            catch (Exception ex)
+            {
+                FISSACLog.Error("StructureTemperatureGetPatch.Postfix", ex);
+            }
         }
     }
 
@@ -162,35 +189,38 @@ namespace FastInsulatedSelfSealingAirLock
         {
             try
             {
-                EnsureSafeDoorOverrideAnims(__instance);
+                bool isFastAirlockDoor = DoorPatchHelpers.IsFastAirlockDoor(__instance);
+                RepairDoorOverrideAnims(__instance, "OnPrefabInit.Postfix");
 
-                if (!DoorPatchHelpers.IsFastAirlockDoor(__instance))
+                if (isFastAirlockDoor)
                 {
-                    return;
+                    DoorDiagnostics.LogPrefabInit(__instance);
                 }
-
-                if (TryGetDoorOverrideAnims(out var doorOverrideAnims))
-                {
-                    __instance.overrideAnims = doorOverrideAnims;
-                }
-
-                DoorDiagnostics.LogPrefabInit(__instance);
             }
             catch (Exception ex)
             {
                 DoorDiagnostics.LogPatchException("DoorAnimPatch.Postfix", __instance, ex);
-                throw;
             }
         }
 
-        private static void EnsureSafeDoorOverrideAnims(Door door)
+        private static void RepairDoorOverrideAnims(Door door, string phase)
         {
             if (door == null)
             {
                 return;
             }
 
-            door.overrideAnims = GetSafeDoorOverrideAnims(door.overrideAnims);
+            KAnimFile[] previousOverrideAnims = door.overrideAnims;
+            KAnimFile[] safeOverrideAnims = GetSafeDoorOverrideAnims(previousOverrideAnims);
+            if ((safeOverrideAnims == null || safeOverrideAnims.Length == 0)
+                && DoorPatchHelpers.ShouldUseDoorRemoteOverrideFallback(door)
+                && TryGetDoorOverrideAnims(out var doorOverrideAnims))
+            {
+                safeOverrideAnims = doorOverrideAnims;
+            }
+
+            door.overrideAnims = safeOverrideAnims;
+            DoorDiagnostics.LogOverrideAnimRepair(phase, door, previousOverrideAnims, safeOverrideAnims);
         }
 
         internal static KAnimFile[] GetSafeDoorOverrideAnims(KAnimFile[] overrideAnims)
@@ -257,14 +287,31 @@ namespace FastInsulatedSelfSealingAirLock
     {
         private static void Postfix(Workable __instance, ref Workable.AnimInfo __result)
         {
-            if (__instance is Door)
+            try
             {
+                if (!(__instance is Door door))
+                {
+                    return;
+                }
+
                 __result.overrideAnims = DoorAnimPatch.GetSafeDoorOverrideAnims(__result.overrideAnims);
+                if (!DoorPatchHelpers.ShouldUseDoorRemoteOverrideFallback(door))
+                {
+                    DoorDiagnostics.LogWorkableAnimInfo("Workable.GetAnim.Postfix", door, __result.overrideAnims);
+                    return;
+                }
+
                 if ((__result.overrideAnims == null || __result.overrideAnims.Length == 0)
                     && DoorAnimPatch.TryGetDoorOverrideAnims(out var doorOverrideAnims))
                 {
                     __result.overrideAnims = doorOverrideAnims;
                 }
+
+                DoorDiagnostics.LogWorkableAnimInfo("Workable.GetAnim.Postfix", door, __result.overrideAnims);
+            }
+            catch (Exception ex)
+            {
+                DoorDiagnostics.LogPatchException("DoorWorkableGetAnimPatch.Postfix", __instance as Door, ex);
             }
         }
     }
@@ -274,12 +321,26 @@ namespace FastInsulatedSelfSealingAirLock
     {
         public static void Prefix(Door __instance, IList<int> cells)
         {
-            DoorPatchHelpers.EnsureValidDoorTemperature(__instance, cells, "SetSimState.Prefix");
+            try
+            {
+                DoorPatchHelpers.EnsureValidDoorTemperature(__instance, cells, "SetSimState.Prefix");
+            }
+            catch (Exception ex)
+            {
+                DoorDiagnostics.LogPatchException("DoorSetSimStatePatch.Prefix", __instance, ex);
+            }
         }
 
         public static void Postfix(Door __instance, IList<int> cells)
         {
-            DoorPatchHelpers.ApplySelfSealingState(__instance, cells, "SetSimState.Postfix");
+            try
+            {
+                DoorPatchHelpers.ApplySelfSealingState(__instance, cells, "SetSimState.Postfix");
+            }
+            catch (Exception ex)
+            {
+                DoorDiagnostics.LogPatchException("DoorSetSimStatePatch.Postfix", __instance, ex);
+            }
         }
     }
 
@@ -288,8 +349,15 @@ namespace FastInsulatedSelfSealingAirLock
     {
         public static void Postfix(Door __instance)
         {
-            DoorDiagnostics.RegisterDoor(__instance);
-            DoorPatchHelpers.ApplySelfSealingState(__instance, __instance.building?.PlacementCells, "OnSpawn.Postfix");
+            try
+            {
+                DoorDiagnostics.RegisterDoor(__instance);
+                DoorPatchHelpers.ApplySelfSealingState(__instance, __instance.building?.PlacementCells, "OnSpawn.Postfix");
+            }
+            catch (Exception ex)
+            {
+                DoorDiagnostics.LogPatchException("DoorOnSpawnPatch.Postfix", __instance, ex);
+            }
         }
     }
 
@@ -298,16 +366,16 @@ namespace FastInsulatedSelfSealingAirLock
     {
         public static void Prefix(Door __instance)
         {
-            if (!DoorPatchHelpers.IsFastAirlockDoor(__instance) || __instance.building?.PlacementCells == null)
-            {
-                return;
-            }
-
-            DoorDiagnostics.LogCleanUp(__instance, __instance.building.PlacementCells);
-            DoorDiagnostics.UnregisterDoor(__instance);
-
             try
             {
+                if (!DoorPatchHelpers.IsFastAirlockDoor(__instance) || __instance.building?.PlacementCells == null)
+                {
+                    return;
+                }
+
+                DoorDiagnostics.LogCleanUp(__instance, __instance.building.PlacementCells);
+                DoorDiagnostics.UnregisterDoor(__instance);
+
                 foreach (int cell in __instance.building.PlacementCells)
                 {
                     SimMessages.ClearCellProperties(cell, AirlockConstants.DoorCellProperties, AirlockConstants.NoCallback);
@@ -316,7 +384,6 @@ namespace FastInsulatedSelfSealingAirLock
             catch (Exception ex)
             {
                 DoorDiagnostics.LogPatchException("DoorCleanUpPatch.Prefix", __instance, ex);
-                throw;
             }
         }
     }
@@ -326,7 +393,14 @@ namespace FastInsulatedSelfSealingAirLock
     {
         public static void Postfix()
         {
-            DoorDiagnostics.SampleRegisteredDoors();
+            try
+            {
+                DoorDiagnostics.SampleRegisteredDoors();
+            }
+            catch (Exception ex)
+            {
+                FISSACLog.Error("GameLeakSamplerPatch.Postfix", ex);
+            }
         }
     }
 }

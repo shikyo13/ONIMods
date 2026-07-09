@@ -19,6 +19,7 @@ Screenshot *.png
 **/debug/
 **/maintenance-logs/
 **/test-results/
+FastInsulatedSelfSealingAirLock/config.json
 
 # Reference repos
 ONIMods - peterhaneve/

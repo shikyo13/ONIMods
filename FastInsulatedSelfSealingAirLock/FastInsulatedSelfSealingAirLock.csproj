@@ -61,14 +61,17 @@
   <Target Name="DeployMod" AfterTargets="ILRepacking" Condition="'$(Configuration)' == 'Release'">
     <PropertyGroup>
       <ModDeploy>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded\mods\dev\FastInsulatedSelfSealingAirLock\</ModDeploy>
+      <LegacyModDeploy>$(USERPROFILE)\Documents\Klei\OxygenNotIncluded\mods\dev\FastInsulatedSelfSealingAirlockContinued\</LegacyModDeploy>
     </PropertyGroup>
+    <RemoveDir Directories="$(LegacyModDeploy)" Condition="Exists('$(LegacyModDeploy)')" />
     <MakeDir Directories="$(ModDeploy)" />
     <Delete Files="$(ModDeploy)PLib.*" TreatErrorsAsWarnings="true" />
     <Delete Files="$(ModDeploy)workshop-description.*" TreatErrorsAsWarnings="true" />
     <Delete Files="$(ModDeploy)CHANGELOG.*" TreatErrorsAsWarnings="true" />
+    <Delete Files="$(ModDeploy)config.json" TreatErrorsAsWarnings="true" />
     <ItemGroup>
       <ModDll Include="$(OutputPath)FastInsulatedSelfSealingAirLock.dll" />
-      <ModMeta Include="$(ProjectDir)mod.yaml;$(ProjectDir)mod_info.yaml;$(ProjectDir)config.json;$(ProjectDir)NOTICE.md" />
+      <ModMeta Include="$(ProjectDir)mod.yaml;$(ProjectDir)mod_info.yaml;$(ProjectDir)NOTICE.md" />
       <ModPreview Include="$(ProjectDir)preview.gif" Condition="Exists('$(ProjectDir)preview.gif')" />
       <ModAnim Include="$(ProjectDir)anim\**\*.*" />
       <ModStrings Include="$(ProjectDir)translations\*.po" />

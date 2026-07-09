@@ -65,6 +65,18 @@ namespace FastInsulatedSelfSealingAirLock
             }
         }
 
+        public static void OnOptionsChanged()
+        {
+            if (Active)
+            {
+                Log("Options", "Debug logging enabled via mod options.");
+            }
+            else if (writer != null)
+            {
+                Close();
+            }
+        }
+
         public static void Close()
         {
             if (writer == null)

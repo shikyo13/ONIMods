@@ -35,6 +35,30 @@ if ($options -notmatch '\[JsonProperty\]\s*public bool DebugLogging \{ get; set;
     throw 'Options must expose a JsonProperty DebugLogging bool.'
 }
 
+if ($options -match '\[RestartRequired\]\s*\[JsonObject') {
+    throw 'Options class must not be marked RestartRequired; DebugLogging must be live-toggleable.'
+}
+
+if ($options -notmatch 'public sealed class Options : SingletonOptions<Options>, IOptions') {
+    throw 'Options must inherit SingletonOptions<Options> and implement IOptions so option changes live-reload.'
+}
+
+if ($options -notmatch '\[ConfigFile\("FastInsulatedSelfSealingAirLock\.json", false, true\)\]') {
+    throw 'Options must use PLib shared config storage so settings survive mod updates and local redeploys.'
+}
+
+if ($options -notmatch '\[RestartRequired\]\s*\[Option\("ModStrings\.Options\.MULTIPLIER_TITLE"' -or $options -match '\[RestartRequired\]\s*\[Option\("ModStrings\.Options\.DEBUG_LOGGING_TITLE"') {
+    throw 'Only the speed multiplier should require restart; DebugLogging must not.'
+}
+
+if ($options -notmatch 'public void OnOptionsChanged\(\)' -or $options -notmatch 'POptions\.ReadSettings<Options>\(\)' -or $options -notmatch 'FISSACLog\.OnOptionsChanged\(\)') {
+    throw 'Options.OnOptionsChanged must refresh cached options and notify FISSACLog.'
+}
+
+if ($options -notmatch 'public IEnumerable<IOptionsEntry> CreateOptions\(\)' -or $options -notmatch 'return null;') {
+    throw 'Options must implement the PLib IOptions.CreateOptions no-op required by this PLib version.'
+}
+
 if ($options -notmatch 'DebugLogging\s*=\s*false') {
     throw 'DebugLogging must default to false.'
 }
@@ -49,6 +73,10 @@ if ($logger -notmatch 'FISSAC\.log' -or $logger -notmatch 'Application\.persiste
 
 if ($logger -notmatch 'SingletonOptions<Options>\.Instance\.DebugLogging') {
     throw 'FISSACLog must be gated by the mod DebugLogging option.'
+}
+
+if ($logger -notmatch 'public static void OnOptionsChanged\(\)' -or $logger -notmatch 'Debug logging enabled via mod options' -or $logger -notmatch 'Close\(\)') {
+    throw 'FISSACLog must open or close the dedicated log when DebugLogging changes at runtime.'
 }
 
 if ($logger -notmatch 'Debug\.LogWarning' -or $logger -notmatch 'Debug\.LogError') {
@@ -67,10 +95,14 @@ if ($diagnostics -notmatch 'Grid\.CellLeft\(cell\)' -or $diagnostics -notmatch '
     throw 'DoorDiagnostics must sample neighboring cells to diagnose cross-door leakage.'
 }
 
-foreach ($hook in @('DoorDiagnostics.LogPrefabInit', 'DoorDiagnostics.RegisterDoor', 'DoorDiagnostics.UnregisterDoor', 'DoorDiagnostics.LogSelfSealingApplication', 'DoorDiagnostics.LogCleanUp', 'DoorDiagnostics.SampleRegisteredDoors')) {
+foreach ($hook in @('DoorDiagnostics.LogPrefabInit', 'DoorDiagnostics.RegisterDoor', 'DoorDiagnostics.UnregisterDoor', 'DoorDiagnostics.LogSelfSealingApplication', 'DoorDiagnostics.LogCleanUp', 'DoorDiagnostics.SampleRegisteredDoors', 'DoorDiagnostics.LogOverrideAnimRepair', 'DoorDiagnostics.LogWorkableAnimInfo')) {
     if ($doorPatches -notmatch [regex]::Escape($hook)) {
         throw "Door patches must call $hook."
     }
+}
+
+if ($diagnostics -notmatch 'DoorAnim' -or $diagnostics -notmatch 'overrideAnims=' -or $diagnostics -notmatch 'resultOverrideAnims=') {
+    throw 'DoorDiagnostics must log door animation override repair and Workable.GetAnim result state.'
 }
 
 if ($diagnostics -match 'isOpen failed') {

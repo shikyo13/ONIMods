@@ -173,6 +173,35 @@ namespace FastInsulatedSelfSealingAirLock
             FISSACLog.Error(patchName + " " + DescribeDoor(door), ex);
         }
 
+        public static void LogOverrideAnimRepair(string phase, Door door, KAnimFile[] before, KAnimFile[] after)
+        {
+            if (!FISSACLog.Active)
+            {
+                return;
+            }
+
+            string beforeDescription = DescribeOverrideAnims(before);
+            string afterDescription = DescribeOverrideAnims(after);
+            if (beforeDescription == afterDescription)
+            {
+                return;
+            }
+
+            FISSACLog.Log("DoorAnim", phase + " " + DescribeDoor(door, includeIsOpen: false)
+                + " overrideAnims=" + beforeDescription + "->" + afterDescription);
+        }
+
+        public static void LogWorkableAnimInfo(string phase, Door door, KAnimFile[] overrideAnims)
+        {
+            if (!FISSACLog.Active)
+            {
+                return;
+            }
+
+            FISSACLog.Log("DoorAnim", phase + " " + DescribeDoor(door, includeIsOpen: false)
+                + " resultOverrideAnims=" + DescribeOverrideAnims(overrideAnims));
+        }
+
         private static void LogCells(string phase, Door door, IList<int> cells, bool includeNeighbors, bool forceDelta)
         {
             if (cells == null)
@@ -263,21 +292,26 @@ namespace FastInsulatedSelfSealingAirLock
 
         private static string DescribeOverrideAnims(Door door)
         {
-            if (door?.overrideAnims == null)
+            return DescribeOverrideAnims(door?.overrideAnims);
+        }
+
+        private static string DescribeOverrideAnims(KAnimFile[] overrideAnims)
+        {
+            if (overrideAnims == null)
             {
                 return "<null>";
             }
 
             int nullCount = 0;
-            for (int index = 0; index < door.overrideAnims.Length; index++)
+            for (int index = 0; index < overrideAnims.Length; index++)
             {
-                if (door.overrideAnims[index] == null)
+                if (overrideAnims[index] == null)
                 {
                     nullCount++;
                 }
             }
 
-            return "count=" + door.overrideAnims.Length + " nulls=" + nullCount;
+            return "count=" + overrideAnims.Length + " nulls=" + nullCount;
         }
 
         private static string SafeDoorState(Door door)
