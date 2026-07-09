@@ -26,8 +26,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <Import Project="ILRepack.targets" />
-
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(GameManaged)\Assembly-CSharp.dll</HintPath>

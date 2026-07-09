@@ -44,8 +44,9 @@ TypeLoadException: Could not resolve type with token 010001d0 from typeref
   <!-- other ONI references -->
 </ItemGroup>
 
-<Import Project="ILRepack.targets" />
 ```
+
+`ILRepack.Lib.MSBuild.Task` automatically imports project-local `ILRepack.targets`. Do not add a manual `<Import Project="ILRepack.targets" />` line to the project file, because that double-imports the target and produces MSB4011 warnings.
 
 ### 2. Create ILRepack.targets
 
