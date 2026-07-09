@@ -1,0 +1,92 @@
+[b]Changelog[/b]
+
+All notable changes for Fast Insulated Self Sealing AirLock Continued are tracked here.
+
+[b]Version 0.4.1 - 2026-07-08[/b]
+
+[list]
+[*]Restored the vanilla remote/tablet door work animation when ONI's static door override is initialized too early with a null animation entry.
+[*]Kept the null override sanitizer in place so vanilla and modded doors still avoid [code]AddAnimOverrides[/code] crashes.
+[*]Confirmed by Workshop feedback that the animation fallback restores visible door-state work animations.
+[/list]
+
+[b]Version 0.4.0 - 2026-07-08[/b]
+
+[list]
+[*]Added a Debug Logging mod option that writes detailed diagnostics to [code]FISSAC.log[/code] next to [code]Player.log[/code].
+[*]Logged mod lifecycle and Harmony patch installation details when debug logging is enabled.
+[*]Added fast-airlock door lifecycle diagnostics for prefab init, spawn, sim-state changes, cleanup, and throttled runtime cell sampling.
+[*]Moved debug leakage sampling to the global sim tick and registered spawned fast-airlock doors for periodic runtime sampling.
+[*]Removed misleading pre-spawn [code]Door.IsOpen()[/code] diagnostic noise from [code]FISSAC.log[/code].
+[*]Logged actual sampled cell state for door and neighboring cells, including element, gas/liquid state, mass, temperature, insulation byte, liquid impermeability, and door/grid flags.
+[*]Repaired zero fast-airlock [code]PrimaryElement[/code] temperatures and delegated structure-temperature reads before vanilla door close sim messages to avoid [code]Invalid cell modification (zero temp with non-zero mass)[/code] warnings.
+[*]Added bundled localization files matching the locale set currently shipped by Duplicant Status Bar: Czech, German, Spanish, French, Japanese, Korean, Portuguese, Brazilian Portuguese, Russian, and Chinese.
+[*]Added DSB-style translation path resolution for locale aliases such as [code]zh-CN[/code], [code]zh-Hans[/code], and [code]pt-BR[/code].
+[*]Added fallback loading for broken Workshop extraction paths that flatten [code]translations\*.po[/code] into the mod root.
+[*]Refreshed translated building strings after translation load so the plan screen and building info use the selected language.
+[/list]
+
+[b]Version 0.3.5 - 2026-07-07[/b]
+
+[list]
+[*]Split Harmony patch timing so database registration remains early while Door and Workable patches install later in the mod load lifecycle.
+[*]Kept the fast-airlock-specific worker animation lookup optional and non-logging.
+[*]Prepared Workshop-facing BBCode, notice, and upload package metadata for publication.
+[*]Updated public credit for 情深旧忆往昔 after they confirmed this continuation can carry maintenance forward, directed players here, and agreed to a link to their page for their other mods.
+[*]Known note: a heavily modded startup can still show one vanilla [code]Missing Anim: [0xDB3DCF89][/code] warning. In current validation it is not spam and does not correlate with the fixed door worker crash.
+[/list]
+
+[b]Version 0.3.4 - 2026-07-07[/b]
+
+[list]
+[*]Sanitized null door worker animation overrides before [code]StandardWorker.AttachOverrideAnims[/code] can consume them.
+[*]Added a [code]Workable.GetAnim[/code] boundary patch for Door instances so runtime-sourced null overrides do not reach [code]KAnimControllerBase.AddAnimOverrides[/code].
+[*]Switched the optional fast-airlock worker animation lookup from [code]Assets.GetAnim[/code] to [code]Assets.TryGetAnim[/code].
+[*]Added lifecycle regression coverage for vanilla and modded door worker animation safety.
+[/list]
+
+[b]Version 0.3.3 - 2026-07-07[/b]
+
+[list]
+[*]Reworked door patch hygiene so vanilla and other modded doors are only defensively sanitized for null worker animation overrides.
+[*]Kept fast-airlock-specific animation assignment scoped to the airlock prefab.
+[*]Updated build metadata and deploy hygiene checks.
+[/list]
+
+[b]Version 0.3.2 - 2026-07-01[/b]
+
+[list]
+[*]Scoped door Harmony behavior to the airlock prefab where practical.
+[*]Re-applied sealed simulation state after vanilla door spawn and [code]Door.SetSimState[/code].
+[*]Restored normal insulation when the door is explicitly opened.
+[*]Removed stale standalone PLib artifacts from the deploy folder during Release builds.
+[/list]
+
+[b]Version 0.3.1 - 2026-07-01[/b]
+
+[list]
+[*]Fixed completed-door spawn crashes on U59 by restoring the vanilla door rotation setting that provides the [code]Rotatable[/code] component expected by [code]Door.OnSpawn[/code].
+[/list]
+
+[b]Version 0.3.0 - 2026-07-01[/b]
+
+[list]
+[*]Rebuilt against current Oxygen Not Included assemblies.
+[*]Updated [code]SimMessages.SetCellProperties[/code] and [code]SimMessages.ClearCellProperties[/code] calls for the current three-argument API.
+[*]Introduced the continuation static ID [code]zerotheabsolute.FastInsulatedSelfSealingAirLock[/code].
+[*]Preserved the saved-game building prefab ID [code]FastInsulatedSelfSealingAirLock[/code] for migration from Neavo's original mod.
+[/list]
+
+[b]Version 0.2.0 - Original Neavo Release[/b]
+
+[list]
+[*]Added configurable door speed multiplier.
+[*]Reduced default speed multiplier from 10x to 5x.
+[*]Added preliminary internationalization support.
+[/list]
+
+[b]Version 0.1.0 - Original Neavo Release[/b]
+
+[list]
+[*]Initial release of the fast insulated self-sealing airlock.
+[/list]

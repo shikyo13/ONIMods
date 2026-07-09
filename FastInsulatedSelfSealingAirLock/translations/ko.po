@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Fast Insulated Self Sealing AirLock Continued\n"
+"POT-Creation-Date: 2026-07-08 00:00-0500\n"
+"PO-Revision-Date: 2026-07-08 00:00-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.MULTIPLIER_TITLE"
+msgid "Door Speed Multiplier"
+msgstr "문 속도 배율"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.MULTIPLIER_TOOLTIPS"
+msgid "The multiplier base is the speed of the game's native Manual Airlock."
+msgstr "배율 기준은 게임 기본 수동 에어락의 속도입니다."
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.DEBUG_LOGGING_TITLE"
+msgid "Debug Logging"
+msgstr "디버그 로깅"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.DEBUG_LOGGING_TOOLTIPS"
+msgid "Write detailed diagnostics to FISSAC.log next to Player.log. Enable only when troubleshooting."
+msgstr "Player.log 옆의 FISSAC.log에 자세한 진단 정보를 기록합니다. 문제 해결 시에만 켜세요."
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.NAME"
+msgid "Fast Insulated Self-Sealing Airlock"
+msgstr "빠른 단열 자동 밀폐 에어락"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.EFFECT"
+msgid "When set to AUTO or LOCKED, the airlock can be completely isolated from gas, liquid and temperature exchanges on both sides of the airlock."
+msgstr "자동 또는 잠금 상태로 설정하면 에어락 양쪽의 기체, 액체, 열 교환을 완전히 차단할 수 있습니다."
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.DESC"
+msgid "Nothing special, just SUPER FAST!"
+msgstr "특별한 건 없고, 그냥 엄청 빠릅니다!"

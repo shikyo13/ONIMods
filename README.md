@@ -36,7 +36,7 @@ A persistent bar showing every duplicant on the current asteroid — stress-colo
 
 ## ReplaceStuff
 
-Replace existing buildings with upgraded versions without deconstructing first. Supports tiles, doors, ladders, fire poles, and more — including modded doors (e.g., Fast Insulated Self Sealing Airlock Continued).
+Replace existing buildings with upgraded versions without deconstructing first. Supports tiles, doors, ladders, fire poles, and more — including modded doors (e.g., Fast Insulated Self Sealing AirLock).
 
 - Footprint-strict replacement groups (same width x height only)
 - Vanilla replacement pipeline integration (`TryReplaceTile`, `ReplacementTags`)

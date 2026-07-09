@@ -7,16 +7,18 @@ obj/
 *.user
 *.suo
 
-# Local tooling
-.local tooling/
-.wolf/
-.mcp.json
-local-notes.md
-.local tooling/
-docs/local tooling/
+# Local planning notes
+local-notes/
+*.local.md
 
 # Screenshots (local dev only)
 Screenshot *.png
+
+# Local diagnostics and captured output
+*.log
+**/debug/
+**/maintenance-logs/
+**/test-results/
 
 # Reference repos
 ONIMods - peterhaneve/
@@ -38,4 +40,4 @@ OniProfiler/All
 # Workshop media preparation scratch files
 DuplicantStatusBar/NewDemoVid.mp4
 DuplicantStatusBar/workshop-media/
-mod-page-images-campaign.md
+mod-page-images*.md

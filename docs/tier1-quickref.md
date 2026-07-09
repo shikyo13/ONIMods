@@ -8,7 +8,7 @@ Hard cap: 150 lines. Universal gotchas + per-mod module maps.
 |-|-|-|
 | ReplaceStuff | `Core/ReplaceStuffMod.cs` | v2.1, active |
 | BuildThrough | `Core/BuildThroughMod.cs` | Initial commit |
-| OniProfiler | `Core/OniProfilerMod.cs` | Active  - see `OniProfiler/HANDOVER.md` for architecture |
+| OniProfiler | `Core/OniProfilerMod.cs` | Active performance overlay and capture tools |
 | GCBudget | `Core/GCBudgetMod.cs` | POC, alloc-gated gen0 GC collections |
 | DuplicantStatusBar | `Core/DuplicantStatusBarMod.cs` | v2.10.4 - persistent dupe status HUD, skill point badges, stamina tooltip, bionic support, extensibility API. Aquatic release verified; localized text font fallback fixed |
 
@@ -108,4 +108,4 @@ Track game updates that break mod behavior here.
 ## Update-Compat Tooling
 
 - `tools/check-patch-targets.ps1 -AssemblyPath <Assembly-CSharp.dll> -Pairs "Type::Method","Outer/Nested::Method","Type::#field"` - metadata-level check that Harmony string targets exist after a game update.
-- `DuplicantStatusBar/tests/compare-memberrefs.ps1 -OldDll <old build> -NewDll <new build>` - proves binary backwards compat: identical external MemberRef sets between a mod DLL built against old vs new game assemblies. Keep a known-good DLL per release (see `DuplicantStatusBar/debug/beta-compat/`).
+- `DuplicantStatusBar/tests/compare-memberrefs.ps1 -OldDll <old build> -NewDll <new build>` - proves binary backwards compat: identical external MemberRef sets between a mod DLL built against old vs new game assemblies. Keep known-good release DLLs outside the tracked tree or in an ignored local diagnostics folder.

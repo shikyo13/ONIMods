@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Fast Insulated Self Sealing AirLock Continued\n"
+"POT-Creation-Date: 2026-07-08 00:00-0500\n"
+"PO-Revision-Date: 2026-07-08 00:00-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.MULTIPLIER_TITLE"
+msgid "Door Speed Multiplier"
+msgstr "Türgeschwindigkeitsmultiplikator"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.MULTIPLIER_TOOLTIPS"
+msgid "The multiplier base is the speed of the game's native Manual Airlock."
+msgstr "Die Basis des Multiplikators ist die Geschwindigkeit der spielinternen manuellen Luftschleuse."
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.DEBUG_LOGGING_TITLE"
+msgid "Debug Logging"
+msgstr "Debug-Protokollierung"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Options.DEBUG_LOGGING_TOOLTIPS"
+msgid "Write detailed diagnostics to FISSAC.log next to Player.log. Enable only when troubleshooting."
+msgstr "Schreibt detaillierte Diagnosen in FISSAC.log neben Player.log. Nur zur Fehlersuche aktivieren."
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.NAME"
+msgid "Fast Insulated Self-Sealing Airlock"
+msgstr "Schnelle isolierte selbstabdichtende Luftschleuse"
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.EFFECT"
+msgid "When set to AUTO or LOCKED, the airlock can be completely isolated from gas, liquid and temperature exchanges on both sides of the airlock."
+msgstr "Bei AUTO oder VERRIEGELT kann die Luftschleuse Gas-, Flüssigkeits- und Wärmeaustausch zwischen beiden Seiten vollständig isolieren."
+
+msgctxt "FastInsulatedSelfSealingAirLock.ModStrings.Building.DESC"
+msgid "Nothing special, just SUPER FAST!"
+msgstr "Nichts Besonderes, nur SUPER SCHNELL!"
