@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 using DuplicantStatusBar.Config;
@@ -1294,7 +1296,7 @@ namespace DuplicantStatusBar.UI
         private void ApplyGameUIScale()
         {
             if (gameCanvasScaler == null)
-                gameCanvasScaler = FindObjectOfType<KCanvasScaler>();
+                gameCanvasScaler = FindSceneObject<KCanvasScaler>();
             float scale = gameCanvasScaler != null
                 ? gameCanvasScaler.GetCanvasScale()
                 : 1f;
@@ -1303,6 +1305,62 @@ namespace DuplicantStatusBar.UI
                 canvasScaler.scaleFactor = scale;
                 lastUIScale = scale;
             }
+        }
+
+        private static T FindSceneObject<T>() where T : UnityEngine.Object
+        {
+            var inactiveType = Type.GetType("UnityEngine.FindObjectsInactive, UnityEngine.CoreModule");
+            var modernMethod = inactiveType != null
+                ? typeof(UnityEngine.Object).GetMethod(
+                    "FindFirstObjectByType",
+                    BindingFlags.Public | BindingFlags.Static,
+                    null,
+                    new Type[] { inactiveType },
+                    null)
+                : null;
+            if (modernMethod != null)
+            {
+                var exclude = Enum.Parse(inactiveType, "Exclude");
+                return modernMethod.MakeGenericMethod(typeof(T))
+                    .Invoke(null, new object[] { exclude }) as T;
+            }
+
+            var legacyMethod = typeof(UnityEngine.Object).GetMethod(
+                "FindObjectOfType",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                Type.EmptyTypes,
+                null);
+            return legacyMethod?.MakeGenericMethod(typeof(T)).Invoke(null, null) as T;
+        }
+
+        private static T[] FindSceneObjects<T>() where T : UnityEngine.Object
+        {
+            var inactiveType = Type.GetType("UnityEngine.FindObjectsInactive, UnityEngine.CoreModule");
+            var sortModeType = Type.GetType("UnityEngine.FindObjectsSortMode, UnityEngine.CoreModule");
+            var modernMethod = inactiveType != null && sortModeType != null
+                ? typeof(UnityEngine.Object).GetMethod(
+                    "FindObjectsByType",
+                    BindingFlags.Public | BindingFlags.Static,
+                    null,
+                    new Type[] { inactiveType, sortModeType },
+                    null)
+                : null;
+            if (modernMethod != null)
+            {
+                var exclude = Enum.Parse(inactiveType, "Exclude");
+                var none = Enum.Parse(sortModeType, "None");
+                return modernMethod.MakeGenericMethod(typeof(T))
+                    .Invoke(null, new object[] { exclude, none }) as T[] ?? new T[0];
+            }
+
+            var legacyMethod = typeof(UnityEngine.Object).GetMethod(
+                "FindObjectsOfType",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                Type.EmptyTypes,
+                null);
+            return legacyMethod?.MakeGenericMethod(typeof(T)).Invoke(null, null) as T[] ?? new T[0];
         }
 
         // ── Widget Sync ─────────────────────────────────────────

@@ -163,7 +163,7 @@ namespace DuplicantStatusBar.UI
             gripTMP.fontSize = 13;
             gripTMP.color = Color.white;
             gripTMP.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
-            gripTMP.enableWordWrapping = false;
+            gripTMP.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
             gripTMP.overflowMode = TMPro.TextOverflowModes.Ellipsis;
             gripTMP.raycastTarget = false;
             gripLE = grip.AddComponent<LayoutElement>();

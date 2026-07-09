@@ -42,7 +42,7 @@ namespace DuplicantStatusBar.UI
             }
 
             // Scan all ScreenSpaceOverlay canvases for sort order conflicts
-            var allCanvases = FindObjectsOfType<Canvas>();
+            var allCanvases = FindSceneObjects<Canvas>();
             foreach (var c in allCanvases)
             {
                 if (c.renderMode == RenderMode.ScreenSpaceOverlay && c.sortingOrder >= 90)
