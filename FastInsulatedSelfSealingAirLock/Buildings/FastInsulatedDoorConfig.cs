@@ -36,6 +36,7 @@ namespace FastInsulatedSelfSealingAirLock
             def.PermittedRotations = PermittedRotations.R90;
             def.SceneLayer = Grid.SceneLayer.TileMain;
             def.ForegroundLayer = Grid.SceneLayer.InteriorWall;
+            def.LogicInputPorts = DoorConfig.CreateSingleInputPortList(new CellOffset(0, 0));
 
             SoundEventVolumeCache.instance.AddVolume("door_manual_kanim", "ManualPressureDoor_gear_LP", NOISE_POLLUTION.NOISY.TIER1);
             SoundEventVolumeCache.instance.AddVolume("door_manual_kanim", "ManualPressureDoor_open", NOISE_POLLUTION.NOISY.TIER2);
